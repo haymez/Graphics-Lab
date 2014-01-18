@@ -71,6 +71,18 @@ canvas.width = "300px";
 canvas.height = "300px";
 canvas.style.border = "1px solid";
 
+//<button> elements
+var runButton = document.createElement('button');
+runButton.id = "runButton" + figNum;
+runButton.onclick = function() {run()};
+runButton.innerHTML = "Run";
+
+var walkButton = document.createElement('button');
+walkButton.id = "walkButton" + figNum;
+walkButton.onclick = function() {walk()};
+walkButton.innerHTML = "Walk";
+
+
 
 
 
