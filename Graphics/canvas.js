@@ -117,7 +117,6 @@ function drawPoint() {
 			startX = evt.clientX - rect.left;
 			startY = evt.clientY - rect.top;
 			toDraw[toDraw.length] = new makePoint(startX, startY);
-			writeCode(); //TEST CODE! DELETE THIS!!
 		}
 		
 		//remove listener after the line has been drawn
@@ -170,7 +169,6 @@ function drawLine() {
 			endX = evt.clientX - rect.left;
 			endY = evt.clientY - rect.top;
 			toDraw[toDraw.length] = new makeLine(startX, startY, endX, endY, "line");
-			writeCode(); //TEST CODE! DELETE THIS!
 		}
 		
 		//remove listener after the line has been drawn
@@ -222,7 +220,6 @@ function drawCircle() {
 			endX = evt.clientX - rect.left;
 			endY = evt.clientY - rect.top;
 			toDraw[toDraw.length] = new makeCircle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
-			writeCode(); //TEST CODE! DELETE THIS!
 		}
 		
 		//remove listener after the circle has been drawn
@@ -314,7 +311,6 @@ function drawPolygon() {
 					//Erase all line elements in toDraw that were used for polygon. Save polygon.
 					toDraw = toDraw.slice(0, toDraw.length-coor.length);
 					toDraw[toDraw.length] = new makePolygon(coor);
-					writeCode(); //TEST CODE! DELETE THIS!
 				}
 				else {
 					toDraw[toDraw.length] = new makeLine(startX, startY, endX, endY, "temp"); //Set this line to temporary because it's merely a preview
