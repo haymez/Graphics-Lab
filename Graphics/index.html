@@ -6,50 +6,51 @@
 </head>
 <body>
 <div id="container" style="height:450px;width:615px;">
-	
 	<h1 style="text-align:center;margin-top:0px;margin-bottom:0px">Watson Graphics Lab</h1>
-	
-	<div id="drawing_window" style="width:300px;height:350px;float:right;">
-		<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Drawing Window</p>
-		<canvas id="drawingCanvas" width="300" height="300" style="border:1px solid;"></canvas>
-		
-		<div id="run_walk" style="width:220px;height:25px;float:right;">
-			<button onclick="run()" style="width:70px;">Run</button>
-			<button onclick="walk()" style="width:70px;">Walk</button>
-		</div>
-	</div>
-	
-	<div id="variable_window" style="height:150px;width:300px;float:left;">
-		<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Variable Declarations</p>
-		<div id="var_win" style="height:128px;width:210px;border-style:ridge;overflow:auto;font-size:10pt;float:left;"></div>
-		
-		<div id="buttons" style="width:70px;height:130px;float:right;">
-			<button onclick="newDistance()" style="width:70px;">Distance</button>
-			<button onclick="drawPoint()" style="width:70px;">Point</button>
-			<button onclick="drawLine()" style="width:70px;">Line</button>
-			<button onclick="drawPolygon()" style="width:70px;">Polygon</button>
-			<button onclick="drawCircle()" style="width:70px;">Circle</button>
-		</div>
-	</div>
-	
-	<div id="program_window" style="height:300px;width:300px;float:left;">
-		<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Program Code</p>
-		<div id="program_buttons" style="width:83px;height:155px;float:right;">
-			<button onclick="assign()" style="width:70px;float:right;">Assign</button>
-			<button onclick="drawShape()" style="width:70px;float:right;">Draw</button>
-			<button onclick="erase()" style="width:70px;float:right;">Erase</button>
-			<button onclick="changeColor()" style="width:70px;float:right;">Color</button>
-			<button onclick="loop()" style="width:70px;float:right;">Loop</button>
-			<button onclick="increment()" style="width:70px;float:right;">+</button>
-			<button onclick="decrement()" style="width:70px;float:right;">-</button>
-		</div>
-		<div id="program_code" style="height:260px;width:210px;border-style:ridge;float:left;overflow:auto;font-size:10pt;"></div>
-	</div>
-	
+        
+    <div id="drawing_window" style="width:300px;height:350px;float:right;">
+            <p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Drawing Window</p>
+            <canvas id="drawingCanvas" width="300" height="300" style="border:1px solid;"></canvas>
+            
+            <div id="run_walk" style="width:220px;height:25px;float:right;">
+                    <button onclick="run()" style="width:70px;">Run</button>
+                    <button onclick="walk()" style="width:70px;">Walk</button>
+            </div>
+    </div>
+    
+    <div id="variable_window" style="height:150px;width:300px;float:left;">
+            <p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Variable Declarations</p>
+            <div id="var_win" style="height:128px;width:210px;border-style:ridge;overflow:auto;float:left;"></div>
+            
+            <div id="buttons" style="width:70px;height:130px;float:right;">
+                    <button onclick="newDistance()" style="width:70px;">Distance</button>
+                    <button onclick="drawPoint()" style="width:70px;">Point</button>
+                    <button onclick="drawLine()" style="width:70px;">Line</button>
+                    <button onclick="drawPolygon()" style="width:70px;">Polygon</button>
+                    <button onclick="drawCircle()" style="width:70px;">Circle</button>
+            </div>
+    </div>
+    
+    <div id="program_window" style="height:300px;width:300px;float:left;">
+            <p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Program Code</p>
+            <div id="program_buttons" style="width:83px;height:155px;float:right;">
+                    <button onclick="assign()" style="width:70px;float:right;">Assign</button>
+                    <button onclick="drawShape()" style="width:70px;float:right;">Draw</button>
+                    <button onclick="erase()" style="width:70px;float:right;">Erase</button>
+                    <button onclick="changeColor()" style="width:70px;float:right;">Color</button>
+                    <button onclick="loop()" style="width:70px;float:right;">Loop</button>
+                    <button onclick="increment()" style="width:70px;float:right;">+</button>
+                    <button onclick="decrement()" style="width:70px;float:right;">-</button>
+            </div>
+            <div id="program_code" style="height:260px;width:210px;border-style:ridge;float:left;overflow:auto;font-size:10pt;"></div>
+    </div>
 </div>
+
+<script src="addElements.js"></script>
 <script src="canvas.js"></script>
 <script src="variables.js"></script>
-<script src="program.js"></script>
+<script src="shapes.js"></script>
 <script src="run_walk.js"></script>
+<script src="editor.js"></script>
 </body>
 </html>
