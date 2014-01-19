@@ -46,7 +46,7 @@ function printVars() {
 	if (g.length > 0)
 		total += 'Polygon: ' + g + '<br>';
 	
-	$("#var_win").empty().append(total); //Add all variables to variable window
+	$("#" + variableDiv.id).empty().append(total); //Add all variables to variable window
 }
 
 //New Distance variable

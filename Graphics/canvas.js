@@ -5,17 +5,18 @@
  */
 
 //Declare all variables
-var canvas = document.getElementById('drawingCanvas'); //Drawing window canvas
 var toDraw = new Array();
 var paintbrush = 0; //Keeps track of which function was called last. (prevents multiple shapes from being drawn at once)
 var color = "red";
 
 //Event listener for cursor position on canvas
-canvas.addEventListener('mousemove', function(evt) {
+$("#" + canvas.id).mousemove(function(evt) {
     var cursorPos = getCursorPos(canvas, evt);
-    var message = cursorPos.x + " x " + cursorPos.y;
+    var message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
+    if (isNaN(cursorPos.x) || cursorPos.x > 300 || cursorPos.x < 0 || cursorPos.y > 300 || cursorPos.y < 0)
+        message = "";
     writeMessage(canvas, message);
-}, false);
+});
 
 //Event listener for when cursor leaves drawing window
 canvas.addEventListener('mouseout', function(evt) {

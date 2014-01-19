@@ -33,7 +33,7 @@ programWindowDiv.style.width = "300px";
 programWindowDiv.style.height = "300px";
 programWindowDiv.style.cssFloat = "left";
 
-//program window
+//program Code window
 var programDiv = document.createElement('div');
 programDiv.id = "program_code" + figNum;
 programDiv.style.width = "210px";
@@ -67,23 +67,121 @@ progButtonDiv.style.cssFloat = "right";
 //<canvas> element for drawing window
 var canvas = document.createElement('canvas');
 canvas.id = "drawCanvas" + figNum;
-canvas.width = "300px";
-canvas.height = "300px";
+canvas.width = "300";
+canvas.height = "300";
 canvas.style.border = "1px solid";
 
-//<button> elements
+//All <button> elements
 var runButton = document.createElement('button');
 runButton.id = "runButton" + figNum;
+runButton.style.width = "70px";
 runButton.onclick = function() {run()};
 runButton.innerHTML = "Run";
 
 var walkButton = document.createElement('button');
 walkButton.id = "walkButton" + figNum;
+walkButton.style.width = "70px";
 walkButton.onclick = function() {walk()};
 walkButton.innerHTML = "Walk";
 
+var distanceButton = document.createElement('button');
+distanceButton.id = "distanceButton" + figNum;
+distanceButton.style.width = "70px";
+distanceButton.onclick = function() {newDistance();};
+distanceButton.innerHTML = "Distance";
 
+var pointButton = document.createElement('button');
+pointButton.id = "pointButton" + figNum;
+pointButton.style.width = "70px";
+pointButton.onclick = function() {drawPoint();};
+pointButton.innerHTML = "Point";
 
+var lineButton = document.createElement('button');
+lineButton.id = "lineButton" + figNum;
+lineButton.style.width = "70px";
+lineButton.onclick = function() {drawLine();};
+lineButton.innerHTML = "Line";
+
+var polygonButton = document.createElement('button');
+polygonButton.id = "polygonButton" + figNum;
+polygonButton.style.width = "70px";
+polygonButton.onclick = function() {drawPolygon();};
+polygonButton.innerHTML = "Polygon";
+
+var circleButton = document.createElement('button');
+circleButton.id = "circleButton" + figNum;
+circleButton.style.width = "70px";
+circleButton.onclick = function() {drawCircle();};
+circleButton.innerHTML = "Circle";
+
+var assignButton = document.createElement('button');
+assignButton.id = "assignButton" + figNum;
+assignButton.style.width = "70px";
+assignButton.onclick = function() {assign();};
+assignButton.innerHTML = "Assign";
+assignButton.style.cssFloat = "right";
+
+var drawButton = document.createElement('button');
+drawButton.id = "drawButton" + figNum;
+drawButton.style.width = "70px";
+drawButton.onclick = function() {drawShape();};
+drawButton.innerHTML = "Draw";
+drawButton.style.cssFloat = "right";
+
+var eraseButton = document.createElement('button');
+eraseButton.id = "eraseButton" + figNum;
+eraseButton.style.width = "70px";
+eraseButton.onclick = function() {erase();};
+eraseButton.innerHTML = "Erase";
+eraseButton.style.cssFloat = "right";
+
+var colorButton = document.createElement('button');
+colorButton.id = "colorButton" + figNum;
+colorButton.style.width = "70px";
+colorButton.onclick = function() {changeColor();};
+colorButton.innerHTML = "Color";
+colorButton.style.cssFloat = "right";
+
+var loopButton = document.createElement('button');
+loopButton.id = "loopButton" + figNum;
+loopButton.style.width = "70px";
+loopButton.onclick = function() {loop();};
+loopButton.innerHTML = "Loop";
+loopButton.style.cssFloat = "right";
+
+//Define window label
+var drawLabel = "Drawing Window";
+var varLabel = "Variable Declarations";
+var progLabel = "Program Code";
+
+//Add everything to Drawing Window <div>
+drawDiv.appendChild(canvas);
+run_walkDiv.appendChild(runButton);
+run_walkDiv.appendChild(walkButton);
+drawDiv.appendChild(run_walkDiv);
+
+//Add everything to the Variable Window <div>
+variableWindowDiv.appendChild(variableDiv);
+buttonDiv.appendChild(distanceButton);
+buttonDiv.appendChild(pointButton);
+buttonDiv.appendChild(lineButton);
+buttonDiv.appendChild(polygonButton);
+buttonDiv.appendChild(circleButton);
+variableWindowDiv.appendChild(buttonDiv);
+
+//Add everything to the Program Code <div>
+progButtonDiv.appendChild(assignButton);
+progButtonDiv.appendChild(drawButton);
+progButtonDiv.appendChild(eraseButton);
+progButtonDiv.appendChild(colorButton);
+progButtonDiv.appendChild(loopButton);
+programWindowDiv.appendChild(progButtonDiv);
+programWindowDiv.appendChild(programDiv);
+
+var container = document.getElementById("container");
+container.appendChild(drawDiv);
+container.appendChild(variableWindowDiv);
+container.appendChild(programWindowDiv);
 
 
 
