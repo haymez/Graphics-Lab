@@ -1,5 +1,5 @@
 /*
- * This code is for the Watson editor
+ * This code is for the Watson Graphics Lab editor
  */
 
 //Allows user to assign values to a declared variable
