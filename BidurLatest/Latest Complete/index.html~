@@ -1,0 +1,146 @@
+<!--
+	In program.js 
+	replace makeLink(arg1, arg2) with following function
+	
+	function makeLink(id, text) 
+	{
+		var string = "";
+		string += "<a id='" + id + "' class='Clickable' href='#' style='color:black;text-decoration:none;'>" + text + "</a>";
+		return string;
+	}
+
+	Why?
+		Added a class to all a tags to be Clickable
+		Default href location set to #
+-->
+<!DOCTYPE HTML>
+<html>
+	<head>
+<!--
+*************************************************************************************************
+   ***********************************Include these in head section **************************
+*************************************************************************************************
+-->
+		<link rel="stylesheet" href="jquery-ui.css">
+		<link rel="stylesheet" href="NumPadStyle.css">
+<!--
+*************************************************************************************************
+   ***************************************** Head section end ********************************
+*************************************************************************************************
+-->
+		<title>Watson Lab Demo</title>
+	</head>
+	<body>
+		<div id="container" style="height:450px;width:615px;">
+	
+			<h1 style="text-align:center;margin-top:0px;margin-bottom:0px">Watson Graphics Lab</h1>
+	
+			<div id="drawing_window" style="width:300px;height:350px;float:right;">
+				<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Drawing Window</p>
+				<canvas id="drawingCanvas" width="300" height="300" style="border:1px solid;"></canvas>
+		
+				<div id="run_walk" style="width:220px;height:25px;float:right;">
+					<button onclick="" style="width:70px;">Run</button>
+					<button onclick="" style="width:70px;">Walk</button>
+				</div>
+			</div>
+	
+			<div id="variable_window" style="height:150px;width:300px;float:left;">
+				<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Variable Declarations</p>
+				<div id="var_win" style="height:128px;width:210px;border-style:ridge;overflow:auto;float:left;"></div>
+		
+				<div id="buttons" style="width:70px;height:130px;float:right;">
+					<button onclick="newDistance()" style="width:70px;">Distance</button>
+					<button onclick="drawPoint()" style="width:70px;">Point</button>
+					<button onclick="drawLine()" style="width:70px;">Line</button>
+					<button onclick="drawPolygon()" style="width:70px;">Polygon</button>
+					<button onclick="drawCircle()" style="width:70px;">Circle</button>
+				</div>
+			</div>
+	
+			<div id="program_window" style="height:300px;width:300px;float:left;">
+				<p style="font-size:12px;margin-top:0px;margin-bottom:0px;margin-left: 10px;">Program Code</p>
+				<div id="program_buttons" style="width:83px;height:155px;float:right;">
+					<button onclick="assign()" style="width:70px;float:right;">Assign</button>
+					<button onclick="drawShape()" style="width:70px;float:right;">Draw</button>
+					<button onclick="erase()" style="width:70px;float:right;">Erase</button>
+					<button onclick="changeColor()" style="width:70px;float:right;">Color</button>
+					<button onclick="loop()" style="width:70px;float:right;">Loop</button>
+					<button onclick="increment()" style="width:70px;float:right;">+</button>
+					<button onclick="decrement()" style="width:70px;float:right;">-</button>
+				</div>
+				<div id="program_code" style="height:260px;width:210px;border-style:ridge;float:left;overflow:auto;"></div>
+			</div>
+	
+		</div>
+		<!--
+		*************************************************************************************************
+			 ************ This is numpad html. Add this anywhere in index page **************************
+		*************************************************************************************************
+		-->
+				<div id="dialog-modal-num" title="Numeric Entry Pad" style="display:none">
+					<input type="text" class="InputValue"/>
+					<div id="NumpadDiv">
+						<ul>
+							<li><input type="button" class="Numpad" id="Numpad-9" value="9"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-8" value="8"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-7" value="7"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-6" value="6"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-5" value="5"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-4" value="4"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-3" value="3"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-2" value="2"/></li>
+							<li><input type="button" class="Numpad" id="Numpad-1" value="1"/></li>
+							<li class="Numpad0"><input type="button" class="Numpad" id="Numpad-0" value="0"/></li>
+						</ul>
+					</div>
+					<div id="NumpadFunctionBtns">
+						<ul>
+							<li><input type="button" value="OK" class="OKBtn WButton"/></li>
+							<li><input type="button" value="Clear" class="ClearBtn WButton"/></li>
+							<li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>
+						</ul>
+					</div>
+					<label class="GeneralLabel">
+						Enter up to 3 digits
+					</label>
+				</div>
+		<!--
+		*************************************************************************************************
+			*********************************** Numpad html end ****************************************
+		*************************************************************************************************
+		-->
+
+		<!--
+		*************************************************************************************************
+			 ************ This is variable selection html. Add this anywhere in index page **************
+		*************************************************************************************************
+		-->
+				<div id="dialog-modal-Vars" title="Choice Selection Panel" style="display:none">
+					<div id="VarsSelectHolder">
+						<select size=8 id="VarsDialogSelect">
+				
+						</select>
+					</div>
+					<div id="VarButtons">
+						<ul>
+							<li><input type="button" value="OK" class="VarOKBtn VarBtn"/></li>
+							<li><input type="button" value="Cancel" class="VarCancelBtn VarBtn"/></li>
+						</ul>
+					</div>
+				</div>
+		<!--
+		*************************************************************************************************
+			 ***************************** Variable selection html end *********************************
+		*************************************************************************************************
+		-->
+
+		<script src="canvas.js"></script>
+		<script src="variables.js"></script>
+		<script src="run_walk.js"></script>
+		<script src="jquery-1.10.2.js"></script>
+		<script src="Click.js"></script> <!--Bidur js -->
+		<script src="program.js"></script>
+		<script src="jquery-ui.js"></script>		<!--Bidur js -->
+	</body>
+</html>
