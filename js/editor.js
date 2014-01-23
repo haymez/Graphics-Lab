@@ -11,12 +11,6 @@ var programStart = 0; // the line the main program starts
 var firstMove = false; // keeps track if the user has added something to the main program
 var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>&#8226;&nbsp;&nbsp;</td></tr></table>"; // template used for a newly added row in the codeTable
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>"; // template used for a newly selected row
-var rowType = [];
-
-this.loop = loop;
-this.selectNextLine = selectNextLine;
-this.incSelRow = incSelRow;
-this.decSelRow = decSelRow;
 
 init();
 
