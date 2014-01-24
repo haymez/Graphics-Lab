@@ -6,9 +6,6 @@ var selRow = 0; // the current selected row
 var blank = "&nbsp;&nbsp;&nbsp;&nbsp;"; // blank template for unselected row
 var arrow = "&#8594;"; // arrow template for selected row
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" // indention used for inside brackets
-var variableCount = 0; // keeps count of the amount of variables
-var programStart = 0; // the line the main program starts
-var firstMove = false; // keeps track if the user has added something to the main program
 var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>&#8226;&nbsp;&nbsp;</td></tr></table>"; // template used for a newly added row in the codeTable
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>"; // template used for a newly selected row
 
@@ -23,7 +20,6 @@ function init() { //Initializes variables
     row = codeTable.insertRow(0);        // make a new row
     cell = row.insertCell(0);                // make a new cell here
     cell.innerHTML = innerTableArrowTemplate;        // set the cell with arrow template
-    programStart = 0;                                // increate the program start to 2
     selRow = 0;                                                // selected row is line 2
 }
 
@@ -190,10 +186,6 @@ function addBlankLine() {
 
 //loop() adds a loop to the current selected line
 function loop(params) {
-        if (!firstMove) {
-            addMainProgramComment();
-            firstMove = true;
-        }
         var indentStr = findIndentation(selRow);
         var row;
         var cell;
@@ -214,8 +206,6 @@ function loop(params) {
         }
         
         selectRow(selRow + 3);
-        
-        if (selRow < programStart) programStart += 3;
         toggleEvents();
 }
 
@@ -233,60 +223,12 @@ function addNewRow(line, params) {
 // addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
 function addRow(table, values, startInd) {
     var cell;
-    for (var i = 0; i < values.length; i++) {                        // for all cells in the table
-        cell = table.rows[0].insertCell(startInd++);        // insert a cell at startInd
-        cell.innerHTML = values[i];                                                // make the innerHTML of the cell cells[i]
-    }
-}
-
-// addRowStyle() takes an innerTable, a string of colors, and a start index and styles the innerTable cells with these colors
-function addRowStyle(table, colors, startInd) {
-    var cell;
-    for (var i = 0; i < colors.length; i++) {                        // for all cells in the table
-        cell = table.rows[0].cells[startInd++];                        // get the cell at the current index
-        cell.style.color = colors[i];                                        // change its style to cells[i]
-    }
-}
-
-// deleteFunction() checks to see what the element is that is requested to be deleted, and deletes that element
-function deleteFunction(rowNum, colNum) {
-    var innerTable = codeTable.rows[rowNum].cells[0].children[0];                        // grab the inner table that needs to be deleted
-    
-    if (isOneLineElement(innerTable.rows[0])) deleteOneLineElement(rowNum);        // if its a one line element, delete it
-}
-
-// deleteOneLineElement() is responsible for appropriately deleting an element that takes up one line
-function deleteOneLineElement(rowNum) {
-    if (selRow > rowNum) selRow--;
-    if (programStart > rowNum) programStart--;
-    
-    codeTable.deleteRow(rowNum);
-}
-
-// isOneLineElement() checks to see if the row passed is a one line element such as an assignment
-function isOneLineElement(row) {
-    var rowLength = row.cells.length;
-    
-    if (rowLength == 6) {
-            for (var i = 0; i < rowLength; i++) {
-                if (row.cells[i].innerText.indexOf("=") >= 0) { return true; }                // check for assignment
-                if (row.cells[i].innerText.indexOf("write") >= 9) { return true; }        // check for a write/writeln
-            }
-    }
-    else if (rowLength == 10) {
-            for (var i = 0; i < rowLength; i++) {
-                if (row.cells[i].innerText.indexOf("prompt") >= 0) { return true; }        // check for a prompt
-            }
-    }
-    else if (rowLength == 12) {
-            for (var i = 0; i < rowLength; i++) {
-                if (row.cells[i].innerText.indexOf("prompt") >= 0) { return true; }        // check for a prompt again (numeric prompt)
-            }
-    }
-    else {
-        if (row.cells[2].innerText.indexOf("return") >= 0) return true;                        // check for a return
-        if (row.cells[2].innerText.indexOf("FUNCTION") >= 0) return true;                // check for a function that hasn't been renamed
-        if (functionExists(row.cells[2].innerText)) return true;                                // check to see if the function exists that has been named
+    // for all cells in the table
+    for (var i = 0; i < values.length; i++) {
+        // insert a cell at startInd
+        cell = table.rows[0].insertCell(startInd++);
+        // make the innerHTML of the cell cells[i]
+        cell.innerHTML = values[i];
     }
 }
 
@@ -329,44 +271,14 @@ function findIndentation(row) {
     return indents;
 }
 
-// checkValidRow() makes sure the program doesn't move somewhere that it shouldn't
-// For example, we don't want the user moving into the variable sections
-function checkValidRow(row, rowNum) {
-    if (row.cells[2].innerText.indexOf("//") >= 0) return false;                                                                // don't let the user edit a comment
-    if (row.cells[2].innerText == '\xA0') return false;                                                                                        // don't let the user edit a blank line
-    if (row.cells[2].innerText.indexOf("{") >= 0 && rowNum >= programStart) return false;                // don't let the user edit before a '{'
-    if (rowNum < variableCount + 3) return false;                                                                                                // don't let the user edit in the variable space
-    
-    // the following if statements ensure that a user doesn't edit before the program start (in the variable or function space.. unless its inside a function)
-    if ((selRow < programStart && rowNum < programStart + 1) || (rowNum < programStart)) {
-        if (row.cells[2].innerText.indexOf("{") >= 0 && selRow > rowNum) return false;
-        if (row.cells[2].innerText.indexOf("}") >= 0 && selRow < rowNum) return false;
-        if (row.cells[2].innerText.indexOf("function") >= 0) return false;
-    }
-    return true;
-}
-
 function selectNextLine(line) {
     var numRows = codeTable.rows.length;
     var innerTable;
     var numCells;
-    var execLines = 0;
     var found = false;
     
     for (var i = 0; i < numRows; i++) {
         innerTable = codeTable.rows[i].cells[0].children[0];
-        if (innerTable.rows[0].cells.length > 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("//") < 0) {
-                execLines++;
-        }
-            
-        if (execLines == line) {
-            var oldInnerTable = codeTable.rows[selRow].cells[0].children[0];
-            oldInnerTable.rows[0].cells[1].innerHTML = blank;
-            innerTable.rows[0].cells[1].innerHTML = arrow;
-            selRow = i;
-            found = true;
-            break;
-        }
     }
     
     if (found == false) {
@@ -378,7 +290,7 @@ function selectNextLine(line) {
     }
 }
 
-//Returns string representing row at specified row index
+//Returns string representation of the row at specified row index
 function rowToString(rowInd) {
     var string = "";
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];
@@ -388,94 +300,31 @@ function rowToString(rowInd) {
     return string;
 }
 
-function incSelRow() {
-    selRow++;
-}
-
-function decSelRow() {
-    selRow--;
-}
-
-var lineNums = [];
-var charCountStart = [ ];
-var charCountEnd = [ ];
-var codeStrLen;
-
-function selectLine(start, end, varCount) {
-    if (start == -1 && end == -1) {
-        returnToNormalColor();
-        highlightLine(codeTable.rows.length - 1);
-
-        var innerTable;
-        innerTable = codeTable.rows[selRow].cells[0].children[0];
-        innerTable.rows[0].cells[1].innerHTML = blank;
-        
-        innerTable = codeTable.rows[codeTable.rows.length - 1].cells[0].children[0];
-        innerTable.rows[0].cells[1].innerHTML = arrow;
-        selRow = codeTable.rows.length - 1;
-    }
-    if (start == 0 && end == codeStrLen) return false;
-    
-    var rowNum = -1;
-    var fallBack = -1;
-    var flag = false;
-    for (var i = 0; i < charCountStart.length; i++) {
-        if (start >= charCountStart[i] && end <= charCountEnd[i]) { rowNum = lineNums[i]; flag = true; break; }
-        if (start == charCountStart[i]) fallBack = lineNums[i];
-    }
-    if (flag == false) return false;
-    
-    if (start != -1) {
-        if (rowNum == -1) rowNum = fallBack;
-        if (rowNum == -1) return false;
-    }
-    else rowNum = codeTable.rows.length - 1;
-    
-    if (rowNum == selRow) {
-        return false;
-    }
-    
-    returnToNormalColor();
-    highlightLine(rowNum);
-    
-    var innerTable;
-    innerTable = codeTable.rows[selRow].cells[0].children[0];
-    innerTable.rows[0].cells[1].innerHTML = blank;
-    
-    innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    innerTable.rows[0].cells[1].innerHTML = arrow;
-    selRow = rowNum;
-    
-    return true;
-}
-
-
-
-
-
 //Allows user to assign values to a declared variable
 function assign() {
-    console.log("Assign");
+    addNewRow(selRow, ["VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
 }
 
 //Allows user to choose a shape to draw
 function drawShape() {
-    console.log("Draw declared and assigned shape");
+    addNewRow(selRow, ["draw", "(", "OBJECT", ")"]);
 }
 
 //Erases a shape
 function erase() {
-    console.log("Erase object");
+    addNewRow(selRow, ["erase", "(", "OBJECT", ")"]);
 }
 
 //Allow users to change the color of shapes
 function changeColor() {
-    console.log("change color");
+    addNewRow(selRow, ["color", "(", "COLOR_NAME", ")"]);
 }
 
 //Creates a loop in program window
 function loop() {
-    console.log("create a loop");
+    addNewRow(selRow, ["repeat", "COUNTER", "times"]);
+    addNewRow(selRow, ["loop"]);
+    addNewRow(selRow, ["endloop"]);
 }
 
 
