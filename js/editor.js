@@ -25,19 +25,26 @@ function init() { //Initializes variables
 
 // we must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
 function toggleEvents() {
-    $('.innerTable' + figNum).off('mouseover');                                                // turn off mouseover event
-    
-    $('.innerTable' + figNum).on('mouseover', 'td', function(){                // turn it back on
-        cellVal = $(this).text();                                                        // grab the hovered cell's value
-        colNum = ($(this).index());                                                        // grab the hovered cell's index
-        var rowNum = ($(this).parent().parent().parent().parent().parent().index());        // grab the row number from codeTable (this is a silly way of doing it, but it works)
+    // turn off mouseover event
+    $('.innerTable' + figNum).off('mouseover');
+    //Turn mouseover event back on
+    $('.innerTable' + figNum).on('mouseover', 'td', function() {
+        // grab the hovered cell's value
+        cellVal = $(this).text();
+        // grab the hovered cell's index
+        colNum = ($(this).index());
+        // grab the row number from codeTable (this is a silly way of doing it, but it works)
+        var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         
-        // depending on what cell the mouse if over, highlight accordingly
-        // go look at the functions getting called here to understand what is going on
         // we pass rowNum and colNum to tell the function where start highlighting
-        if (cellVal.indexOf('(') >= 0) highlightParenthesis('(', ')', rowNum, colNum);        // must highlight backwards if we land on a '}'
-        else if (cellVal.indexOf(')') >= 0)        highlightParenthesisBackwards('(', ')', rowNum, colNum);
-        else highlightCell(rowNum, colNum);
+        if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 && 
+            cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 && cellVal.indexOf('endloop') == -1) {
+            if (cellVal.indexOf('(') >= 0)
+                highlightParenthesis('(', ')', rowNum, colNum);
+            else if (cellVal.indexOf(')') >= 0)
+                highlightParenthesisBackwards('(', ')', rowNum, colNum);
+            else highlightCell(rowNum, colNum);
+        }
     });
     
     $('.innerTable' + figNum).off('mouseout');                                        // toggle mouseout event

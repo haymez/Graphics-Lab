@@ -13,14 +13,14 @@ drawDiv.style.cssFloat = "right";
 //Variable window area <div>
 var variableWindowDiv = document.createElement('div');
 variableWindowDiv.id = "variable_window" + figNum;
-variableWindowDiv.style.width = "330px"; //added 30
+variableWindowDiv.style.width = "335px"; //added 35
 variableWindowDiv.style.height = "150px";
 variableWindowDiv.style.cssFloat = "left";
 
 //<div> for variable window
 var variableDiv = document.createElement('div');
 variableDiv.id = "var_win" + figNum;
-variableDiv.style.width = "240px"; //added 30
+variableDiv.style.width = "245px"; //added 35
 variableDiv.style.height = "128px";
 variableDiv.style.border = "ridge";
 variableDiv.style.overflow = "auto";
@@ -30,14 +30,14 @@ variableDiv.style.fontSize = "13px";
 //Program window <div>
 var programWindowDiv = document.createElement('div');
 programWindowDiv.id = "program_window" + figNum;
-programWindowDiv.style.width = "330px"; //added 30
+programWindowDiv.style.width = "335px"; //added 35
 programWindowDiv.style.height = "300px";
 programWindowDiv.style.cssFloat = "left";
 
 //program Code window
 var programDiv = document.createElement('div');
 programDiv.id = "program_code" + figNum;
-programDiv.style.width = "240px"; //added 30
+programDiv.style.width = "245px"; //added 35
 programDiv.style.height = "260px";
 programDiv.style.border = "ridge";
 programDiv.style.overflow = "auto";
