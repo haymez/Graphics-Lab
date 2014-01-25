@@ -54,6 +54,39 @@ function toggleEvents() {
         returnToNormalColor();
         codeTable.style.cursor = 'default';
     });
+    
+    //Turn click listener off
+    $(".innerTable" + figNum).off("click");
+    //Turn it back on
+    $(".innerTable" + figNum).on("click", "td", function() {
+        var cellVal = $(this).text();
+        var colNum = $(this).index();
+        var rowNum = ($(this).parent().parent().parent().parent().parent().index());
+        var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+        //This doesn't work right now
+        if (cellVal.indexOf("•") >= 0) {
+            alert("delete this row");
+        }
+        //User clicked on variable number. Generate keypad popup
+        else if (!isNaN(Number(cellVal))) {
+            alert("Generate keypad with 3 digit limit");
+        }
+        //User clicked on something within draw(). Generate list of drawable items
+        else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1) {
+            alert("Draw: Bring up list of variables that appear on left side of an assignment");
+        }
+        else if (rowToString(rowNum).indexOf("erase") >= 0) {
+            alert("Erase: Bring up list of variables that appear on left side of an assignment");
+        }
+        else if (rowToString(rowNum).indexOf("color") >= 0) {
+            alert("Color: bring up list of colors");
+        }
+        //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labelled "COUNTER")
+        //Make sure user isn't clicking 'repeat' or 'times'
+        else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1) {
+            alert("Generate keypad with 2 digit limit")
+        }
+    });
 }
 
 function returnToNormalColor() {

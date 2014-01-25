@@ -48,6 +48,7 @@ var codeTable = document.createElement('table');
 codeTable.id = 'editor' + figNum;
 codeTable.className = "codeTable";
 codeTable.style.fontSize = "13px";
+codeTable.style.borderSpacing = "0px"; //Need to get this working..
 
 //<div> for run and walk buttons
 var run_walkDiv = document.createElement('div');
