@@ -96,30 +96,35 @@ distanceButton.id = "distanceButton" + figNum;
 distanceButton.style.width = "70px";
 distanceButton.onclick = function() {newDistance();};
 distanceButton.innerHTML = "Distance";
+distanceButton.className = "button" + figNum;
 
 var pointButton = document.createElement('button');
 pointButton.id = "pointButton" + figNum;
 pointButton.style.width = "70px";
 pointButton.onclick = function() {drawPoint();};
 pointButton.innerHTML = "Point";
+pointButton.className = "button" + figNum;
 
 var lineButton = document.createElement('button');
 lineButton.id = "lineButton" + figNum;
 lineButton.style.width = "70px";
 lineButton.onclick = function() {drawLine();};
 lineButton.innerHTML = "Line";
+lineButton.className = "button" + figNum;
 
 var polygonButton = document.createElement('button');
 polygonButton.id = "polygonButton" + figNum;
 polygonButton.style.width = "70px";
 polygonButton.onclick = function() {drawPolygon();};
 polygonButton.innerHTML = "Polygon";
+polygonButton.className = "button" + figNum;
 
 var circleButton = document.createElement('button');
 circleButton.id = "circleButton" + figNum;
 circleButton.style.width = "70px";
 circleButton.onclick = function() {drawCircle();};
 circleButton.innerHTML = "Circle";
+circleButton.className = "button" + figNum;
 
 var assignButton = document.createElement('button');
 assignButton.id = "assignButton" + figNum;
@@ -127,6 +132,7 @@ assignButton.style.width = "70px";
 assignButton.onclick = function() {assign();};
 assignButton.innerHTML = "Assign";
 assignButton.style.cssFloat = "right";
+assignButton.className = "button" + figNum;
 
 var drawButton = document.createElement('button');
 drawButton.id = "drawButton" + figNum;
@@ -134,6 +140,7 @@ drawButton.style.width = "70px";
 drawButton.onclick = function() {drawShape();};
 drawButton.innerHTML = "Draw";
 drawButton.style.cssFloat = "right";
+drawButton.className = "button" + figNum;
 
 var eraseButton = document.createElement('button');
 eraseButton.id = "eraseButton" + figNum;
@@ -141,6 +148,7 @@ eraseButton.style.width = "70px";
 eraseButton.onclick = function() {erase();};
 eraseButton.innerHTML = "Erase";
 eraseButton.style.cssFloat = "right";
+eraseButton.className = "button" + figNum;
 
 var colorButton = document.createElement('button');
 colorButton.id = "colorButton" + figNum;
@@ -148,6 +156,7 @@ colorButton.style.width = "70px";
 colorButton.onclick = function() {changeColor();};
 colorButton.innerHTML = "Color";
 colorButton.style.cssFloat = "right";
+colorButton.className = "button" + figNum;
 
 var loopButton = document.createElement('button');
 loopButton.id = "loopButton" + figNum;
@@ -155,6 +164,7 @@ loopButton.style.width = "70px";
 loopButton.onclick = function() {loop();};
 loopButton.innerHTML = "Loop";
 loopButton.style.cssFloat = "right";
+loopButton.className = "button" + figNum;
 
 //Define window label
 var drawLabel = "Drawing Window";

@@ -2,12 +2,18 @@
  * This code is for the Watson Graphics Lab editor.
  */
 
-var selRow = 0; // the current selected row
-var blank = "&nbsp;&nbsp;&nbsp;&nbsp;"; // blank template for unselected row
-var arrow = "&#8594;"; // arrow template for selected row
-var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" // indention used for inside brackets
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>&#8226;&nbsp;&nbsp;</td></tr></table>"; // template used for a newly added row in the codeTable
-var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>"; // template used for a newly selected row
+//The current selected row
+var selRow = 0; 
+//Blank template for unselected row
+var blank = "&nbsp;&nbsp;&nbsp;&nbsp;";
+//arrow template for selected row
+var arrow = "&#8594;";
+//Indentation used for inside brackets
+var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+//Template used for a newly added row in the codeTable
+var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>&#8226;&nbsp;&nbsp;</td></tr></table>";
+//Template used for a newly selected row
+var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 
 init();
 
@@ -16,16 +22,19 @@ function init() { //Initializes variables
     var cell;
     var innerTable;
     
-    // make a blank row where the program starts (this could have been in the for loops above)
-    row = codeTable.insertRow(0);        // make a new row
-    cell = row.insertCell(0);                // make a new cell here
-    cell.innerHTML = innerTableArrowTemplate;        // set the cell with arrow template
-    selRow = 0;                                                // selected row is line 2
+    //Make a blank row where the program starts
+    row = codeTable.insertRow(0);
+    // make a new cell here
+    cell = row.insertCell(0);
+    //Set the cell with arrow template
+    cell.innerHTML = innerTableArrowTemplate;
+    //Selected row is line 2
+    selRow = 0;
 }
 
-// we must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
+//We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
 function toggleEvents() {
-    // turn off mouseover event
+    //Turn off mouseover event
     $('.innerTable' + figNum).off('mouseover');
     //Turn mouseover event back on
     $('.innerTable' + figNum).on('mouseover', 'td', function() {
@@ -47,7 +56,7 @@ function toggleEvents() {
         }
     });
     
-    $('.innerTable' + figNum).off('mouseout');                                        // toggle mouseout event
+    $('.innerTable' + figNum).off('mouseout');
     
     // we must put the cells we highlight red back to their normal state after we mouseout of them
     $('.innerTable' + figNum).on('mouseout', 'td', function(){
@@ -91,10 +100,9 @@ function toggleEvents() {
 
 function returnToNormalColor() {
     for (var i = 0; i < codeTable.rows.length; i++) {
-        var innerTable = codeTable.rows[i].cells[0].children[0];                                                                                // grab the inner table for this table data object
-        var numCells = innerTable.rows[0].cells.length;                                                                                                       // grab the number of cells in this inner table
-        
-        for (var j = 0; j < numCells; j++) {                                                                                                                // the rest is black
+        var innerTable = codeTable.rows[i].cells[0].children[0];
+        var numCells = innerTable.rows[0].cells.length;
+        for (var j = 0; j < numCells; j++) {
             innerTable.rows[0].cells[j].style.color = "#000000";
         }
     }
@@ -209,10 +217,14 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
 
 // highlightLine() simply highlights the row with the row index passed to it
 function highlightLine(rowInd) {
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];        // grab the inner table at this index
-    var numCells = innerTable.rows[0].cells.length;                                        // grab the number of cells for this row
-    for (var i = 0; i < numCells; i++) {                                                        // iterate throughout the cells
-        innerTable.rows[0].cells[i].style.color = '#FF0000';                // highlight all cells red
+    // grab the inner table at this index
+    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
+    // grab the number of cells for this row
+    var numCells = innerTable.rows[0].cells.length;
+    // iterate throughout the cells
+    for (var i = 0; i < numCells; i++) {
+        //Highlight all cells red
+        innerTable.rows[0].cells[i].style.color = '#FF0000';
     }
 }
 
