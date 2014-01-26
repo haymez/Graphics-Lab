@@ -1,3 +1,4 @@
+var fresh = true;
 /*
  * Controls the Run and Walk features of the Watson Graphcis Lab
  */
@@ -11,12 +12,22 @@ function run() {
 //Allows users to walk through the program code one step at a time
 function walk() {
     returnToNormalColor();
-    if (step > codeTable.rows.length-1) { //Don't allow step to go beyond program
+    console.log(codeTable.rows.length);
+	console.log(step);
+    if (step >= codeTable.rows.length-1) //Don't allow step to go beyond program
+	{
         step = 0;
         return;
     }
+	if(step==0)
+	{
+		fresh=true;
+		toDraw = new Array();
+	}
     selectRow(step);
     highlightLine(step);
-    console.log(rowToString(step));
+    interpret(rowToString(step));
+	clear();
+	draw();
     step++;
 }

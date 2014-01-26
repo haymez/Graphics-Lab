@@ -176,7 +176,7 @@ function drawLine() {
             toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
             
             addNewRow(selRow, [lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
-                "(", "(", startX, ",", 300-startY, ")", "(", endX, 300-endY, ")", ")"]);
+                "(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
             addNewRow(selRow, ["draw", "(", lineVariables[lineVariables.length-1], ")"]);
         }
         
