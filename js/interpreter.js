@@ -861,7 +861,7 @@ function validCircle(tokens)
               (c[variableNumber-1].diameter != -1)     )
          {
             circleValueX = c[variableNumber-1].startX;
-            circleValueY = c[variableNumber-1].startY;
+            circleValueY = 300-c[variableNumber-1].startY;
             circleValueR = c[variableNumber-1].diameter;
             return true;
          }
