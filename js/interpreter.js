@@ -861,7 +861,7 @@ function validCircle(tokens)
               (c[variableNumber-1].diameter != -1)     )
          {
             circleValueX = c[variableNumber-1].startX;
-            circleValueY = 300-c[variableNumber-1].startY;
+            circleValueY = c[variableNumber-1].startY;
             circleValueR = c[variableNumber-1].diameter;
             return true;
          }
@@ -876,7 +876,7 @@ function validCircle(tokens)
       {
          // the center point
          circleValueX = pointValueX;
-         circleValueY = 300-pointValueY;
+         circleValueY = pointValueY;
 	console.log(rect.top);
 	if(tokens[0].charAt(0)=='p')
 	{
