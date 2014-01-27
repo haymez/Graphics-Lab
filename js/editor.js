@@ -47,12 +47,34 @@ function toggleEvents() {
         
         // we pass rowNum and colNum to tell the function where start highlighting
         if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 && 
-            cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 && cellVal.indexOf('endloop') == -1) {
-            if (cellVal.indexOf('(') >= 0)
+            cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 && 
+            cellVal.indexOf('endloop') == -1) {
+            //set cursor to pointer when hovering over clickable items
+            $(this).css('cursor', 'pointer');
+            if (cellVal.indexOf('(') >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("erase") == -1 && 
+                rowToString(rowNum).indexOf("color") == -1)
                 highlightParenthesis('(', ')', rowNum, colNum);
-            else if (cellVal.indexOf(')') >= 0)
+            else if (cellVal.indexOf(')') >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("erase") == -1 && 
+                rowToString(rowNum).indexOf("color") == -1)
                 highlightParenthesisBackwards('(', ')', rowNum, colNum);
-            else highlightCell(rowNum, colNum);
+            else if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
+                if (cellVal.indexOf("*") >= 0) {
+                    if (rowToString(rowNum).indexOf("repeat") >= 0) {
+                        for (var i = 0; i < codeTable.rows.length; i++) {
+                            if (rowToString(rowNum+i).indexOf("endloop") >= 0) {
+                                highlightLine(rowNum+i);
+                                break;
+                            }
+                            else {
+                                highlightLine(rowNum+i);
+                            }
+                        }
+                    }
+                    highlightLine(rowNum);
+                }
+                else
+                    highlightCell(rowNum, colNum);
+            }
         }
     });
     
@@ -80,14 +102,14 @@ function toggleEvents() {
         }
         //User clicked on variable number. Generate keypad popup
         else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
-            console.log("\"" + $(this).html() + "\"");
             alert("Numbers: Generate keypad with 3 digit limit");
         }
         //User clicked on something within draw(). Generate list of drawable items
-        else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1) {
+        else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
+            cellVal.indexOf(")") == -1) {
             alert("Draw: Bring up list of variables that appear on left side of an assignment");
         }
-        else if (rowToString(rowNum).indexOf("erase") >= 0) {
+        else if (rowToString(rowNum).indexOf("erase") >= 0 && cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
             alert("Erase: Bring up list of variables that appear on left side of an assignment");
         }
         else if (rowToString(rowNum).indexOf("color") >= 0) {
@@ -98,13 +120,19 @@ function toggleEvents() {
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1) {
             alert("Generate keypad with 2 digit limit")
         }
-        //User clicked a variable on the left side of an assignment operator
-        else if (innerTable.rows[rowNum].cells[colNum+1].innerText.indexOf("=") >= 0) {
-            alert("Generate pop up with list of declared variables");
+        else if (cellVal.indexOf("EXPRESSION") >= 0) {
+            alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" + 
+                "Right Hand Side expression");
         }
+        //User clicked a variable on the left side of an assignment operator
+        else if (colNum < innerTable.rows[0].cells.length-1)
+            if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
+                alert("Generate pop up with list of declared variables");
+            }
     });
 }
 
+//Return everything to normal color (black)
 function returnToNormalColor() {
     for (var i = 0; i < codeTable.rows.length; i++) {
         var innerTable = codeTable.rows[i].cells[0].children[0];

@@ -13,6 +13,7 @@ function point(startX, startY) {
 	this.startX = startX;
 	this.startY = startY;
 	this.type = 'point';
+	this.color = "#FF0000";
 	this.varNum = pointVariables.length; //Index of this object in pointVariables
 	this.drawNum = toDraw.length; //Index of this object in toDraw
 	this.active = true; //Boolean to control if shape needs to be drawn or not
@@ -25,6 +26,7 @@ function line(startX, startY, endX, endY, type) {
 	this.endX = endX;
 	this.endY = endY;
 	this.type = type;
+	this.color = "#FF0000";
 	this.varNum = lineVariables.length; //Index of this object in lineVariables
 	this.drawNum = toDraw.length; //Index of this object in toDraw
 	this.active = true; //Boolean to control if shape needs to be drawn or not
@@ -36,6 +38,7 @@ function circle(startX, startY, diameter) {
 	this.startY = startY;
 	this.diameter = diameter;
 	this.type = 'circle';
+	this.color = "#FF0000";
 	this.varNum = circleVariables.length;
 	this.drawNum = toDraw.length;
 	this.active = true;
@@ -45,6 +48,7 @@ function circle(startX, startY, diameter) {
 function polygon(angles) {
 	this.angles = angles;
 	this.type = 'polygon';
+	this.color = "#FF0000";
 	this.varNum = polygonVariables.length;
 	this.drawNum = toDraw.length;
 	this.active = true;

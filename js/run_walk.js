@@ -15,6 +15,7 @@ function run() {
             walk();
         }
     }, 100);
+    //Reset
     $("#" + walkButton.id).html("Reset").off("click").click(function() {
         clearInterval(delay);
         step = 0;
@@ -22,8 +23,9 @@ function run() {
         selectRow(codeTable.rows.length-1);
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $(this).html("Walk").off("click").click(function() { walk(); });
-        $(".button").attr("disabled", false);
+        $(".button" + figNum).attr("disabled", false);
     });
+    //Pause
     $("#" + runButton.id).html("Pause").off("click").click(function() {
         clearInterval(delay);
         $(this).html("Play").off("click").click(function() { run(); });
@@ -40,13 +42,13 @@ function walk() {
     //Turn off toggle events for table cells
     $('.innerTable' + figNum).off('mouseover').off('mouseout').off('click');
     returnToNormalColor();
-    if (step == codeTable.rows.length-1) { //Don't allow step to go beyond program
+    if (step == codeTable.rows.length-1) { //Don't allow step to go beyond program scope
         selectRow(step);
         step = 0;
         toggleEvents();
-        $(".button" + figNum).attr("disabled", false);
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
+        $(".button" + figNum).attr("disabled", false);
         programRunning = false;
         return;
     }
