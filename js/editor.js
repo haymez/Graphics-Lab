@@ -11,7 +11,7 @@ var arrow = "&#8594;";
 //Indentation used for inside brackets
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 //Template used for a newly added row in the codeTable
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>&#8226;&nbsp;&nbsp;</td></tr></table>";
+var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
 //Template used for a newly selected row
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 
@@ -57,7 +57,6 @@ function toggleEvents() {
     });
     
     $('.innerTable' + figNum).off('mouseout');
-    
     // we must put the cells we highlight red back to their normal state after we mouseout of them
     $('.innerTable' + figNum).on('mouseout', 'td', function(){
         returnToNormalColor();
@@ -73,12 +72,16 @@ function toggleEvents() {
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
         //This doesn't work right now
-        if (cellVal.indexOf("•") >= 0) {
+        if (cellVal.indexOf("*") >= 0) {
             alert("delete this row");
         }
+        else if ($(this).html().indexOf(blank) >= 0) {
+            alert("Move pointer here");
+        }
         //User clicked on variable number. Generate keypad popup
-        else if (!isNaN(Number(cellVal))) {
-            alert("Generate keypad with 3 digit limit");
+        else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
+            console.log("\"" + $(this).html() + "\"");
+            alert("Numbers: Generate keypad with 3 digit limit");
         }
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1) {
@@ -90,10 +93,14 @@ function toggleEvents() {
         else if (rowToString(rowNum).indexOf("color") >= 0) {
             alert("Color: bring up list of colors");
         }
-        //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labelled "COUNTER")
+        //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
         //Make sure user isn't clicking 'repeat' or 'times'
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1) {
             alert("Generate keypad with 2 digit limit")
+        }
+        //User clicked a variable on the left side of an assignment operator
+        else if (innerTable.rows[rowNum].cells[colNum+1].innerText.indexOf("=") >= 0) {
+            alert("Generate pop up with list of declared variables");
         }
     });
 }
@@ -261,7 +268,7 @@ function loop(params) {
         toggleEvents();
 }
 
-//TEST CODE
+//Adds new row on line <line> and creates cells bases on <params> array
 function addNewRow(line, params) {
     var row = codeTable.insertRow(line);
     var cell = row.insertCell(0);
