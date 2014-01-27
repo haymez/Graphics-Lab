@@ -8,10 +8,6 @@ var programRunning = false;
 function run() {
     paintbrush++;
     programRunning = true;
-    /*if (step > 0) {
-        step = 0;
-        returnToNormalColor();
-    }*/
     walk();
     var delay = setInterval(function() {
         if (!programRunning) clearInterval(delay);
@@ -19,6 +15,20 @@ function run() {
             walk();
         }
     }, 100);
+    $("#" + walkButton.id).html("Reset").off("click").click(function() {
+        clearInterval(delay);
+        step = 0;
+        returnToNormalColor()
+        selectRow(codeTable.rows.length-1);
+        $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
+        $(this).html("Walk").off("click").click(function() { walk(); });
+        $(".button").attr("disabled", false);
+    });
+    $("#" + runButton.id).html("Pause").off("click").click(function() {
+        clearInterval(delay);
+        $(this).html("Play").off("click").click(function() { run(); });
+        $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
+    });
 }
 
 //Allows users to walk through the program code one step at a time
@@ -35,6 +45,8 @@ function walk() {
         step = 0;
         toggleEvents();
         $(".button" + figNum).attr("disabled", false);
+        $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
+        $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         programRunning = false;
         return;
     }
