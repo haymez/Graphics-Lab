@@ -82,13 +82,11 @@ canvas.style.border = "1px solid";
 var runButton = document.createElement('button');
 runButton.id = "runButton" + figNum;
 runButton.style.width = "70px";
-runButton.onclick = function() {run()};
 runButton.innerHTML = "Run";
 
 var walkButton = document.createElement('button');
 walkButton.id = "walkButton" + figNum;
 walkButton.style.width = "70px";
-walkButton.onclick = function() {walk()};
 walkButton.innerHTML = "Walk";
 
 var distanceButton = document.createElement('button');
@@ -200,6 +198,10 @@ var container = document.getElementById("container");
 container.appendChild(drawDiv);
 container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
+
+//Add listeners for walk and run
+$("#" + runButton.id).click(function() { run(); });
+$("#" + walkButton.id).click(function() { walk(); });
 
 
 
