@@ -32,6 +32,7 @@ function interpret(input)
 {
 	if (fresh)
 	{
+		toDraw = [];
 		fresh = false;
 		for (var i = 0; i < distanceVariables.length; i++)
 		{
@@ -438,7 +439,7 @@ function interpret(input)
 			valid = validLine(tokens.slice(2, -1));
 			if (valid[0])
 			{
-				l[assignmentVariableNumber-1] = new line(valid[1], valid[2], valid[3], valid[4]);
+				l[assignmentVariableNumber-1] = new line(valid[1], valid[2], valid[3], valid[4], "line");
 			}
 			else
 			{

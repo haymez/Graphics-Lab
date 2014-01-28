@@ -4,6 +4,7 @@
 //Assign all global variables
 var step = 0;
 var programRunning = false;
+var fresh = true;
 //Allows users to run the program slowly
 function run() {
     paintbrush++;
@@ -56,10 +57,15 @@ function walk() {
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
         programRunning = false;
+        fresh = true;
         return;
     }
     selectRow(step);
     highlightLine(step);
-    console.log(rowToString(step));
+    clear();
+    draw();
+    $("#drawCanvas" + figNum).trigger("mousemove");
+    interpret(rowToString(step));
+    $("#drawCanvas" + figNum).trigger("mousemove");
     step++;
 }
