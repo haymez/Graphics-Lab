@@ -7,7 +7,6 @@ var programRunning = false;
 //Allows users to run the program slowly
 function run() {
     paintbrush++;
-    programRunning = true;
     walk();
     var delay = setInterval(function() {
         if (!programRunning) clearInterval(delay);
@@ -36,13 +35,20 @@ function run() {
 //Allows users to walk through the program code one step at a time
 function walk() {
     paintbrush++;
+    var oldPos = -1;
+    if (!programRunning) {
+        //check if selected row is before end of code
+        if (selRow < codeTable.rows.length-1)
+            codeTable.deleteRow(selRow);
+    }
     programRunning = true;
     //Set some buttons to false while walking or running
     $(".button" + figNum).attr("disabled", true);
     //Turn off toggle events for table cells
     $('.innerTable' + figNum).off('mouseover').off('mouseout').off('click');
     returnToNormalColor();
-    if (step == codeTable.rows.length-1) { //Don't allow step to go beyond program scope
+    //Don't allow step to go beyond program scope
+    if (step == codeTable.rows.length-1) {
         selectRow(step);
         step = 0;
         toggleEvents();
