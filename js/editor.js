@@ -96,11 +96,13 @@ function toggleEvents() {
         //This doesn't work right now
         if (cellVal.indexOf("*") >= 0) {
             alert("delete this row");
+            codeTable.deleteRow(rowNum);
+            if (rowNum < selRow) selRow--;
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-            alert("Move pointer here");
+            moveToLine(rowNum);
         }
-        //User clicked on variable number. Generate keypad popup
+        //User clicked on variable number. Generate keypad pop up
         else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
             alert("Numbers: Generate keypad with 3 digit limit");
         }
@@ -132,6 +134,13 @@ function toggleEvents() {
     });
 }
 
+/*//Moves pointer to specific location
+function movePointer(rowNum) {
+    var oldRow = selRow;
+    console.log(rowToString(selRow));
+    addNewRow(rowNum, []);
+}*/
+
 //Return everything to normal color (black)
 function returnToNormalColor() {
     for (var i = 0; i < codeTable.rows.length; i++) {
@@ -145,14 +154,63 @@ function returnToNormalColor() {
 
 // move to a specified row
 function moveToLine(rowNum) {
+    var innerTable = codeTable.rows[selRow].cells[0].children[0];
     var newRow;
     var cell;
+    
+    if (rowNum < selRow) {
+        if (selRow != codeTable.rows.length-1)
+            codeTable.deleteRow(selRow);                                // delete the current selected row
+        else {
+            innerTable.rows[0].cells[0].innerHTML = blank;
+        }
+        newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
+        cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
+        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
+        selectRow(rowNum);                                              // select newly inserted row
+    }
+    else {
+        codeTable.deleteRow(selRow);                                    // delete the current selected row
+        newRow = codeTable.insertRow(rowNum-1);                         // insert a new row at row number specified
+        cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
+        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
+        selectRow(rowNum-1);                                            // select newly inserted row
+    }
+}
 
-    codeTable.deleteRow(selRow);                                    // delete the current selected row
-    newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
-    cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
-    cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
-    selectRow(rowNum);                                              // make this the new selected row
+//Adds new row on line <line> and creates cells bases on <params> array
+function addNewRow(line, params) {
+    var row = codeTable.insertRow(line);
+    var cell = row.insertCell(0);
+    cell.innerHTML = innerTableTemplate;
+    var innerTable = codeTable.rows[line].cells[0].children[0];
+    addRow(innerTable, params, 2);
+    toggleEvents();
+    selRow++;
+}
+
+// addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
+function addRow(table, values, startInd) {
+    var cell;
+    // for all cells in the table
+    for (var i = 0; i < values.length; i++) {
+        // insert a cell at startInd
+        cell = table.rows[0].insertCell(startInd++);
+        // make the innerHTML of the cell cells[i]
+        cell.innerHTML = values[i];
+    }
+}
+
+// selectRow() selects a row with the specified rowNum
+function selectRow(rowNum) {
+    if (selRow != -1) {                                                                                                                // if there is a selected row
+        var innerTable = codeTable.rows[selRow].cells[0].children[0]; // grab the innerTable for the currently selected row
+        innerTable.rows[0].cells[0].innerHTML = blank; // make its arrow go away (it is no longer selected)
+    }
+    
+    selRow = rowNum;
+    var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+    innerTable.rows[0].cells[0].innerHTML = arrow;
 }
 
 // highlight one cell red at a specific row and column
@@ -263,15 +321,15 @@ function highlightLine(rowInd) {
     }
 }
 
-function addBlankLine() {
+/*function addBlankLine() {
     var row = codeTable.insertRow(selRow);
     var cell = row.insertCell(0);
     cell.innerHTML = innerTableTemplate;
     selRow++;
     toggleEvents();
-}
+}*/
 
-//loop() adds a loop to the current selected line
+/*//loop() adds a loop to the current selected line
 function loop(params) {
         var indentStr = findIndentation(selRow);
         var row;
@@ -294,44 +352,9 @@ function loop(params) {
         
         selectRow(selRow + 3);
         toggleEvents();
-}
+}*/
 
-//Adds new row on line <line> and creates cells bases on <params> array
-function addNewRow(line, params) {
-    var row = codeTable.insertRow(line);
-    var cell = row.insertCell(0);
-    cell.innerHTML = innerTableTemplate;
-    var innerTable = codeTable.rows[line].cells[0].children[0];
-    addRow(innerTable, params, 2);
-    toggleEvents();
-    selRow++;
-}
-
-// addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
-function addRow(table, values, startInd) {
-    var cell;
-    // for all cells in the table
-    for (var i = 0; i < values.length; i++) {
-        // insert a cell at startInd
-        cell = table.rows[0].insertCell(startInd++);
-        // make the innerHTML of the cell cells[i]
-        cell.innerHTML = values[i];
-    }
-}
-
-// selectRow() selects a row with the specified rowNum
-function selectRow(rowNum) {
-    if (selRow != -1) {                                                                                                                // if there is a selected row
-        var innerTable = codeTable.rows[selRow].cells[0].children[0]; // grab the innerTable for the currently selected row
-        innerTable.rows[0].cells[0].innerHTML = blank; // make its arrow go away (it is no longer selected)
-    }
-    
-    selRow = rowNum;
-    var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    innerTable.rows[0].cells[0].innerHTML = arrow;
-}
-
-// findIndentation() returns a string with the appropriate spacing depending on the row number passed to it
+/*// findIndentation() returns a string with the appropriate spacing depending on the row number passed to it
 // Starting from the top of the code, it finds how many mismatching brackets '{' '}' there are when the row
 // is reached. The number of opened brackets without a matching close parenthesis is how many tabs this row
 // will need
@@ -356,9 +379,9 @@ function findIndentation(row) {
     for (var i = 0; i < bracket; i++) indents += indent;
     
     return indents;
-}
+}*/
 
-function selectNextLine(line) {
+/*function selectNextLine(line) {
     var numRows = codeTable.rows.length;
     var innerTable;
     var numCells;
@@ -375,7 +398,7 @@ function selectNextLine(line) {
         innerTable.rows[0].cells[1].innerHTML = arrow;
         selRow = numRows - 1;
     }
-}
+}*/
 
 //Returns string representation of the row at specified row index
 function rowToString(rowInd) {
