@@ -169,9 +169,6 @@ var drawLabel = "Drawing Window";
 var varLabel = "Variable Declarations";
 var progLabel = "Program Code";
 
-var NumpadContainerDiv = document.createElement('div');
-progButtonDiv.id = "NVDiv";
-
 //Add everything to Drawing Window <div>
 drawDiv.appendChild(canvas);
 run_walkDiv.appendChild(runButton);
@@ -201,7 +198,6 @@ var container = document.getElementById("container");
 container.appendChild(drawDiv);
 container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
-container.appendChild(NumpadContainerDiv);
 
 //Add listeners for walk and run
 $("#" + runButton.id).click(function() { run(); });

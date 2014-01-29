@@ -201,6 +201,7 @@ var container = document.getElementById("container");
 container.appendChild(drawDiv);
 container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
+container.appendChild(NumpadContainerDiv);
 
 //Add listeners for walk and run
 $("#" + runButton.id).click(function() { run(); });
