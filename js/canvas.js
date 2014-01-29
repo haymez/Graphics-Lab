@@ -7,10 +7,10 @@
 //Declare all variables
 var toDraw = new Array();
 var paintbrush = 0; //Keeps track of which function was called last. (prevents multiple shapes from being drawn at once)
-var color = "red";
 
 //Event listener for cursor position on canvas
 $("#" + canvas.id).mousemove(function(evt) {
+    $(this).css('cursor', 'crosshair');
     var cursorPos = getCursorPos(canvas, evt);
     var message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
     if (isNaN(cursorPos.x) || cursorPos.x > 300 || cursorPos.x < 0 || cursorPos.y > 300 || cursorPos.y < 0)
@@ -36,7 +36,7 @@ function draw() {
                 if (toDraw[i].type == 'point') {
                         //This is a point
                         var ctx = canvas.getContext('2d');
-                        ctx.fillStyle = color;
+                        ctx.fillStyle = toDraw[i].color;
                         ctx.fillRect(toDraw[i].startX-2, toDraw[i].startY-2, 2, 2);
                 }
                 else if (toDraw[i].type == 'line' || toDraw[i].type == 'temp') {
@@ -45,7 +45,7 @@ function draw() {
                         ctx.beginPath();
                         ctx.moveTo(toDraw[i].startX, toDraw[i].startY);
                         ctx.lineTo(toDraw[i].endX, toDraw[i].endY);
-                        ctx.strokeStyle = color;
+                        ctx.strokeStyle = toDraw[i].color;
                         ctx.stroke();
                 }
                 else if (toDraw[i].type == 'circle') {
@@ -53,7 +53,7 @@ function draw() {
                         var ctx = canvas.getContext('2d');
                         ctx.beginPath();
                         ctx.arc(toDraw[i].startX, toDraw[i].startY, toDraw[i].diameter, 0, 2*Math.PI);
-                        ctx.strokeStyle = color;
+                        ctx.strokeStyle = toDraw[i].color;
                         ctx.stroke();
                 }
                 else if (toDraw[i].type == 'polygon') {
@@ -63,7 +63,7 @@ function draw() {
                                 ctx.beginPath();
                                 ctx.moveTo(toDraw[i].angles[n].startX, toDraw[i].angles[n].startY);
                                 ctx.lineTo(toDraw[i].angles[n].endX, toDraw[i].angles[n].endY);
-                                ctx.strokeStyle = color;
+                                ctx.strokeStyle = toDraw[i].color;
                                 ctx.stroke();
                         }
                 }
@@ -164,7 +164,7 @@ function drawLine() {
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = "#FF0000";
                 ctx.stroke();
                 if (click > 1)
                     this.removeEventListener('mousemove',arguments.callee,false);
@@ -219,7 +219,7 @@ function drawCircle() {
                     var ctx = canvas.getContext('2d');
                     ctx.beginPath();
                     ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
-                    ctx.strokeStyle = color;
+                    ctx.strokeStyle = "#FF0000";
                     ctx.stroke();
                     if (click > 1)
                         this.removeEventListener('mousemove',arguments.callee,false);
@@ -306,7 +306,7 @@ function drawPolygon() {
                 }
                 else
                     ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = "#FF0000";
                 ctx.stroke();
                 if (click % 2 == 0) //if click is finishing a preview line then we need to remove the listener
                     this.removeEventListener('mousemove',arguments.callee,false);
