@@ -14,7 +14,8 @@
 				- NumpadDesign.js
 				- jquery-ui.js
 				- Click.js
-		<h3>Instructions on including keypad:</h3>
+--------------------------------------------------------------
+<h3>Instructions on including keypad:</h3>
 
 		1. In the head section of index page, add followings:
 						<link rel="stylesheet" href="css/jquery-ui-custom.css"/>
@@ -38,3 +39,4 @@
 				
 	</body>
 </html>
+
