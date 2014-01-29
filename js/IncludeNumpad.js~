@@ -1,0 +1,4 @@
+		  $(function(){
+		    $("#NVDiv").load("Numpad.html"); 
+		  });
+

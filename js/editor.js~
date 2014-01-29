@@ -121,8 +121,7 @@ function toggleEvents() {
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
             cellVal.indexOf(")") == -1) {
-					/************************************************************************************************************************/
-          CurrentElement = $(this);
+            CurrentElement = $(this);
 					CreateDialogOptions();
 					$( "#dialog-modal-Vars" ).dialog(
 					{
@@ -130,11 +129,10 @@ function toggleEvents() {
 						width: 350,
 						modal: true
 					});	
-					/************************************************************************************************************************/
+//            alert("Draw: Bring up list of variables that appear on left side of an assignment");
         }
         else if (rowToString(rowNum).indexOf("erase") >= 0 && cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-					/************************************************************************************************************************/
-          CurrentElement = $(this);
+            CurrentElement = $(this);
 					CreateDialogOptions();
 					$( "#dialog-modal-Vars" ).dialog(
 					{
@@ -142,7 +140,6 @@ function toggleEvents() {
 						width: 350,
 						modal: true
 					});	
-					/************************************************************************************************************************/
 //            alert("Erase: Bring up list of variables that appear on left side of an assignment");
         }
         else if (rowToString(rowNum).indexOf("color") >= 0) {
@@ -160,7 +157,6 @@ function toggleEvents() {
         //User clicked a variable on the left side of an assignment operator
         else if (colNum < innerTable.rows[0].cells.length-1)
             if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
-					/************************************************************************************************************************/
 	          CurrentElement = $(this);
 						CreateDialogOptions();
 						$( "#dialog-modal-Vars" ).dialog(
@@ -169,7 +165,6 @@ function toggleEvents() {
 							width: 350,
 							modal: true
 						});	
-					/************************************************************************************************************************/
 //                alert("Generate pop up with list of declared variables");
             }
     });

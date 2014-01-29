@@ -4,6 +4,7 @@
 		<title>Title is always good</title>
 		<meta charset="ISO-8859-1">
 		<script src="js/jquery-1.10.2.js"></script>
+    <script src="js/IncludeNumpad.js"></script> 
     <link rel="stylesheet" href="css/jquery-ui-custom.css">
     <link rel="stylesheet" href="css/NumPadStyle.css">
 	</head>
