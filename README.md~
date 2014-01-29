@@ -34,7 +34,9 @@
 		4. Make sure to have other required files for design in css folder, which should also be located in same folder as index.html
 				a. jquery-ui-custom.css
 				b. NumpadStyle.css
---------------------------------------------------------------
-</body>
+
+
+				
+	</body>
 </html>
 
