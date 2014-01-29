@@ -3,6 +3,7 @@
 		<h1>Done by: Bidur Shrestha</h1>
 		<h2>This branch is merged with keypad.</h2>
 		<h3>Required directory structure for adding keypad:</h3>
+
 		- index.html
 		- css/
 				- jquery-ui.custom.css
@@ -14,6 +15,7 @@
 				- jquery-ui.js
 				- Click.js
 		<h3>Instructions on including keypad:</h3>
+
 		1. In the head section of index page, add followings:
 						<link rel="stylesheet" href="css/jquery-ui-custom.css"/>
 						<link rel="stylesheet" href="css/NumPadStyle.css"/>
