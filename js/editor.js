@@ -97,7 +97,7 @@ function toggleEvents() {
         var colNum = $(this).index();
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-        //This doesn't work right now
+        //Delete this row
         if (cellVal.indexOf("*") >= 0) {
             alert("delete this row");
             codeTable.deleteRow(rowNum);
