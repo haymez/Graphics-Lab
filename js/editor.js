@@ -95,11 +95,15 @@ function toggleEvents() {
         var colNum = $(this).index();
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-        //Delete this row
+        //Delete this row if user confirms
         if (cellVal.indexOf("*") >= 0) {
-            alert("delete this row");
-            codeTable.deleteRow(rowNum);
-            if (rowNum < selRow) selRow--;
+        	if(confirm("Are you sure you want to delete the highlited\ntext?")) {
+        		codeTable.deleteRow(rowNum);
+            	if (rowNum < selRow) selRow--;
+        	}
+        	else {
+        		return;
+        	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
             moveToLine(rowNum);
@@ -201,18 +205,9 @@ function toggleEvents() {
 					width: 350,
 					modal: true
 				});	
-					/************************************************************************************************************************/
-//                alert("Generate pop up with list of declared variables");
             }
     });
 }
-
-/*//Moves pointer to specific location
-function movePointer(rowNum) {
-    var oldRow = selRow;
-    console.log(rowToString(selRow));
-    addNewRow(rowNum, []);
-}*/
 
 //Return everything to normal color (black)
 function returnToNormalColor() {
@@ -393,85 +388,6 @@ function highlightLine(rowInd) {
         innerTable.rows[0].cells[i].style.color = '#FF0000';
     }
 }
-
-/*function addBlankLine() {
-    var row = codeTable.insertRow(selRow);
-    var cell = row.insertCell(0);
-    cell.innerHTML = innerTableTemplate;
-    selRow++;
-    toggleEvents();
-}*/
-
-/*//loop() adds a loop to the current selected line
-function loop(params) {
-        var indentStr = findIndentation(selRow);
-        var row;
-        var cell;
-        var innerTable;
-        
-        for (var i = 0; i < 3; i++) {
-            row = codeTable.insertRow(selRow + i);
-            cell = row.insertCell(0);
-            cell.innerHTML = innerTableTemplate;
-            innerTable = codeTable.rows[selRow + i].cells[0].children[0];
-            
-            if (i == 0) {
-                    addRow(innerTable, [ indentStr + "<b>for</b>&nbsp;", "(", params[0] + "&nbsp;", "=&nbsp;", params[1], ";&nbsp;", params[2] + "&nbsp;", params[3] + "&nbsp;", params[4], ";&nbsp;", params[5], params[6], ")" ], 2);
-                    addRowStyle(innerTable, [ "blue", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black" ], 2);
-            }
-            else if (i == 1) { addRow(innerTable, [ indentStr + "{" ], 2); }
-            else if (i == 2) { addRow(innerTable, [ indentStr + "}" ], 2); }
-        }
-        
-        selectRow(selRow + 3);
-        toggleEvents();
-}*/
-
-/*// findIndentation() returns a string with the appropriate spacing depending on the row number passed to it
-// Starting from the top of the code, it finds how many mismatching brackets '{' '}' there are when the row
-// is reached. The number of opened brackets without a matching close parenthesis is how many tabs this row
-// will need
-function findIndentation(row) {
-    var bracket = 0;        // number of brackets opened
-    for (var i = 0; i < codeTable.rows.length; i++) {                                                                // iterate throughout the code table
-        if (i == row) break;                                                                                                                // when the iteration equals the row, stop
-        var innerTable = codeTable.rows[i].cells[0].children[0];                                        // grab the inner table for this row in the code table
-        var numCells = innerTable.rows[0].cells.length;                                                                // grab the number of cells in this inner table
-        for (var j = 0; j < numCells; j++) {                                                                                // iterate throughout the cells
-            if (innerTable.rows[0].cells[j].innerText.indexOf('{') >= 0) {                        // if an open bracket, add one to bracket
-                bracket++;
-            }
-            else if (innerTable.rows[0].cells[j].innerText.indexOf('}') >= 0) {                // if a close bracket, subtract one from bracket
-                bracket--;
-            }
-        }
-    }
-    
-    // the bracket variable is how many indents we need
-    var indents = "";
-    for (var i = 0; i < bracket; i++) indents += indent;
-    
-    return indents;
-}*/
-
-/*function selectNextLine(line) {
-    var numRows = codeTable.rows.length;
-    var innerTable;
-    var numCells;
-    var found = false;
-    
-    for (var i = 0; i < numRows; i++) {
-        innerTable = codeTable.rows[i].cells[0].children[0];
-    }
-    
-    if (found == false) {
-        var oldInnerTable = codeTable.rows[selRow].cells[0].children[0];
-        oldInnerTable.rows[0].cells[1].innerHTML = blank;
-        innerTable = codeTable.rows[numRows - 1].cells[0].children[0];
-        innerTable.rows[0].cells[1].innerHTML = arrow;
-        selRow = numRows - 1;
-    }
-}*/
 
 //Returns string representation of the row at specified row index
 function rowToString(rowInd) {

@@ -90,27 +90,5 @@ $(document).on('click', "input.VarCancelBtn" , function()
 
 function CreateDialogOptions(list) {
 	$("select#VarsDialogSelect").html(list);
-	
-	/*//Here change Options2 to the name of array variable that holds all the current variables
-	var Options2 = new Array();
-	var ValToken = CurrentElement.html().substring(0,1);	
-	if (ValToken=="l")
-		Options2 = lineVariables;//["Var1", "var2", "l3", "c2", "sth"];
-	else if (ValToken=="d")
-		Options2 = distanceVariables;
-	else if (ValToken=="p")
-		Options2 = pointVariables;
-	else if (ValToken=="g")
-		Options2 = polygonVariables;
-	else if (ValToken=="c")
-		Options2 = circleVariables;
-	var OptionVals = "";
-	var i = 0;
-	for (i = 0; i < Options2.length; i++)
-	{
-		OptionVals = OptionVals+"<option>"+Options2[i]+"</option>";
-	}
-	$("select#VarsDialogSelect").html(OptionVals);
-	return;*/
 }
 
