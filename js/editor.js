@@ -14,10 +14,8 @@ var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
 //Template used for a newly selected row
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
-
-/************************************************************************************************************************/
-var CurrentElement; // This identifies the current clicked element for change later on from numpad and variable chooser 
-/************************************************************************************************************************/
+// This identifies the current clicked element for change later on from numpad and variable chooser
+var CurrentElement; 
 
 init();
 
@@ -110,43 +108,62 @@ function toggleEvents() {
         else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
 					/************************************************************************************************************************/
             CurrentElement = $(this);
-						$( "#dialog-modal-num" ).dialog(
-						{
-							height: 280,
-							width: 350,
-							modal: true
-						});
+            $("input.InputValue").val("");
+			$( "#dialog-modal-num" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
 					/************************************************************************************************************************/
         }
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
-            cellVal.indexOf(")") == -1) {
-					/************************************************************************************************************************/
-          CurrentElement = $(this);
-					CreateDialogOptions();
-					$( "#dialog-modal-Vars" ).dialog(
-					{
-						height: 280,
-						width: 350,
-						modal: true
-					});	
-					/************************************************************************************************************************/
+        cellVal.indexOf(")") == -1) {
+        	//list variable stores list of items
+            list = "";
+            //finds all drawable shapes above the current row
+            for (var i = 0; i < rowNum; i++) {
+			if (rowToString(i).indexOf("=") && rowToString(i).indexOf("VARIABLE") == -1)
+				if (rowToString(i).substring(0, rowToString(i).indexOf("=")).length > 0)
+					list += "<option>" + rowToString(i).substring(0, rowToString(i).indexOf("=")) + "</option>";
+			}
+			CurrentElement = $(this);
+			console.log(list);
+			CreateDialogOptions(list);
+			$( "#dialog-modal-Vars" ).dialog({
+				height: 280,
+				width: 350,
+				modal: true
+			});
         }
         else if (rowToString(rowNum).indexOf("erase") >= 0 && cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-					/************************************************************************************************************************/
-          CurrentElement = $(this);
-					CreateDialogOptions();
-					$( "#dialog-modal-Vars" ).dialog(
-					{
-						height: 280,
-						width: 350,
-						modal: true
-					});	
-					/************************************************************************************************************************/
-//            alert("Erase: Bring up list of variables that appear on left side of an assignment");
+        	list = "";
+        	for (var i = 0; i < rowNum; i++) {
+        		if (rowToString(i).indexOf("draw") >= 0 && rowToString(i).indexOf("OBJECT") == -1) {
+        			list += "<option>" + rowToString(i).substring(rowToString(i).indexOf("(")+1, rowToString(i).indexOf(")")) + "</option>";
+        		}
+        	}
+        	CurrentElement = $(this);
+			CreateDialogOptions(list);
+			$( "#dialog-modal-Vars" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
         }
-        else if (rowToString(rowNum).indexOf("color") >= 0) {
-            alert("Color: bring up list of colors");
+        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1) {
+        	list = "<option>red</option>" + "<option>blue</option>" + "<option>green</option>" + "<option>yellow</option>" + 
+        		"<option>orange</option>" + "<option>black</option>" + "<option>white</option>";
+            CurrentElement = $(this);
+			CreateDialogOptions(list);
+			$( "#dialog-modal-Vars" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});	
         }
         //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
         //Make sure user isn't clicking 'repeat' or 'times'
@@ -160,15 +177,30 @@ function toggleEvents() {
         //User clicked a variable on the left side of an assignment operator
         else if (colNum < innerTable.rows[0].cells.length-1)
             if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
-					/************************************************************************************************************************/
-	          CurrentElement = $(this);
-						CreateDialogOptions();
-						$( "#dialog-modal-Vars" ).dialog(
-						{
-							height: 280,
-							width: 350,
-							modal: true
-						});	
+            	list = "";
+            	for (var i = 0; i < distanceVariables.length; i++) {
+            		list += "<option>" + distanceVariables[i] + "</option>";
+            	}
+            	for (var i = 0; i < pointVariables.length; i++) {
+            		list += "<option>" + pointVariables[i] + "</option>";
+            	}
+            	for (var i = 0; i < lineVariables.length; i++) {
+            		list += "<option>" + lineVariables[i] + "</option>";
+            	}
+            	for (var i = 0; i < circleVariables.length; i++) {
+            		list += "<option>" + circleVariables[i] + "</option>";
+            	}
+            	for (var i = 0; i < polygonVariables.length; i++) {
+            		list += "<option>" + polygonVariables[i] + "</option>";
+            	}
+          		CurrentElement = $(this);
+				CreateDialogOptions(list);
+				$( "#dialog-modal-Vars" ).dialog(
+				{
+					height: 280,
+					width: 350,
+					modal: true
+				});	
 					/************************************************************************************************************************/
 //                alert("Generate pop up with list of declared variables");
             }

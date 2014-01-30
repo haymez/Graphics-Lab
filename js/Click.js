@@ -33,17 +33,17 @@ $(document).on('click', "input.Numpad" , function()
 	var NewVal = Current+""+Val;
 	if (NewVal.length>3)
 		NewVal = NewVal.substring(1, 4);
-	if ((parseInt(NewVal))>300)
+	/*if ((parseInt(NewVal))>300)
 	{
 		alert("Cannot have more than 300.");
 		NewVal="300";
-	}
-	$("input.InputValue").val(NewVal);	
+	}*/
+	$("input.InputValue").val(NewVal);
 });
 
 $(document).on('click', "input.ClearBtn" , function() 
 {
-	ClearInput();	
+	$("input.InputValue").val("");
 });
 
 $(document).on('click', "input.CancelBtn" , function() 
@@ -53,33 +53,19 @@ $(document).on('click', "input.CancelBtn" , function()
 
 $(document).on('click', "input.OKBtn" , function() 
 {
-	var Attrb = CurrentID;
-	var Value = $("input.InputValue").val();
-	var Token = CurrentElement.html().substring(0,1);
-	if (parseInt(Token)>=0 && parseInt(Token)<=9)
-	{
-		CurrentElement.html(parseInt(Value));
-		$( "#dialog-modal-num" ).dialog("close");
+	var input = $("input.InputValue").val();
+	
+	if (input > 300) {
+	    $("#dialog-modal-num").dialog("close");
+	    alert("Please choose a value less than or equal to 300");
+	    $("input.InputValue").val("");
+	    $("#dialog-modal-num").dialog("open");
 	}
-	else
-	{
-		CurrentElement.html(parseInt(Value));	
+	else {
+	    CurrentElement.html(parseInt(input));
+        $("#dialog-modal-num").dialog("close");
 	}
-/*	if ((Attrb.substring(0,5)=="start"))
-	{
-		$("#"+Attrb).html(Value);
-		$( "#dialog-modal-num" ).dialog("close");
-	}
-	else if ((Attrb.substring(0,6)=="lclick"))
-	{
-		$("#"+Attrb).html(Value);	
-	}
-	else
-	{
-		alert('There was an error!');
-	}
-*/
-	return;	
+	//return;	
 });
 
 
@@ -102,14 +88,10 @@ $(document).on('click', "input.VarCancelBtn" , function()
 		$( "#dialog-modal-Vars" ).dialog("close");
 });
 
-function ClearInput()
-{
-	$("input.InputValue").val("");
-}
-
-function CreateDialogOptions(Options)
-{
-	//Here change Options2 to the name of array variable that holds all the current variables
+function CreateDialogOptions(list) {
+	$("select#VarsDialogSelect").html(list);
+	
+	/*//Here change Options2 to the name of array variable that holds all the current variables
 	var Options2 = new Array();
 	var ValToken = CurrentElement.html().substring(0,1);	
 	if (ValToken=="l")
@@ -129,6 +111,6 @@ function CreateDialogOptions(Options)
 		OptionVals = OptionVals+"<option>"+Options2[i]+"</option>";
 	}
 	$("select#VarsDialogSelect").html(OptionVals);
-	return;
+	return;*/
 }
 
