@@ -65,7 +65,17 @@ function walk() {
     clear();
     draw();
     $("#drawCanvas" + figNum).trigger("mousemove");
-    interpret(rowToString(step));
+    if (rowToString(step).substring(0, 1).indexOf("g") >= 0) {
+    	var string = "";
+    	while (rowToString(step).indexOf("draw") == -1) {
+    		string += rowToString(step);
+    		step++;
+    	}
+    	interpret(string);
+    }
+    else {
+    	interpret(rowToString(step));
+    	step++;
+    }
     $("#drawCanvas" + figNum).trigger("mousemove");
-    step++;
 }
