@@ -29,7 +29,7 @@ document.write
                                     </ul>\
                             </div>\
                             <label class="GeneralLabel">\
-                                    Enter up to 3 digits\
+                                    Enter Digits within range 0 to 300\
                             </label>\
                     </div>\
     <!--\

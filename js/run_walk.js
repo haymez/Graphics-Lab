@@ -72,11 +72,9 @@ function walk() {
     		step++;
     	}
     	interpret(string);
-    	console.log(string);
     }
     else {
     	interpret(rowToString(step));
-    	console.log(rowToString(step));
     	step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");

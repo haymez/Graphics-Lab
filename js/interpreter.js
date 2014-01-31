@@ -8,6 +8,7 @@ var p = new Array();
 var l = new Array();
 var g = new Array();
 var c = new Array();
+var color = "red";
 var variableNumber;
 var variableType;
 
@@ -32,8 +33,8 @@ function interpret(input)
 {
 	if (fresh)
 	{
-		toDraw = [];
 		fresh = false;
+		toDraw = [];
 		for (var i = 0; i < distanceVariables.length; i++)
 		{
 			d[i] = 0;
@@ -61,6 +62,7 @@ function interpret(input)
 	// Note: /s includes several different types of whitespace
 	//characters.
 	tokens = input.split(/[(,)\s]+/);
+	console.log(tokens);
 
 	// Check for valid tokens that can delimit the start of
 	// statement or loop structure -- 'repeat' 'endloop'
@@ -73,34 +75,48 @@ function interpret(input)
 		}
 		if (isValid(tokens[1]) && (!(tokens[1].charAt(0) == 'd')))
 		{
+			index = parseInt(tokens[1].substring(1))-1;
 			if (tokens[1].charAt(0) == 'p')
 			{
-				toDraw.push(p[parseInt(tokens[1].substr(1)) - 1]);
+				var shape = p[index];
+				console.log(shape);
+				shape.color = color;
+				color = "red"
+				toDraw.push(shape);
 
 			}
 			else if (tokens[1].charAt(0) == 'l')
 			{
-				toDraw.push(l[parseInt(tokens[1].substr(1)) - 1]);
+				var shape = l[index];
+				shape.color = color;
+				color = "red"
+				toDraw.push(shape);
 			}
 			else if (tokens[1].charAt(0) == 'g')
 			{
-				var polygon = g[parseInt(tokens[1].substr(1)) - 1];
+				var shape = g[index];
+				shape.color = color;
+				color = "red"
+				console.log(shape);
+				toDraw.push(shape);
 			}
 			//assume circle
 			else
 			{
-				toDraw.push(c[parseInt(tokens[1].substr(1)) - 1]);
+				var shape = c[index];
+				shape.color = color;
+				color = "red"
+				toDraw.push(shape);
 			}
 		}
 		else if (tokens[0].localeCompare("OBJECT") == 0)
 		{
-			//TODO: handle incomplete
-			//handleIncompleteProgram(currentToken);
+			handleIncompleteProgram(tokens);
 			return;
 		}
 		else
 		{
-			console.log("Syntax error");
+			handleSyntaxError(tokens);
 			return;
 		}
 	}
@@ -110,38 +126,48 @@ function interpret(input)
 		if (tokens.length < 3)
 		//TODO: handle errors
 		{
+			handleSyntaxError(tokens);
 			return;
 		}
 
 		if (validVariable(tokens[1]) && (!(tokens[1].charAt(0) == 'd')))
 		{
+			index = parseInt(tokens[1].substr(1))-1;
 			if (tokens[1].charAt(0) == 'p')
 			{
-
+				var shape = p[index];
+				shape.color = "white";
+				toDraw.push(shape);
 			}
 			else if (tokens[1].charAt(0) == 'l')
 			{
-
+				var shape = l[index];
+				shape.color = "white";
+				toDraw.push(shape);
 			}
 			else if (tokens[1].charAt(0) == 'g')
 			{
-
+				var shape = g[index];
+				shape.color = "white";
+				toDraw.push(shape);
 			}
 			//assume circle
 			else
 			{
-
+				var shape = c[index];
+				shape.color = "white";
+				toDraw.push(shape);
 			}
 		}
 		else if (tokens[0].localeCompare("OBJECT") == 0)
 		{
 			//TODO: incomplete
-			//handleIncompleteProgram(currentToken);
+			handleIncompleteProgram(tokens);
 			return;
 		}
 		else
 		{
-			console.log("Syntax error");
+			handleSyntaxError(tokens);
 			return;
 		}
 	}
@@ -183,15 +209,9 @@ function interpret(input)
 		{
 			color = "white";
 		}
-		//else if (tokens[1].localeCompare("white")==0)
-		//{
-		//TODO: incomplete program
-		//handleIncompleteProgram(currentToken);
-		//    return;
-		//}
 		else
 		{
-			console.log("Syntax error");
+			handleSyntaxError(tokens);
 			return;
 		}
 	}
@@ -206,7 +226,7 @@ function interpret(input)
 		// get the next token -- distance variable expected
 		if (tokens.length < 3)
 		{
-			//TODO: handle errors
+			handleSyntaxError(tokens);
 			return;
 		}
 
@@ -220,10 +240,11 @@ function interpret(input)
 			//TODO: seems redundant to check length twice. Also unexpected end of program
 			if ((tokens.length < 3))
 			{
+				handleSyntaxError(tokens);
 				return;
 			}
 
-			var valid = validDistanceConstanct(tokens[2])
+			var valid = validDistanceConstant(tokens[2])
 			if (valid[0])
 			{
 				if (StatementType.localeCompare("increment") == 0)
@@ -246,117 +267,25 @@ function interpret(input)
 			}
 			else if (tokens[2].localeCompare("AMOUNT") == 0)
 			{
-				//TODO: incomplete
-				//handleIncompleteProgram(currentToken);
+				handleIncompleteProgram(tokens);
 				return;
 			}
 			else
 			{
-				//TODO: syntax
-				//handleSyntaxError(currentToken);
+				handleSyntaxError(tokens);
 				return;
 			}
 		}
 		else if (currentToken.equals("DISTANCE"))
 		{
-			//TODO: incomplete
-			//handleIncompleteProgram(currentToken);
+			handleIncompleteProgram(tokens);
 			return;
 		}
 		else
 		{
-			//TODO: syntax
-			//handleSyntaxError(currentToken);
+			handleSyntaxError(tokens);
 			return;
 		}
-	}
-	else if (tokens[2].localeCompare("repeat") == 0)
-	{
-		/*
-         // get the next token
-         if (!getNextToken()) {handleUnexpectedEndOfProgram(); return;}
-
-         // a valid counter is expected here.
-         if ( currentToken.equals("COUNTER") )
-         {
-             handleIncompleteProgram(currentToken);
-             return;
-         }
-
-         if ( ! validCounter(currentToken) )
-         {
-            handleSyntaxError(currentToken);
-            return;
-         }
-
-         // place the current counter on a stack of counters
-         loopIterationStack.addElement(new Integer(counterValue));
-         loopIterationsRemaining = counterValue;
-
-         // get the next token
-         if (!getNextToken()) {handleUnexpectedEndOfProgram(); return;}
-
-         // The keyword 'times' is expected
-         if ( ! currentToken.equals("times"))
-         {
-            handleSyntaxError(currentToken);
-            return;
-         }
-
-         // get the next token
-         if (!getNextToken()) {handleUnexpectedEndOfProgram(); return;}
-
-         // The keyword 'loop' is expected
-         if ( ! currentToken.equals("loop"))
-         {
-            handleSyntaxError(currentToken);
-            return;
-         }
-
-         // bump up the current line number, since loop is on a separate line
-         currentLineIndexZeroBased++;
-
-         // place a copy of the unexamined portion of the programCode
-         // onto a stack.
-         restOfProgram = codeParser.nextToken("");
-         programCodeStack.addElement(restOfProgram);
-         codeParser = new StringTokenizer(restOfProgram, "(,) \t\n\r");
-
-         // record the current line number
-         currentLineStack.addElement(new Integer(currentLineIndexZeroBased));
-	*/
-	}
-	else if (tokens[0].localeCompare("endloop") == 0)
-	{
-		/*
-         // end of loop structure
-         loopIterationsRemaining--;
-         if (loopIterationsRemaining > 0)
-         {
-            codeParser = new StringTokenizer(restOfProgram, "(,) \t\n\r");
-            loopIterationStack.setElementAt(
-                                  new Integer(loopIterationsRemaining),
-                                  loopIterationStack.size()-1           );
-            currentLineIndexZeroBased =
-                     ((Integer)currentLineStack.lastElement()).intValue();
-         }
-         else
-         {
-            //Current loop is complete so pop the loop stacks.
-            programCodeStack.removeElementAt(programCodeStack.size()-1);
-            loopIterationStack.removeElementAt(loopIterationStack.size()-1);
-            currentLineStack.removeElementAt(currentLineStack.size()-1);
-
-            // If the loop stack is not empty, restore loop variables
-            // to those of the next outermost loop
-            if ( ! programCodeStack.isEmpty() )
-            {
-               restOfProgram =
-                  (String) programCodeStack.lastElement();
-               loopIterationsRemaining =
-                  ((Integer)loopIterationStack.lastElement()).intValue();
-            }
-         }*/
 	}
 	// Check to make sure we have not encountered a placeholder
 	// indicating an incomplete assignment statement.  If so,
@@ -365,8 +294,7 @@ function interpret(input)
 	// the interpreter.
 	else if (tokens[2].localeCompare("VARIABLE") == 0)
 	{
-		//TODO: incomplete
-		//handleIncompleteProgram(currentToken);
+		handleIncompleteProgram(tokens);
 		return;
 	}
 	// The only other syntactically valid token that can appear at
@@ -381,26 +309,21 @@ function interpret(input)
 		// get the next token
 		if (tokens.length < 3)
 		{
-			console.log("hit");
-			//TODO: unexpected input
-			//handleUnexpectedEndOfProgram();
+			handleUnexpectedEndOfProgram(tokens);
 			return;
 		}
 
 		// The assignment operator = is expected
 		if (tokens[1].localeCompare("=") != 0)
 		{
-			console.log("Hi");
-			//TODO: syntax error
-			//handleSyntaxError(currentToken);
+			handleSyntaxError(tokens);
 			return;
 		}
 
 		// get the next token
 		if (tokens.length < 4)
 		{
-			//TODO: unexpected input
-			//handleUnexpectedEndOfProgram();
+			handleUnexpectedEndOfProgram(tokens);
 			return;
 		}
 
@@ -416,7 +339,7 @@ function interpret(input)
 			}
 			else
 			{
-				handleSyntaxError(currentToken);
+				handleSyntaxError(tokens);
 				return;
 			}
 		}
@@ -429,8 +352,7 @@ function interpret(input)
 			}
 			else
 			{
-				//TODO: syntax error
-				//handleSyntaxError(currentToken);
+				handleSyntaxError(tokens);
 				return;
 			}
 		}
@@ -443,109 +365,39 @@ function interpret(input)
 			}
 			else
 			{
-				//TODO:
-				//handleSyntaxError(currentToken);
+				handleSyntaxError(tokens);
 				return;
 			}
 		}
 		else if (assignmentVariableType.localeCompare("polygon") == 0)
 		{
-			/*boolean morePolyPointsExpected = true;
-            boolean firstPoint = true;
-            Integer firstX = new Integer(-1);
-            Integer firstY = new Integer(-1);
-
-            // Wipe out the old contents of the polygon vector
-            g[assignmentVariableNumber-1] = new Vector();
-            
-            while (morePolyPointsExpected)
-            {
-               if (validPoint())  // may getNextToken for second distance
-               {
-                  // add the current point to the Vector for this poly
-                  g[assignmentVariableNumber-1].addElement(
-                                                new Integer(pointValueX) );
-                  g[assignmentVariableNumber-1].addElement(
-                                                new Integer(pointValueY) );
-
-                  // are we finished yet?
-                  if (firstPoint)
-                  {
-                     firstPoint = false;
-                     firstX = (Integer)
-                              g[assignmentVariableNumber-1].elementAt(0);
-                     firstY = (Integer)
-                              g[assignmentVariableNumber-1].elementAt(1);
-                  
-                     // we expect more poly points, so get the next token
-                     if (!getNextToken())
-                     {
-                        handleUnexpectedEndOfProgram();
-                        return;
-                     }
-                  }
-                  else if ((pointValueX == firstX.intValue()) &&
-                           (pointValueY == firstY.intValue())    )
-                  {
-                     // We just found a point in the polygon that matches the
-                     // first point.  We are quite likely at the end of the 
-                     // polygon, but just to make sure that there is not a
-                     // point in the middle of the polygon that happens to match
-                     // the first point, we will check to see if a "," follows
-                     // in the case of a point variable or a ")," follows in the
-                     // case of a distance variable or constant.  This situation
-                     // can only arise in polygons generated under program control
-                     // as opposed to being created interactively. 
-
-                     // Get a copy of the remainder of the program from this point
-                     // on.  Reset the CodeParser so it will be unaware that we 
-                     // made a copy of the program string.
-
-                     String remainderOfProgram = (codeParser.nextToken("")).trim();
-                     codeParser = new StringTokenizer(remainderOfProgram, "(,) \t\n\r");
- 
-                     if ( ! ( remainderOfProgram.startsWith(",") ||
-                              remainderOfProgram.startsWith("),")   ) )
-                     {
-                        // This truly was the last point in the polygon, so
-                        // prepare to exit the loop.  
-                        morePolyPointsExpected = false;
-                     }
-                     else
-                     {
-                        // false alarm.  We are not at the end of the polygon,
-                        // so get the next token.
-                        if (!getNextToken())
-                        {
-                           handleUnexpectedEndOfProgram();
-                           return;
-                        }
-                     }
-                  }
-                  else
-                  {
-                     // we expect more poly points, so get the next token
-                     if (!getNextToken())
-                     {
-                        handleUnexpectedEndOfProgram();
-                        return;
-                     }
-                  }
-               }
-               else
-               {
-                  handleSyntaxError(currentToken);
-                  return;
-               }
-            }
-            
-            // update the Current Line Number (necessary since polygons
-            // are multiline statements)
-
-            currentLineIndexZeroBased =
-                       currentLineIndexZeroBased +
-                       ( g[assignmentVariableNumber-1].size() / 2 ) - 1;
-		*/
+			valid = validPolygon(tokens.slice(2));
+			if (valid[0])
+			{
+				var points = valid.slice(1);
+				var lines = new Array();
+				var i = 0;
+				while(i < points.length)
+				{
+					if(i+1==points.length)
+					{
+						lines[i] = new line(points[i].startX,points[i].startY,points[0].startX,points[0].startY, "line");
+					}
+					else
+					{
+						lines[i] = new line(points[i].startX,points[i].startY,points[i+1].startX,points[i+1].startY, "line");
+					}
+					i++;
+				}
+				console.log(lines);
+				g[assignmentVariableNumber - 1] = new polygon(lines);
+				console.log(g[0]);
+			}
+			else
+			{
+				handleSyntaxError(tokens);
+				return;
+			}
 		}
 		else
 		{
@@ -558,8 +410,7 @@ function interpret(input)
 			}
 			else
 			{
-				//TODO:
-				//handleSyntaxError(currentToken);
+				handleSyntaxError(tokens);
 				return;
 			}
 		}
@@ -570,8 +421,7 @@ function interpret(input)
 	// Print a (friendly) error message and exit.
 	else
 	{
-		//TODO: syntax
-		//handleSyntaxError(currentToken);
+		handleSyntaxError(tokens);
 		return;
 	}
 }
@@ -899,11 +749,6 @@ function validLine(tokens)
 	}
 }
 
-function validPolygon()
-{
-	return true;
-}
-
 function validCircle(tokens)
 {
 	var index;
@@ -976,4 +821,84 @@ function validCircle(tokens)
 			}
 		}
 	}
+}
+
+function validPolygon(tokens)
+{
+	var returned = new Array();
+	var parse = new Array();
+	var isStart = true;
+	var i = 0, c = 1, firstX = 0, firstY = 0;
+	if (isValid(tokens[0]) && tokens.charAt(0) == 'g')
+	{
+		returned[0] = true;
+		returned[1] = g[variableNumber-1].angles;
+		return returned;
+	}
+	while(i+1 < tokens.length)
+	{
+		console.log(tokens[i]);
+		 // point variable
+		if(isValid(tokens[i]) && tokens[i].charAt(0) == 'p')
+		{
+			parse = validPoint(tokens[i]);
+			i++;
+		}
+		else // constant
+		{
+			parse = validPoint(tokens.slice(i, i+2));
+			i += 2;
+		}
+		// transfer to return arrray
+		if(parse[0])
+		{
+				returned[c++] = new point(parse[1], parse[2]);
+		}
+		else // point error
+		{
+			// handlePointError()
+			returned[0] = false;
+			return returned;
+		}
+		// check for end of polygon
+		if(isStart)
+		{
+			isStart = false;
+			firstX = parse[1];
+			firstY = parse[2];
+		}
+		else if(firstX == parse[1] && firsttY == parse[2]) // its the end, if not continue
+		{
+			returned[0] = true;
+			return returned;
+		}
+		parse = new Array();
+	}
+	returned[0] = true;
+	return returned;
+}
+
+/*
+handles cases where the user was expected to provide input, but
+the default placeholder was found instead.
+*/
+function handleIncompleteProgram(token)
+{
+	alert("Error: incomplete program");
+}
+
+/*
+handles cases where the code's syntax is incorrect
+(should never happen, for debugging purposes)
+*/
+function handleSyntaxError(tokens)
+{
+	alert("Error: syntax");
+	console.log(tokens);
+}
+/*
+*/
+function handleUnexpectedEndOfProgram(tokens)
+{
+	alert("Error: unexpected end of program");
 }

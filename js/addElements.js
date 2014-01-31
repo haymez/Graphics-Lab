@@ -253,11 +253,14 @@ var runButton = document.createElement('button');
 runButton.id = "runButton" + figNum;
 runButton.style.width = "70px";
 runButton.innerHTML = "Run";
+//runButton.style.backgroundColor = "green";
+
 
 var walkButton = document.createElement('button');
 walkButton.id = "walkButton" + figNum;
 walkButton.style.width = "70px";
 walkButton.innerHTML = "Walk";
+//walkButton.style.backgroundColor = "yellow";
 
 var distanceButton = document.createElement('button');
 distanceButton.id = "distanceButton" + figNum;
