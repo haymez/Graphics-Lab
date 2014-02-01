@@ -62,7 +62,6 @@ function interpret(input)
 	// Note: /s includes several different types of whitespace
 	//characters.
 	tokens = input.split(/[(,)\s]+/);
-	console.log(tokens);
 
 	// Check for valid tokens that can delimit the start of
 	// statement or loop structure -- 'repeat' 'endloop'
@@ -130,7 +129,7 @@ function interpret(input)
 			return;
 		}
 
-		if (validVariable(tokens[1]) && (!(tokens[1].charAt(0) == 'd')))
+		if (isValid(tokens[1]) && (!(tokens[1].charAt(0) == 'd')))
 		{
 			index = parseInt(tokens[1].substr(1))-1;
 			if (tokens[1].charAt(0) == 'p')
@@ -230,7 +229,7 @@ function interpret(input)
 			return;
 		}
 
-		if (validVariable(tokens[1]) && (tokens[1].charAt(0) == 'd'))
+		if (isValid(tokens[1]) && (tokens[1].charAt(0) == 'd'))
 		{
 			// remember the variable number
 			//int
