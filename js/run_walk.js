@@ -66,11 +66,13 @@ function walk() {
     draw();
     $("#drawCanvas" + figNum).trigger("mousemove");
     if (rowToString(step).substring(0, 1).indexOf("g") >= 0) {
-    	var string = "";
-    	while (rowToString(step).indexOf("draw") == -1) {
+    	var string = rowToString(step);
+    	step++;
+    	while (!containsCommand(rowToString(step+1))) {
     		string += rowToString(step);
     		step++;
     	}
+    	step++;
     	interpret(string);
     }
     else {
@@ -78,4 +80,18 @@ function walk() {
     	step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");
+}
+
+function containsCommand(input) {
+	var found = false;
+	found = found || input.indexOf("draw") != -1;
+	found = found || input.indexOf("erase") != -1;
+	found = found || input.indexOf("=") != -1;
+	found = found || input.indexOf("color") != -1;
+	found = found || input.indexOf("loop") != -1;
+	found = found || input.indexOf("repeat") != -1;
+	found = found || input.indexOf("endloop") != -1;
+	found = found || input.indexOf("increment") != -1;
+	found = found || input.indexOf("decrement") != -1;
+	return found;
 }

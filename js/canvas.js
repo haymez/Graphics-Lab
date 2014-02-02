@@ -328,8 +328,10 @@ function drawPolygon() {
                     addNewRow(selRow, [polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
                         "(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
                     for(var i = 1; i < coor.length; i++) {
-                        if (i == coor.length-1)
-                            addNewRow(selRow, [indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ")"]);
+                        if (i == coor.length-1) {
+                            addNewRow(selRow, [indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")"]);
+                            addNewRow(selRow, [indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+                        }
                         else
                             addNewRow(selRow, [indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
                     }
