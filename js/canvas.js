@@ -119,9 +119,9 @@ function drawPoint() {
         startY = evt.clientY - rect.top;
         toDraw[toDraw.length] = new point(startX, startY);
         
-        addNewRow(selRow, [pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+        addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
             "(", startX,",", 300-startY, ")"]);
-        addNewRow(selRow, ["draw", "(", pointVariables[pointVariables.length-1], ")"])
+        addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"])
     }
     
     //remove listener after the line has been drawn
@@ -175,9 +175,9 @@ function drawLine() {
             endY = evt.clientY - rect.top;
             toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
             
-            addNewRow(selRow, [lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
+            addNewRow(selRow, [getIndent(selRow) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
                 "(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
-            addNewRow(selRow, ["draw", "(", lineVariables[lineVariables.length-1], ")"]);
+            addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
         }
         
         //remove listener after the line has been drawn
@@ -230,9 +230,9 @@ function drawCircle() {
             endY = evt.clientY - rect.top;
             toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
             
-            addNewRow(selRow, [circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+            addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
                 startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-            addNewRow(selRow, ["draw", "(", circleVariables[circleVariables.length-1], ")"]);
+            addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
         }
         
         //remove listener after the circle has been drawn
@@ -325,17 +325,17 @@ function drawPolygon() {
                     toDraw = toDraw.slice(0, toDraw.length-coor.length);
                     toDraw[toDraw.length] = new polygon(coor);
                     
-                    addNewRow(selRow, [polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
+                    addNewRow(selRow, [getIndent(selRow) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
                         "(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
                     for(var i = 1; i < coor.length; i++) {
                         if (i == coor.length-1) {
-                            addNewRow(selRow, [indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")"]);
-                            addNewRow(selRow, [indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")"]);
+                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
                         }
                         else
-                            addNewRow(selRow, [indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
                     }
-                    addNewRow(selRow, ["draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
+                    addNewRow(selRow, [getIndent(selRow) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
                 }
                 else {
                     toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp"); //Set this line to temporary because it's merely a preview

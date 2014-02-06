@@ -5,6 +5,8 @@
 var step = 0;
 var programRunning = false;
 var fresh = true;
+var loopArray = new Array();
+
 //Allows users to run the program slowly
 function run() {
     paintbrush++;
@@ -65,8 +67,10 @@ function walk() {
     clear();
     draw();
     $("#drawCanvas" + figNum).trigger("mousemove");
-    if (rowToString(step).substring(0, 1).indexOf("g") >= 0) {
-    	var string = rowToString(step);
+    
+    //Polygon found
+    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1) {
+    	var string = rowToString(step).trim();
     	step++;
     	while (!containsCommand(rowToString(step+1))) {
     		string += rowToString(step);
@@ -74,6 +78,27 @@ function walk() {
     	}
     	step++;
     	interpret(string);
+    }
+    //Loop found
+    else if (rowToString(step).indexOf("repeat") >= 0 && rowToString(step).indexOf("COUNTER") == -1) {
+    	var i = Number(rowToString(step).substring(rowToString(step).indexOf("repeat")+6, rowToString(step).indexOf("times")));
+    	step += 2;
+    	var loopStart = step;
+    	loopArray[loopArray.length] = new makeLoop(loopStart, i);
+    	
+    }
+    //found the end of a loop
+    else if (rowToString(step).indexOf("endloop") >= 0) {
+    	//Loop is not finished. Decrement i and return to loop start.
+    	if (loopArray[loopArray.length-1].i > 1) {
+    		loopArray[loopArray.length-1].i--;
+    		step = loopArray[loopArray.length-1].loopStart;
+    	}
+    	//this loop is finished. Remove it from array and increment step
+    	else {
+    		step++;
+    		loopArray.splice(loopArray.length-1, 1);
+    	}
     }
     else {
     	interpret(rowToString(step));
@@ -95,3 +120,34 @@ function containsCommand(input) {
 	found = found || input.indexOf("decrement") != -1;
 	return found;
 }
+
+//returns the indent of the loop.
+function makeLoop(loopStart, i) {
+	this.loopStart = loopStart;
+	this.i = i;
+}
+
+//return string with correct number of indents
+function getIndent(row) {
+	var loop = 0;
+	for (var i = 0; i < row; i++) {
+		if (rowToString(i).indexOf("loop") >= 0) loop++;
+		if (rowToString(i).indexOf("endloop") >= 0) loop--;
+	}
+	var string = "";
+	for (var i = 0; i < loop; i++) {
+		string += indent;
+	}
+	return string;
+}
+
+
+
+
+
+
+
+
+
+
+

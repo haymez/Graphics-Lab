@@ -1,0 +1,10 @@
+/*this handles all general style for the graphics lab*/
+
+.codeTd
+{
+	border:none;
+	border-collapse:collapse;
+	padding: 0px;
+	margin: 0px;
+	white-space: nowrap;
+}

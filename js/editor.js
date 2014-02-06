@@ -106,11 +106,11 @@ function toggleEvents() {
         	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-            moveToLine(rowNum);
+        	if (rowToString(rowNum) != "loop")
+            	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
         else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
-					/************************************************************************************************************************/
             CurrentElement = $(this);
             $("input.InputValue").val("");
 			$( "#dialog-modal-num" ).dialog(
@@ -119,7 +119,6 @@ function toggleEvents() {
 				width: 350,
 				modal: true
 			});
-					/************************************************************************************************************************/
         }
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
@@ -133,7 +132,6 @@ function toggleEvents() {
 					list += "<option>" + rowToString(i).substring(0, rowToString(i).indexOf("=")) + "</option>";
 			}
 			CurrentElement = $(this);
-			console.log(list);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog({
 				height: 280,
@@ -172,7 +170,14 @@ function toggleEvents() {
         //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
         //Make sure user isn't clicking 'repeat' or 'times'
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1) {
-            alert("Generate keypad with 2 digit limit")
+        	CurrentElement = $(this);
+            $("input.InputValue").val("");
+			$( "#dialog-modal-num" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
         }
         else if (cellVal.indexOf("EXPRESSION") >= 0) {
             alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" + 
@@ -204,7 +209,12 @@ function toggleEvents() {
 					height: 280,
 					width: 350,
 					modal: true
-				});	
+				});
+				for (var i = 0; i < codeTable.rows.length; i++) {
+					if (rowToString.indexOf("EXPRESSION") >= 0 && rowToString.indexOf("VARIABLE") == -1) {
+						//code to handle changing expression to appropriate text
+					}
+				}
             }
     });
 }
@@ -396,34 +406,35 @@ function rowToString(rowInd) {
     for (var i = 2; i < innerTable.rows[0].cells.length; i++) {
         string += innerTable.rows[0].cells[i].innerText;
     }
-    return string;
+    return string.trim();
 }
 
 //Allows user to assign values to a declared variable
 function assign() {
-    addNewRow(selRow, ["VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
+    addNewRow(selRow, [getIndent(selRow) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
 }
 
 //Allows user to choose a shape to draw
 function drawShape() {
-    addNewRow(selRow, ["draw", "(", "OBJECT", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "draw", "(", "OBJECT", ")"]);
 }
 
 //Erases a shape
 function erase() {
-    addNewRow(selRow, ["erase", "(", "OBJECT", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "erase", "(", "OBJECT", ")"]);
 }
 
 //Allow users to change the color of shapes
 function changeColor() {
-    addNewRow(selRow, ["color", "(", "COLOR_NAME", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "color", "(", "COLOR_NAME", ")"]);
 }
 
 //Creates a loop in program window
 function loop() {
-    addNewRow(selRow, ["repeat", "COUNTER", "times"]);
-    addNewRow(selRow, ["loop"]);
-    addNewRow(selRow, ["endloop"]);
+	var thisIndent = getIndent(selRow);
+    addNewRow(selRow, [thisIndent + "repeat", "COUNTER", "times"]);
+    addNewRow(selRow, [thisIndent + "loop"]);
+    addNewRow(selRow, [thisIndent + "endloop"]);
 }
 
 

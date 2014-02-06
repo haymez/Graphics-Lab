@@ -78,7 +78,6 @@ function interpret(input)
 			if (tokens[1].charAt(0) == 'p')
 			{
 				var shape = p[index];
-				console.log(shape);
 				shape.color = color;
 				color = "red"
 				toDraw.push(shape);
@@ -96,7 +95,6 @@ function interpret(input)
 				var shape = g[index];
 				shape.color = color;
 				color = "red"
-				console.log(shape);
 				toDraw.push(shape);
 			}
 			//assume circle
@@ -388,9 +386,7 @@ function interpret(input)
 					}
 					i++;
 				}
-				console.log(lines);
 				g[assignmentVariableNumber - 1] = new polygon(lines);
-				console.log(g[0]);
 			}
 			else
 			{
@@ -836,7 +832,6 @@ function validPolygon(tokens)
 	}
 	while(i+1 < tokens.length)
 	{
-		console.log(tokens[i]);
 		 // point variable
 		if(isValid(tokens[i]) && tokens[i].charAt(0) == 'p')
 		{
@@ -893,7 +888,6 @@ handles cases where the code's syntax is incorrect
 function handleSyntaxError(tokens)
 {
 	alert("Error: syntax");
-	console.log(tokens);
 }
 /*
 */
