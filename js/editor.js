@@ -16,6 +16,7 @@ var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td c
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 // This identifies the current clicked element for change later on from numpad and variable chooser
 var CurrentElement; 
+var currRow = 0;
 
 init();
 
@@ -110,7 +111,7 @@ function toggleEvents() {
             	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
-        else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
+        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || cellVal == 'X') {
             CurrentElement = $(this);
             $("input.InputValue").val("");
 			$( "#dialog-modal-num" ).dialog(
@@ -127,10 +128,11 @@ function toggleEvents() {
             list = "";
             //finds all drawable shapes above the current row
             for (var i = 0; i < rowNum; i++) {
-			if (rowToString(i).indexOf("=") && rowToString(i).indexOf("VARIABLE") == -1)
+			if (rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1)
 				if (rowToString(i).substring(0, rowToString(i).indexOf("=")).length > 0)
 					list += "<option>" + rowToString(i).substring(0, rowToString(i).indexOf("=")) + "</option>";
 			}
+			currRow = rowNum;
 			CurrentElement = $(this);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog({
@@ -146,6 +148,7 @@ function toggleEvents() {
         			list += "<option>" + rowToString(i).substring(rowToString(i).indexOf("(")+1, rowToString(i).indexOf(")")) + "</option>";
         		}
         	}
+        	currRow = rowNum;
         	CurrentElement = $(this);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog(
@@ -158,6 +161,7 @@ function toggleEvents() {
         else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1) {
         	list = "<option>red</option>" + "<option>blue</option>" + "<option>green</option>" + "<option>yellow</option>" + 
         		"<option>orange</option>" + "<option>black</option>" + "<option>white</option>";
+            currRow = rowNum;
             CurrentElement = $(this);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog(
@@ -203,6 +207,7 @@ function toggleEvents() {
             		list += "<option>" + polygonVariables[i] + "</option>";
             	}
           		CurrentElement = $(this);
+          		currRow = rowNum;
 				CreateDialogOptions(list);
 				$( "#dialog-modal-Vars" ).dialog(
 				{
@@ -210,11 +215,7 @@ function toggleEvents() {
 					width: 350,
 					modal: true
 				});
-				for (var i = 0; i < codeTable.rows.length; i++) {
-					if (rowToString.indexOf("EXPRESSION") >= 0 && rowToString.indexOf("VARIABLE") == -1) {
-						//code to handle changing expression to appropriate text
-					}
-				}
+				
             }
     });
 }
