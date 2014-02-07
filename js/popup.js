@@ -64,13 +64,14 @@ $(document).on('click', "input.OKBtn" , function()
 });
 
 //User clicked Okay on a variable selector TODO: finish this
-$(document).on('click', "input.VarOKBtn" , function() 
-{
+$(document).on('click', "input.VarOKBtn" , function() {
 	var varName = $('#VarsDialogSelect :selected').text();
+	
 	if (rowToString(currRow).indexOf("draw") == -1) {
-		if (varName.indexOf("d") >= 0) {
+		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1) {
 			codeTable.deleteRow(currRow);
 			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
+			selRow--;
 		}
 		else if (varName.indexOf("p") >= 0) {
 			alert("add point stuff");
@@ -79,11 +80,31 @@ $(document).on('click', "input.VarOKBtn" , function()
 		else if (varName.indexOf("l") >= 0) {
 			alert("add line stuff");
 		}
-		else if (varName.indexOf("c") >= 0) {
+		else if (varName.indexOf("c") >= 0 && varName.indexOf("constant") == -1) {
 			alert("add circle stuff");
 		}
 		else if (varName.indexOf("g") >= 0) {
 			alert("add polygon stuff");
+		}
+		else if (varName.indexOf("+") >= 0) {
+			codeTable.deleteRow(currRow);
+			addNewRow(currRow, [varName.substring(0, varName.indexOf("=")), "&nbsp;=&nbsp;", varName.substring(0, varName.indexOf("=")), "+", 'X']);
+			selRow--;
+		}
+		else if (varName.indexOf("-") >= 0) {
+			codeTable.deleteRow(currRow);
+			addNewRow(currRow, [varName.substring(0, varName.indexOf("=")), "&nbsp;=&nbsp;", varName.substring(0, varName.indexOf("=")), "-", 'X']);
+			selRow--;
+		}
+		else if (varName.indexOf("constant") >= 0) {
+			//CurrentElement = $(this);
+            $("input.InputValue").val("");
+			$( "#dialog-modal-num" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
 		}
 		$( "#dialog-modal-Vars" ).dialog("close");
 	}

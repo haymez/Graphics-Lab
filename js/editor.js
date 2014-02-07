@@ -111,15 +111,56 @@ function toggleEvents() {
             	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
-        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || cellVal == 'X') {
-            CurrentElement = $(this);
-            $("input.InputValue").val("");
-			$( "#dialog-modal-num" ).dialog(
-			{
-				height: 280,
-				width: 350,
-				modal: true
-			});
+        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || cellVal.match('X')) {
+        	//updating a distance variable
+        	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
+        		rowToString(rowNum).indexOf("-") == -1) {
+        		var found = false;
+        		list = "";
+        		
+        		//find if another instance of this distance variable has occurred already
+        		for (var i = 0; i < rowNum; i++) {
+        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=")) {
+        				found = true;
+        				var distanceVar = rowToString(step).substring(rowToString(step).indexOf("d"), rowToString(step).indexOf("=")-1);
+        				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
+        				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
+        				list += "<option>constant</option>";
+						currRow = rowNum;
+						CurrentElement = $(this);
+						CreateDialogOptions(list);
+						$( "#dialog-modal-Vars" ).dialog({
+							height: 280,
+							width: 350,
+							modal: true
+						});
+						break;
+        			}
+        		}
+        		
+        		//if no previous distance variable has been found, just generate keypad pop up
+        		if (!found) {
+        			CurrentElement = $(this);
+		            $("input.InputValue").val("");
+					$( "#dialog-modal-num" ).dialog(
+					{
+						height: 280,
+						width: 350,
+						modal: true
+					});
+        		}
+        		
+        	}
+        	else {
+        		CurrentElement = $(this);
+	            $("input.InputValue").val("");
+				$( "#dialog-modal-num" ).dialog(
+				{
+					height: 280,
+					width: 350,
+					modal: true
+				});
+        	}
         }
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
@@ -296,6 +337,7 @@ function selectRow(rowNum) {
 function highlightCell(rowInd, colInd) {
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
     innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
+    //innerTable.rows[0].cells[colInd].style.fontWeight = 'bold'; TODO: make this happen! makes current line stand out more
 }
 
 // highlightControlStructure() looks for matching braces '{' and '}'. Once the braces match up. it stops highlighting
