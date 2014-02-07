@@ -16,6 +16,7 @@ var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td c
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 // This identifies the current clicked element for change later on from numpad and variable chooser
 var CurrentElement; 
+var currRow = 0;
 
 init();
 
@@ -106,20 +107,63 @@ function toggleEvents() {
         	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-            moveToLine(rowNum);
+        	if (rowToString(rowNum) != "loop")
+            	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
-        else if (!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) {
-					/************************************************************************************************************************/
-            CurrentElement = $(this);
-            $("input.InputValue").val("");
-			$( "#dialog-modal-num" ).dialog(
-			{
-				height: 280,
-				width: 350,
-				modal: true
-			});
-					/************************************************************************************************************************/
+        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1)) {
+        	//updating a distance variable
+        	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
+        		rowToString(rowNum).indexOf("-") == -1) {
+        		var found = false;
+        		list = "";
+        		
+        		//find if another instance of this distance variable has occurred already
+        		for (var i = 0; i < rowNum; i++) {
+        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).indexOf("d") >=0) {
+        					
+        				console.log("distance variable found on row: " + i);
+        				console.log("")
+        				found = true;
+        				var distanceVar = rowToString(i).substring(rowToString(i).indexOf("d"), rowToString(i).indexOf("=")-1);
+        				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
+        				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
+        				list += "<option>constant</option>";
+						currRow = rowNum;
+						CurrentElement = $(this);
+						CreateDialogOptions(list);
+						$( "#dialog-modal-Vars" ).dialog({
+							height: 280,
+							width: 350,
+							modal: true
+						});
+						break;
+        			}
+        		}
+        		
+        		//if no previous distance variable has been found, just generate keypad pop up
+        		if (!found) {
+        			CurrentElement = $(this);
+		            $("input.InputValue").val("");
+					$( "#dialog-modal-num" ).dialog(
+					{
+						height: 280,
+						width: 350,
+						modal: true
+					});
+        		}
+        		
+        	}
+        	else {
+        		CurrentElement = $(this);
+	            $("input.InputValue").val("");
+				$( "#dialog-modal-num" ).dialog(
+				{
+					height: 280,
+					width: 350,
+					modal: true
+				});
+        	}
         }
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
@@ -128,12 +172,12 @@ function toggleEvents() {
             list = "";
             //finds all drawable shapes above the current row
             for (var i = 0; i < rowNum; i++) {
-			if (rowToString(i).indexOf("=") && rowToString(i).indexOf("VARIABLE") == -1)
+			if (rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1)
 				if (rowToString(i).substring(0, rowToString(i).indexOf("=")).length > 0)
 					list += "<option>" + rowToString(i).substring(0, rowToString(i).indexOf("=")) + "</option>";
 			}
+			currRow = rowNum;
 			CurrentElement = $(this);
-			console.log(list);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog({
 				height: 280,
@@ -148,6 +192,7 @@ function toggleEvents() {
         			list += "<option>" + rowToString(i).substring(rowToString(i).indexOf("(")+1, rowToString(i).indexOf(")")) + "</option>";
         		}
         	}
+        	currRow = rowNum;
         	CurrentElement = $(this);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog(
@@ -160,6 +205,7 @@ function toggleEvents() {
         else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1) {
         	list = "<option>red</option>" + "<option>blue</option>" + "<option>green</option>" + "<option>yellow</option>" + 
         		"<option>orange</option>" + "<option>black</option>" + "<option>white</option>";
+            currRow = rowNum;
             CurrentElement = $(this);
 			CreateDialogOptions(list);
 			$( "#dialog-modal-Vars" ).dialog(
@@ -172,7 +218,14 @@ function toggleEvents() {
         //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
         //Make sure user isn't clicking 'repeat' or 'times'
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1) {
-            alert("Generate keypad with 2 digit limit")
+        	CurrentElement = $(this);
+            $("input.InputValue").val("");
+			$( "#dialog-modal-num" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
         }
         else if (cellVal.indexOf("EXPRESSION") >= 0) {
             alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" + 
@@ -198,13 +251,15 @@ function toggleEvents() {
             		list += "<option>" + polygonVariables[i] + "</option>";
             	}
           		CurrentElement = $(this);
+          		currRow = rowNum;
 				CreateDialogOptions(list);
 				$( "#dialog-modal-Vars" ).dialog(
 				{
 					height: 280,
 					width: 350,
 					modal: true
-				});	
+				});
+				
             }
     });
 }
@@ -285,6 +340,7 @@ function selectRow(rowNum) {
 function highlightCell(rowInd, colInd) {
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
     innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
+    //innerTable.rows[0].cells[colInd].style.fontWeight = 'bold'; TODO: make this happen! makes current line stand out more
 }
 
 // highlightControlStructure() looks for matching braces '{' and '}'. Once the braces match up. it stops highlighting
@@ -396,34 +452,35 @@ function rowToString(rowInd) {
     for (var i = 2; i < innerTable.rows[0].cells.length; i++) {
         string += innerTable.rows[0].cells[i].innerText;
     }
-    return string;
+    return string.trim();
 }
 
 //Allows user to assign values to a declared variable
 function assign() {
-    addNewRow(selRow, ["VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
+    addNewRow(selRow, [getIndent(selRow) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
 }
 
 //Allows user to choose a shape to draw
 function drawShape() {
-    addNewRow(selRow, ["draw", "(", "OBJECT", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "draw", "(", "OBJECT", ")"]);
 }
 
 //Erases a shape
 function erase() {
-    addNewRow(selRow, ["erase", "(", "OBJECT", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "erase", "(", "OBJECT", ")"]);
 }
 
 //Allow users to change the color of shapes
 function changeColor() {
-    addNewRow(selRow, ["color", "(", "COLOR_NAME", ")"]);
+    addNewRow(selRow, [getIndent(selRow) + "color", "(", "COLOR_NAME", ")"]);
 }
 
 //Creates a loop in program window
 function loop() {
-    addNewRow(selRow, ["repeat", "COUNTER", "times"]);
-    addNewRow(selRow, ["loop"]);
-    addNewRow(selRow, ["endloop"]);
+	var thisIndent = getIndent(selRow);
+    addNewRow(selRow, [thisIndent + "repeat", "COUNTER", "times"]);
+    addNewRow(selRow, [thisIndent + "loop"]);
+    addNewRow(selRow, [thisIndent + "endloop"]);
 }
 
 

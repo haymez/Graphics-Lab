@@ -33,11 +33,6 @@ $(document).on('click', "input.Numpad" , function()
 	var NewVal = Current+""+Val;
 	if (NewVal.length>3)
 		NewVal = NewVal.substring(1, 4);
-	/*if ((parseInt(NewVal))>300)
-	{
-		alert("Cannot have more than 300.");
-		NewVal="300";
-	}*/
 	$("input.InputValue").val(NewVal);
 });
 
@@ -68,18 +63,59 @@ $(document).on('click', "input.OKBtn" , function()
 	//return;	
 });
 
-
-$(document).on('click', "input.VarOKBtn" , function() 
-{
-	var VarName = $('#VarsDialogSelect :selected').text();
-	if (VarName=="")
-	{
-		alert("Please select one variable name.");
-	}
-	else
-	{
-		CurrentElement.html(VarName);	
+//User clicked Okay on a variable selector TODO: finish this
+$(document).on('click', "input.VarOKBtn" , function() {
+	var varName = $('#VarsDialogSelect :selected').text();
+	
+	if (rowToString(currRow).indexOf("draw") == -1) {
+		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1) {
+			codeTable.deleteRow(currRow);
+			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
+			selRow--;
+		}
+		else if (varName.indexOf("p") >= 0) {
+			alert("add point stuff");
+			
+		}
+		else if (varName.indexOf("l") >= 0) {
+			alert("add line stuff");
+		}
+		else if (varName.indexOf("c") >= 0 && varName.indexOf("constant") == -1) {
+			alert("add circle stuff");
+		}
+		else if (varName.indexOf("g") >= 0) {
+			alert("add polygon stuff");
+		}
+		else if (varName.indexOf("+") >= 0) {
+			codeTable.deleteRow(currRow);
+			addNewRow(currRow, [varName.substring(0, varName.indexOf("=")), "&nbsp;=&nbsp;", varName.substring(0, varName.indexOf("=")), "+", 'X']);
+			selRow--;
+		}
+		else if (varName.indexOf("-") >= 0) {
+			codeTable.deleteRow(currRow);
+			addNewRow(currRow, [varName.substring(0, varName.indexOf("=")), "&nbsp;=&nbsp;", varName.substring(0, varName.indexOf("=")), "-", 'X']);
+			selRow--;
+		}
+		else if (varName.indexOf("constant") >= 0) {
+			//CurrentElement = $(this);
+            $("input.InputValue").val("");
+			$( "#dialog-modal-num" ).dialog(
+			{
+				height: 280,
+				width: 350,
+				modal: true
+			});
+		}
 		$( "#dialog-modal-Vars" ).dialog("close");
+	}
+	else {
+		if (varName=="") {
+			alert("Please select one variable name.");
+		}
+		else {
+			CurrentElement.html(varName);	
+			$( "#dialog-modal-Vars" ).dialog("close");
+		}	
 	}
 });
 
