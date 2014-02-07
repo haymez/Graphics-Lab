@@ -111,7 +111,7 @@ function toggleEvents() {
             	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
-        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || cellVal.match('X')) {
+        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1)) {
         	//updating a distance variable
         	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
         		rowToString(rowNum).indexOf("-") == -1) {
@@ -120,7 +120,7 @@ function toggleEvents() {
         		
         		//find if another instance of this distance variable has occurred already
         		for (var i = 0; i < rowNum; i++) {
-        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=")) {
+        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).indexOf("d") >=0) {
         				found = true;
         				var distanceVar = rowToString(step).substring(rowToString(step).indexOf("d"), rowToString(step).indexOf("=")-1);
         				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
