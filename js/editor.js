@@ -121,8 +121,11 @@ function toggleEvents() {
         		//find if another instance of this distance variable has occurred already
         		for (var i = 0; i < rowNum; i++) {
         			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).indexOf("d") >=0) {
+        					
+        				console.log("distance variable found on row: " + i);
+        				console.log("")
         				found = true;
-        				var distanceVar = rowToString(step).substring(rowToString(step).indexOf("d"), rowToString(step).indexOf("=")-1);
+        				var distanceVar = rowToString(i).substring(rowToString(i).indexOf("d"), rowToString(i).indexOf("=")-1);
         				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
         				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
         				list += "<option>constant</option>";

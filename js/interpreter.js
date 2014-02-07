@@ -70,7 +70,7 @@ function interpret(input)
 		// get the next token
 		if (tokens.length < 3)
 		{
-			//TODO: handle errors
+			handleSyntaxError(tokens);
 		}
 		if (isValid(tokens[1]) && (!(tokens[1].charAt(0) == 'd')))
 		{
@@ -108,7 +108,7 @@ function interpret(input)
 		}
 		else if (tokens[0].localeCompare("OBJECT") == 0)
 		{
-			handleIncompleteProgram(tokens);
+			handleIncompleteProgram(tokens[0]);
 			return;
 		}
 		else
@@ -159,7 +159,7 @@ function interpret(input)
 		else if (tokens[0].localeCompare("OBJECT") == 0)
 		{
 			//TODO: incomplete
-			handleIncompleteProgram(tokens);
+			handleIncompleteProgram(tokens[0]);
 			return;
 		}
 		else
@@ -264,7 +264,7 @@ function interpret(input)
 			}
 			else if (tokens[2].localeCompare("AMOUNT") == 0)
 			{
-				handleIncompleteProgram(tokens);
+				handleIncompleteProgram(tokens[2]);
 				return;
 			}
 			else
@@ -273,9 +273,9 @@ function interpret(input)
 				return;
 			}
 		}
-		else if (currentToken.equals("DISTANCE"))
+		else if (tokens[1].equals("DISTANCE"))
 		{
-			handleIncompleteProgram(tokens);
+			handleIncompleteProgram(tokens[1]);
 			return;
 		}
 		else
@@ -289,9 +289,9 @@ function interpret(input)
 	// display a message informing the user that the program must
 	// be complete before it can be successfully run and then exit
 	// the interpreter.
-	else if (tokens[2].localeCompare("VARIABLE") == 0)
+	else if (tokens[0].localeCompare("VARIABLE") == 0)
 	{
-		handleIncompleteProgram(tokens);
+		handleIncompleteProgram(tokens[0]);
 		return;
 	}
 	// The only other syntactically valid token that can appear at
@@ -318,7 +318,7 @@ function interpret(input)
 		}
 
 		// get the next token
-		if (tokens.length < 4)
+		if (tokens.length < 3)
 		{
 			handleUnexpectedEndOfProgram(tokens);
 			return;
@@ -328,11 +328,36 @@ function interpret(input)
 
 		if (assignmentVariableType.localeCompare("distance") == 0)
 		{
+			
 			var valid;
 			valid = validDistance(tokens[2]);
 			if (valid[0])
 			{
 				d[assignmentVariableNumber - 1] = valid[1];
+			}
+			//new functionality for increment and decrement
+			//check if right hand side of equal sign
+			else if (tokens[2].indexOf(tokens[0] != -1))
+			{
+				//tokenize based on + or minus
+				var split = tokens[2].split(/[=-+]+/);
+				if(tokens[2].indexof("+") != -1)
+				{
+					d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] + parseInt(split[1]);
+				}
+				else if(tokens[2].indexof("-") != -1)
+				{
+					d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] - parseInt(split[1]);
+				}
+				//assignment to itself. Do nothing.
+				else if(split.length < 2)
+				{
+				}
+				else
+				{
+					handleSyntaxError(tokens);
+				}
+				
 			}
 			else
 			{
@@ -563,15 +588,11 @@ function validDistance(token)
 		}
 		else if (token.localeCompare("DISTANCE") == 0)
 		{
-			// TODO: program is still not complete
-			//handleIncompleteProgram(currentToken);
 			returned[0] = false;
 			return returned;
 		}
 		else if (currentToken.startsWith("X"))
 		{
-			// TODO: program is still not complete
-			//handleIncompleteProgram(currentToken);
 			returned[0] = false;
 			return returned;
 		}
@@ -635,17 +656,15 @@ function validPoint(tokens)
 				returned[0] = true;
 				return returned;
 			}
-			else if (tokens[0].charAt(0) == 'Y')
+			else if (tokens[1].charAt(0) == 'Y')
 			{
-				//TODO: incomplete
-				//handleIncompleteProgram(currentToken);
-				//return false;
+				handleIncompleteProgram(tokens[0]);
+				returned[0] = false;
+				return returned;
 			}
-			else if (currentToken.startsWith("X"))
+			else if (tokens[0].startsWith("X"))
 			{
-				//TODO:
-				//handleIncompleteProgram(currentToken);
-				//return false;
+				handleIncompleteProgram(tokens[0]);
 				returned[0] = false;
 				return returned;
 			}
@@ -802,10 +821,10 @@ function validCircle(tokens)
 				returned[3] = parse[1];
 				return returned;
 			}
-			else if (currentToken.equals("RADIUS"))
+			else if (tokens[index].equals("RADIUS"))
 			{
-				//TODO: incomplete
-				//handleIncompleteProgram(currentToken);
+			
+				handleIncompleteProgram(tokens[index]);
 				returned[0] = false;
 				return returned;
 			}
@@ -878,7 +897,15 @@ the default placeholder was found instead.
 */
 function handleIncompleteProgram(token)
 {
-	alert("Error: incomplete program");
+	alert("\t\t\t         ATTENTION !\n\n"                        + 
+                                    "Watson could not successfully run this program "       + 
+                                    "since it is incomplete.  The placeholder named "       + 
+                                    token + " was encountered during execution.\n\n" + 
+                                    "In order to successfully run a Watson graphics "       + 
+                                    "program, all uppercase placeholders must first "       + 
+                                    "be replaced with the actual code they stand for.\n\n"  + 
+                                    "Click on " + token + " to replace this "        + 
+                                    "placeholder. ");
 }
 
 /*
@@ -887,11 +914,27 @@ handles cases where the code's syntax is incorrect
 */
 function handleSyntaxError(tokens)
 {
-	alert("Error: syntax");
+	alert("Abnormal Program Termination", 
+                                    "\t\t\t         Program Syntactically Incorrect !\n\n"   + 
+                                    "A syntax error has been detected while attempting to "  + 
+                                    "execute this program.  Please bring this problem to "   + 
+                                    "the immediate attention of your instructor.\n\n"        + 
+                                    "Details:\n"                                             + 
+                                    "The end of program was encountered prematurely while "  + 
+                                    "processing a statement or structure.  The most likely " + 
+                                    "cause is that the initial program for this activity "   + 
+                                    "(located in the source file 'Activities.java') is"      + 
+                                    "incorrect.");
 }
 /*
 */
-function handleUnexpectedEndOfProgram(tokens)
+function handleUnexpectedEndOfProgram(token)
 {
-	alert("Error: unexpected end of program");
+	alert("Abnormal Program Termination" + 
+                                    "\t\t\t         Program Syntactically Incorrect !\n\n"       + 
+                                    "A syntax error has been detected while attempting to "      + 
+                                    "execute this program. \n\n"           + 
+                                    "Details:\n"                                                 + 
+                                    "An unrecognized or out of place token ==> " + token  + 
+                                    "<== \n was encountered.");
 }
