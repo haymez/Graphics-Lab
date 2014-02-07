@@ -115,6 +115,7 @@ function toggleEvents() {
         	//updating a distance variable
         	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
         		rowToString(rowNum).indexOf("-") == -1) {
+        			
         		var found = false;
         		list = "";
         		
@@ -155,14 +156,35 @@ function toggleEvents() {
         		
         	}
         	else {
+        		//check to see if any distance variables have appeared on the left side of an assignment before this point.
+        		currRow = rowNum;
         		CurrentElement = $(this);
-	            $("input.InputValue").val("");
-				$( "#dialog-modal-num" ).dialog(
-				{
-					height: 280,
-					width: 350,
-					modal: true
-				});
+        		list = "";
+        		for (var i = 0; i < currRow; i++) {
+        			if (rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).match("d")) {
+        				var rowString = rowToString(i);
+        				list += "<option>" + rowString.substring(rowString.indexOf("d"), rowString.indexOf("=")-1) + "</option>";
+        			}
+        		}
+        		//if distance vars were found assignmed...
+        		if (list.length > 1) {
+        			list += "<option>constant</option>";
+        			CreateDialogOptions(list);
+					$( "#dialog-modal-Vars" ).dialog({
+						height: 280,
+						width: 350,
+						modal: true
+					});
+        		}
+        		else {
+		            $("input.InputValue").val("");
+					$( "#dialog-modal-num" ).dialog(
+					{
+						height: 280,
+						width: 350,
+						modal: true
+					});
+				}
         	}
         }
         //User clicked on something within draw(). Generate list of drawable items

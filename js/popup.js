@@ -68,11 +68,16 @@ $(document).on('click', "input.VarOKBtn" , function() {
 	var varName = $('#VarsDialogSelect :selected').text();
 	
 	if (rowToString(currRow).indexOf("draw") == -1) {
-		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1) {
+		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1 && 
+			((rowToString(currRow).indexOf("d") < rowToString(currRow).indexOf("=") && rowToString(currRow).match("d"))) || rowToString(currRow).indexOf("VARIABLE") >= 0) {
+				
 			codeTable.deleteRow(currRow);
 			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
 			selRow--;
 		}
+		/*else if (rowToString(currRow).indexOf("VARIABLE") == -1 && !(rowToString(currRow).indexOf("d") < rowToString(currRow).indexOf("="))) {
+			
+		}*/
 		else if (varName.indexOf("p") >= 0) {
 			alert("add point stuff");
 			
@@ -105,6 +110,9 @@ $(document).on('click', "input.VarOKBtn" , function() {
 				width: 350,
 				modal: true
 			});
+		}
+		else {
+			CurrentElement.html(varName);
 		}
 		$( "#dialog-modal-Vars" ).dialog("close");
 	}
