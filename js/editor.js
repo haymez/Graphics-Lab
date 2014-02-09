@@ -166,7 +166,7 @@ function toggleEvents() {
         				list += "<option>" + rowString.substring(rowString.indexOf("d"), rowString.indexOf("=")-1) + "</option>";
         			}
         		}
-        		//if distance vars were found assignmed...
+        		//if distance vars were found assigned...
         		if (list.length > 1) {
         			list += "<option>constant</option>";
         			CreateDialogOptions(list);
@@ -362,31 +362,7 @@ function selectRow(rowNum) {
 function highlightCell(rowInd, colInd) {
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
     innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
-    //innerTable.rows[0].cells[colInd].style.fontWeight = 'bold'; TODO: make this happen! makes current line stand out more
-}
-
-// highlightControlStructure() looks for matching braces '{' and '}'. Once the braces match up. it stops highlighting
-function highlightLoop(rowInd, colInd) {
-    var bracket = 1;                        // bracket found initialized to 1 so the while loops executes
-    var numCells;                                // number of cells in the current row
-    var firstBrack = false;                // first bracket found flag; since bracket is initialized to one, the first bracket doesn't count
-    
-    for (var i = rowInd; i < codeTable.rows.length; i++) {                                                                // iterate throughout rows starting at the specified index
-        var innerTable = codeTable.rows[i].cells[0].children[0];                                                // grab the inner table of this row
-        var numCells = innerTable.rows[0].cells.length                                                                        // grab the number of cells in this row
-        for (var j = 0; j < numCells; j++) {                                                                                        // iterate throughout these cells
-            if (innerTable.rows[0].cells[j].innerText.indexOf("{") >= 0) {                                // if we found a '{'
-                if (!firstBrack) firstBrack = true;                                                                                // if this is the first bracket, skip it
-                else bracket++;                                                                                                                        // otherwise, count it
-            }
-            else if (innerTable.rows[0].cells[j].innerText.indexOf("}") >= 0) {                        // if we found a '}'
-                bracket--;                                                                                                                                // subtract from bracket
-            }
-            
-            innerTable.rows[0].cells[j].style.color = "#FF0000";                                                // color the current cell red as we go
-        }
-        if (bracket == 0) break;                                                                                                                // if we found matching brackets, brackets will be 0, break
-    }
+    //TODO: make bold as well so text stands out
 }
 
 function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
