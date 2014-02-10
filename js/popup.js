@@ -75,9 +75,6 @@ $(document).on('click', "input.VarOKBtn" , function() {
 			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
 			selRow--;
 		}
-		/*else if (rowToString(currRow).indexOf("VARIABLE") == -1 && !(rowToString(currRow).indexOf("d") < rowToString(currRow).indexOf("="))) {
-			
-		}*/
 		else if (varName.indexOf("p") >= 0) {
 			alert("add point stuff");
 			

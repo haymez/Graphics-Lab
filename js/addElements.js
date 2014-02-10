@@ -47,8 +47,26 @@ programDiv.style.cssFloat = "left";
 var codeTable = document.createElement('table');
 codeTable.id = 'editor' + figNum;
 codeTable.className = "codeTable";
-codeTable.style.fontSize = "13px";
-codeTable.style.borderSpacing = "0px"; //Need to get this working..
+codeTable.style.fontSize = "14px";
+
+//div for insert table
+var insertDiv = document.createElement('div');
+insertDiv.id = "insertDiv" + figNum;
+insertDiv.style.width = "18px";
+insertDiv.style.height = "260px";
+insertDiv.style.cssFloat = "left";
+
+//div to offset insert table
+var offsetDiv = document.createElement('div');
+offsetDiv.id = "offset_div" + figNum;
+offsetDiv.style.width = "14px";
+offsetDiv.style.height = "9px";
+
+//insertion selection table
+var insertTable = document.createElement('table');
+insertTable.id = "insertTable" + figNum;
+insertTable.style.fontSize = "14px";
+insertTable.style.cssFloat = "left";
 
 //<div> for run and walk buttons
 var run_walkDiv = document.createElement('div');
@@ -191,6 +209,10 @@ progButtonDiv.appendChild(drawButton);
 progButtonDiv.appendChild(eraseButton);
 progButtonDiv.appendChild(colorButton);
 progButtonDiv.appendChild(loopButton);
+//test stuff here
+insertDiv.appendChild(offsetDiv);
+insertDiv.appendChild(insertTable);
+programDiv.appendChild(insertDiv);
 programDiv.appendChild(codeTable);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
@@ -210,7 +232,10 @@ $("#" + walkButton.id).click(function() { walk(); });
 $("button").attr("class", "btn btn-xs btn-default")
 
 
-
+$(document).ready(function() {
+	addNewInsertRow();
+	toggleEvents();
+})
 
 
 

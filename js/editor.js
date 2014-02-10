@@ -111,35 +111,31 @@ function toggleEvents() {
             	moveToLine(rowNum);
         }
         //User clicked on variable number. Generate keypad pop up
-        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1)) {
+		else if (isEditableValue(cellVal, rowNum)) {        	
         	//updating a distance variable
         	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
         		rowToString(rowNum).indexOf("-") == -1) {
         			
         		var found = false;
         		list = "";
+        		var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=")-1);
         		
         		//find if another instance of this distance variable has occurred already
-        		for (var i = 0; i < rowNum; i++) {
-        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).indexOf("d") >=0) {
-        					
-        				console.log("distance variable found on row: " + i);
-        				console.log("")
-        				found = true;
-        				var distanceVar = rowToString(i).substring(rowToString(i).indexOf("d"), rowToString(i).indexOf("=")-1);
-        				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
-        				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
-        				list += "<option>constant</option>";
-						currRow = rowNum;
-						CurrentElement = $(this);
-						CreateDialogOptions(list);
-						$( "#dialog-modal-Vars" ).dialog({
-							height: 280,
-							width: 350,
-							modal: true
-						});
-						break;
-        			}
+    			if(beenAssigned(distanceVar, rowNum)) {
+    				console.log("distance variable found on row: " + i);
+    				console.log("")
+    				found = true;
+    				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
+    				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
+    				list += "<option>constant</option>";
+					currRow = rowNum;
+					CurrentElement = $(this);
+					CreateDialogOptions(list);
+					$( "#dialog-modal-Vars" ).dialog({
+						height: 280,
+						width: 350,
+						modal: true
+					});
         		}
         		
         		//if no previous distance variable has been found, just generate keypad pop up
@@ -284,6 +280,34 @@ function toggleEvents() {
 				
             }
     });
+
+	$(".insert").off("mouseover");
+	$(".insert").on("mouseover", function() {
+		$(this).css('cursor', 'pointer');
+		$(this).html(">");
+	});
+	$(".insert").off("mouseout");
+	$(".insert").on("mouseout", function() {
+		$(this).html(blank);
+	});
+	$(".insert").off("click");
+	$(".insert").on("click", function() {
+		var insertRow = $(this).parent().index();
+		console.log("you chose row: " + insertRow);
+	});
+	$("#" + offsetDiv.id).off("mouseover");
+	$("#" + offsetDiv.id).on("mouseover", function() {
+		$(this).css('cursor', 'pointer');
+		$(this).html(">");
+	});
+	$("#" + offsetDiv.id).off("mouseout");
+	$("#" + offsetDiv.id).on("mouseout", function() {
+		$(this).html(blank);
+	});
+	$("#" + offsetDiv.id).off("click");
+	$("#" + offsetDiv.id).on("click", function() {
+		console.log("move to top row");
+	});
 }
 
 //Return everything to normal color (black)
@@ -332,6 +356,7 @@ function addNewRow(line, params) {
     addRow(innerTable, params, 2);
     toggleEvents();
     selRow++;
+    addNewInsertRow();
 }
 
 // addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
@@ -344,6 +369,14 @@ function addRow(table, values, startInd) {
         // make the innerHTML of the cell cells[i]
         cell.innerHTML = values[i];
     }
+}
+
+//adds a row to the insert area
+function addNewInsertRow() {
+	var row = insertTable.insertRow(-1);
+	var cell = row.insertCell(0);
+	cell.className = "insert";
+	cell.innerHTML = blank;
 }
 
 // selectRow() selects a row with the specified rowNum
@@ -480,6 +513,44 @@ function loop() {
     addNewRow(selRow, [thisIndent + "loop"]);
     addNewRow(selRow, [thisIndent + "endloop"]);
 }
+
+//editor text parsing functions
+
+//This function detects if this line is a distance assignment
+function isDistanceAssign(row) {
+	var string = rowToString(row);
+	if (string.indexOf("d") < string.indexOf("=") && string.indexOf("d") >= 0)
+		return true;
+	else
+		return false;
+}
+
+//This function checks to see if the specified distance variable has been assignmed above the specified row
+function beenAssigned(distanceVar, row) {
+	for (var i = 0; i < row; i++) {
+		if(isDistanceAssign(i)) {
+			console.log("found distance assignment on row: " + i);
+			return true;
+		}
+	}
+	return false;
+}
+
+//This function checks to see if the user clicked on a variable value (ie X/Y/RADIUS/any number between 0-300)
+function isEditableValue(cellVal, row) {
+	var rowString = rowToString(row);
+	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1 || 
+	cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+		return true;
+	else
+		return false;
+}
+
+
+
+
+
+
 
 
 
