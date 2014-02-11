@@ -283,8 +283,13 @@ function toggleEvents() {
 
 	$(".insert").off("mouseover");
 	$(".insert").on("mouseover", function() {
-		$(this).css('cursor', 'pointer');
-		$(this).html(">");
+		if (($(this).parent().index() < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		$(this).parent().index()+1 < codeTable.rows.length) {
+			$(this).css('cursor', 'pointer');
+			$(this).html(">");
+			console.log($(this).parent().index()+1);
+			console.log(codeTable.rows.length);
+		}
 	});
 	$(".insert").off("mouseout");
 	$(".insert").on("mouseout", function() {
@@ -292,8 +297,14 @@ function toggleEvents() {
 	});
 	$(".insert").off("click");
 	$(".insert").on("click", function() {
-		var insertRow = $(this).parent().index();
-		console.log("you chose row: " + insertRow);
+		if (($(this).parent().index() < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		$(this).parent().index()+1 < codeTable.rows.length) {
+			if ($(this).parent().index()+1 != selRow) {
+				var insertRow = $(this).parent().index();
+				console.log("you chose row: " + Number(insertRow+1));
+				moveToLine(insertRow+1);
+			}
+		}
 	});
 	$("#" + offsetDiv.id).off("mouseover");
 	$("#" + offsetDiv.id).on("mouseover", function() {
@@ -306,7 +317,10 @@ function toggleEvents() {
 	});
 	$("#" + offsetDiv.id).off("click");
 	$("#" + offsetDiv.id).on("click", function() {
-		console.log("move to top row");
+		if(selRow != 0) {
+			console.log("move to top row");
+			moveToLine(0);
+		}
 	});
 }
 
@@ -328,17 +342,22 @@ function moveToLine(rowNum) {
     var cell;
     
     if (rowNum < selRow) {
-        if (selRow != codeTable.rows.length-1)
+        if (selRow != codeTable.rows.length-1) {
             codeTable.deleteRow(selRow);                                // delete the current selected row
+            insertTable.deleteRow(-1);
+        }
         else {
             innerTable.rows[0].cells[0].innerHTML = blank;
         }
         newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
+        addNewInsertRow(); //TODO: make this work
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
         cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
         selectRow(rowNum);                                              // select newly inserted row
     }
     else {
+    	insertTable.deleteRow(-1);
+    	addNewInsertRow();
         codeTable.deleteRow(selRow);                                    // delete the current selected row
         newRow = codeTable.insertRow(rowNum-1);                         // insert a new row at row number specified
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
@@ -377,6 +396,9 @@ function addNewInsertRow() {
 	var cell = row.insertCell(0);
 	cell.className = "insert";
 	cell.innerHTML = blank;
+	if (insertTable.rows.length == 1) {
+		for (var i = 0; i < 3; i++) addNewInsertRow();
+	}
 }
 
 // selectRow() selects a row with the specified rowNum

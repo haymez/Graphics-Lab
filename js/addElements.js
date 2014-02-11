@@ -53,7 +53,7 @@ codeTable.style.fontSize = "14px";
 var insertDiv = document.createElement('div');
 insertDiv.id = "insertDiv" + figNum;
 insertDiv.style.width = "18px";
-insertDiv.style.height = "260px";
+insertDiv.style.height = "250px";
 insertDiv.style.cssFloat = "left";
 
 //div to offset insert table
@@ -233,7 +233,6 @@ $("button").attr("class", "btn btn-xs btn-default")
 
 
 $(document).ready(function() {
-	addNewInsertRow();
 	toggleEvents();
 })
 
