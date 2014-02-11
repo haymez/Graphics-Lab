@@ -107,8 +107,7 @@ function toggleEvents() {
         	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-        	if (rowToString(rowNum) != "loop")
-            	moveToLine(rowNum);
+        	//TODO: remove old insertion area. It's not needed anymore
         }
         //User clicked on variable number. Generate keypad pop up
 		else if (isEditableValue(cellVal, rowNum)) {        	
@@ -283,12 +282,12 @@ function toggleEvents() {
 
 	$(".insert").off("mouseover");
 	$(".insert").on("mouseover", function() {
-		if (($(this).parent().index() < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
-		$(this).parent().index()+1 < codeTable.rows.length) {
+		var insertRow = $(this).parent().index();
+		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop" && insertRow+1 != selRow && insertRow+1 != selRow+1) {
 			$(this).css('cursor', 'pointer');
 			$(this).html(">");
-			console.log($(this).parent().index()+1);
-			console.log(codeTable.rows.length);
+			console.log(insertRow+1);
 		}
 	});
 	$(".insert").off("mouseout");
@@ -297,12 +296,13 @@ function toggleEvents() {
 	});
 	$(".insert").off("click");
 	$(".insert").on("click", function() {
-		if (($(this).parent().index() < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
-		$(this).parent().index()+1 < codeTable.rows.length) {
-			if ($(this).parent().index()+1 != selRow) {
-				var insertRow = $(this).parent().index();
+		var insertRow = $(this).parent().index();
+		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
+			if (insertRow+1 != selRow) {
 				console.log("you chose row: " + Number(insertRow+1));
 				moveToLine(insertRow+1);
+				$(this).html(blank);
 			}
 		}
 	});
@@ -350,7 +350,7 @@ function moveToLine(rowNum) {
             innerTable.rows[0].cells[0].innerHTML = blank;
         }
         newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
-        addNewInsertRow(); //TODO: make this work
+        addNewInsertRow();
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
         cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
         selectRow(rowNum);                                              // select newly inserted row
