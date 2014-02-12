@@ -11,9 +11,9 @@ var arrow = "&#8594;";
 //Indentation used for inside brackets
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 //Template used for a newly added row in the codeTable
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + blank + "</td><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
+var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
 //Template used for a newly selected row
-var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + arrow +  "</td><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
+var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 // This identifies the current clicked element for change later on from numpad and variable chooser
 var CurrentElement; 
 var currRow = 0;
@@ -33,6 +33,7 @@ function init() { //Initializes variables
     cell.innerHTML = innerTableArrowTemplate;
     //Selected row is line 2
     selRow = 0;
+    selectRow(selRow);
 }
 
 //We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
@@ -121,8 +122,6 @@ function toggleEvents() {
         		
         		//find if another instance of this distance variable has occurred already
     			if(beenAssigned(distanceVar, rowNum)) {
-    				console.log("distance variable found on row: " + i);
-    				console.log("")
     				found = true;
     				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
     				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
@@ -287,7 +286,6 @@ function toggleEvents() {
 		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop" && insertRow+1 != selRow && insertRow+1 != selRow+1) {
 			$(this).css('cursor', 'pointer');
 			$(this).html(">");
-			console.log(insertRow+1);
 		}
 	});
 	$(".insert").off("mouseout");
@@ -300,7 +298,6 @@ function toggleEvents() {
 		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
 		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
 			if (insertRow+1 != selRow) {
-				console.log("you chose row: " + Number(insertRow+1));
 				moveToLine(insertRow+1);
 				$(this).html(blank);
 			}
@@ -318,7 +315,6 @@ function toggleEvents() {
 	$("#" + offsetDiv.id).off("click");
 	$("#" + offsetDiv.id).on("click", function() {
 		if(selRow != 0) {
-			console.log("move to top row");
 			moveToLine(0);
 		}
 	});
@@ -353,7 +349,7 @@ function moveToLine(rowNum) {
         newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
         addNewInsertRow();
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
-        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
+        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with arrow
         selectRow(rowNum);                                              // select newly inserted row
     }
     else {
@@ -373,7 +369,7 @@ function addNewRow(line, params) {
     var cell = row.insertCell(0);
     cell.innerHTML = innerTableTemplate;
     var innerTable = codeTable.rows[line].cells[0].children[0];
-    addRow(innerTable, params, 2);
+    addRow(innerTable, params, 1);
     toggleEvents();
     selRow++;
     addNewInsertRow();
@@ -404,20 +400,22 @@ function addNewInsertRow() {
 
 // selectRow() selects a row with the specified rowNum
 function selectRow(rowNum) {
-    if (selRow != -1) {                                                                                                                // if there is a selected row
-        var innerTable = codeTable.rows[selRow].cells[0].children[0]; // grab the innerTable for the currently selected row
-        innerTable.rows[0].cells[0].innerHTML = blank; // make its arrow go away (it is no longer selected)
+    if (selRow != -1) {
+        var innerTable = codeTable.rows[selRow].cells[0].children[0];
     }
     
     selRow = rowNum;
     var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    innerTable.rows[0].cells[0].innerHTML = arrow;
+    if (innerTable.rows[0].cells[0].innerHTML.indexOf("*") == -1)
+		innerTable.rows[0].cells[0].innerHTML = arrow;
 }
 
 // highlight one cell red at a specific row and column
 function highlightCell(rowInd, colInd) {
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
-    innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
+	// grab the inner table at the specified row
+    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
+    // color the cell red at specific column
+    innerTable.rows[0].cells[colInd].style.color = "#FF0000";
     innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
 }
 
@@ -506,7 +504,7 @@ function highlightLine(rowInd) {
 function rowToString(rowInd) {
     var string = "";
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-    for (var i = 2; i < innerTable.rows[0].cells.length; i++) {
+    for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
         string += innerTable.rows[0].cells[i].innerText;
     }
     return string.trim();
@@ -555,7 +553,6 @@ function isDistanceAssign(row) {
 function beenAssigned(distanceVar, row) {
 	for (var i = 0; i < row; i++) {
 		if(isDistanceAssign(i)) {
-			console.log("found distance assignment on row: " + i);
 			return true;
 		}
 	}

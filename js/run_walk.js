@@ -43,6 +43,10 @@ function walk() {
         //check if selected row is before end of code
         if (selRow < codeTable.rows.length-1)
             codeTable.deleteRow(selRow);
+        else {
+        	moveToLine(0);
+        	codeTable.deleteRow(selRow);
+        }
     }
     programRunning = true;
     //Set some buttons to false while walking or running
