@@ -107,38 +107,34 @@ function toggleEvents() {
         	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-        	if (rowToString(rowNum) != "loop")
-            	moveToLine(rowNum);
+        	//TODO: remove old insertion area. It's not needed anymore
         }
         //User clicked on variable number. Generate keypad pop up
-        else if ((!isNaN(Number(cellVal)) && rowToString(rowNum).indexOf("repeat") == -1) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1)) {
+		else if (isEditableValue(cellVal, rowNum)) {        	
         	//updating a distance variable
         	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
         		rowToString(rowNum).indexOf("-") == -1) {
+        			
         		var found = false;
         		list = "";
+        		var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=")-1);
         		
         		//find if another instance of this distance variable has occurred already
-        		for (var i = 0; i < rowNum; i++) {
-        			if(rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).indexOf("d") >=0) {
-        					
-        				console.log("distance variable found on row: " + i);
-        				console.log("")
-        				found = true;
-        				var distanceVar = rowToString(i).substring(rowToString(i).indexOf("d"), rowToString(i).indexOf("=")-1);
-        				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
-        				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
-        				list += "<option>constant</option>";
-						currRow = rowNum;
-						CurrentElement = $(this);
-						CreateDialogOptions(list);
-						$( "#dialog-modal-Vars" ).dialog({
-							height: 280,
-							width: 350,
-							modal: true
-						});
-						break;
-        			}
+    			if(beenAssigned(distanceVar, rowNum)) {
+    				console.log("distance variable found on row: " + i);
+    				console.log("")
+    				found = true;
+    				list += "<option>" + distanceVar + "=" + distanceVar + "+X";
+    				list += "<option>" + distanceVar + "=" + distanceVar + "-X";
+    				list += "<option>constant</option>";
+					currRow = rowNum;
+					CurrentElement = $(this);
+					CreateDialogOptions(list);
+					$( "#dialog-modal-Vars" ).dialog({
+						height: 280,
+						width: 350,
+						modal: true
+					});
         		}
         		
         		//if no previous distance variable has been found, just generate keypad pop up
@@ -155,14 +151,35 @@ function toggleEvents() {
         		
         	}
         	else {
+        		//check to see if any distance variables have appeared on the left side of an assignment before this point.
+        		currRow = rowNum;
         		CurrentElement = $(this);
-	            $("input.InputValue").val("");
-				$( "#dialog-modal-num" ).dialog(
-				{
-					height: 280,
-					width: 350,
-					modal: true
-				});
+        		list = "";
+        		for (var i = 0; i < currRow; i++) {
+        			if (rowToString(i).indexOf("d") < rowToString(i).indexOf("=") && rowToString(i).match("d")) {
+        				var rowString = rowToString(i);
+        				list += "<option>" + rowString.substring(rowString.indexOf("d"), rowString.indexOf("=")-1) + "</option>";
+        			}
+        		}
+        		//if distance vars were found assigned...
+        		if (list.length > 1) {
+        			list += "<option>constant</option>";
+        			CreateDialogOptions(list);
+					$( "#dialog-modal-Vars" ).dialog({
+						height: 280,
+						width: 350,
+						modal: true
+					});
+        		}
+        		else {
+		            $("input.InputValue").val("");
+					$( "#dialog-modal-num" ).dialog(
+					{
+						height: 280,
+						width: 350,
+						modal: true
+					});
+				}
         	}
         }
         //User clicked on something within draw(). Generate list of drawable items
@@ -262,6 +279,49 @@ function toggleEvents() {
 				
             }
     });
+
+	$(".insert").off("mouseover");
+	$(".insert").on("mouseover", function() {
+		var insertRow = $(this).parent().index();
+		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop" && insertRow+1 != selRow && insertRow+1 != selRow+1) {
+			$(this).css('cursor', 'pointer');
+			$(this).html(">");
+			console.log(insertRow+1);
+		}
+	});
+	$(".insert").off("mouseout");
+	$(".insert").on("mouseout", function() {
+		$(this).html(blank);
+	});
+	$(".insert").off("click");
+	$(".insert").on("click", function() {
+		var insertRow = $(this).parent().index();
+		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
+		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
+			if (insertRow+1 != selRow) {
+				console.log("you chose row: " + Number(insertRow+1));
+				moveToLine(insertRow+1);
+				$(this).html(blank);
+			}
+		}
+	});
+	$("#" + offsetDiv.id).off("mouseover");
+	$("#" + offsetDiv.id).on("mouseover", function() {
+		$(this).css('cursor', 'pointer');
+		$(this).html(">");
+	});
+	$("#" + offsetDiv.id).off("mouseout");
+	$("#" + offsetDiv.id).on("mouseout", function() {
+		$(this).html(blank);
+	});
+	$("#" + offsetDiv.id).off("click");
+	$("#" + offsetDiv.id).on("click", function() {
+		if(selRow != 0) {
+			console.log("move to top row");
+			moveToLine(0);
+		}
+	});
 }
 
 //Return everything to normal color (black)
@@ -271,6 +331,7 @@ function returnToNormalColor() {
         var numCells = innerTable.rows[0].cells.length;
         for (var j = 0; j < numCells; j++) {
             innerTable.rows[0].cells[j].style.color = "#000000";
+            innerTable.rows[0].cells[j].style.fontWeight = "normal";
         }
     }
 }
@@ -282,17 +343,22 @@ function moveToLine(rowNum) {
     var cell;
     
     if (rowNum < selRow) {
-        if (selRow != codeTable.rows.length-1)
+        if (selRow != codeTable.rows.length-1) {
             codeTable.deleteRow(selRow);                                // delete the current selected row
+            insertTable.deleteRow(-1);
+        }
         else {
             innerTable.rows[0].cells[0].innerHTML = blank;
         }
         newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
+        addNewInsertRow();
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
         cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
         selectRow(rowNum);                                              // select newly inserted row
     }
     else {
+    	insertTable.deleteRow(-1);
+    	addNewInsertRow();
         codeTable.deleteRow(selRow);                                    // delete the current selected row
         newRow = codeTable.insertRow(rowNum-1);                         // insert a new row at row number specified
         cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
@@ -310,6 +376,7 @@ function addNewRow(line, params) {
     addRow(innerTable, params, 2);
     toggleEvents();
     selRow++;
+    addNewInsertRow();
 }
 
 // addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
@@ -322,6 +389,17 @@ function addRow(table, values, startInd) {
         // make the innerHTML of the cell cells[i]
         cell.innerHTML = values[i];
     }
+}
+
+//adds a row to the insert area
+function addNewInsertRow() {
+	var row = insertTable.insertRow(-1);
+	var cell = row.insertCell(0);
+	cell.className = "insert";
+	cell.innerHTML = blank;
+	if (insertTable.rows.length == 1) {
+		for (var i = 0; i < 3; i++) addNewInsertRow();
+	}
 }
 
 // selectRow() selects a row with the specified rowNum
@@ -340,31 +418,7 @@ function selectRow(rowNum) {
 function highlightCell(rowInd, colInd) {
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
     innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
-    //innerTable.rows[0].cells[colInd].style.fontWeight = 'bold'; TODO: make this happen! makes current line stand out more
-}
-
-// highlightControlStructure() looks for matching braces '{' and '}'. Once the braces match up. it stops highlighting
-function highlightLoop(rowInd, colInd) {
-    var bracket = 1;                        // bracket found initialized to 1 so the while loops executes
-    var numCells;                                // number of cells in the current row
-    var firstBrack = false;                // first bracket found flag; since bracket is initialized to one, the first bracket doesn't count
-    
-    for (var i = rowInd; i < codeTable.rows.length; i++) {                                                                // iterate throughout rows starting at the specified index
-        var innerTable = codeTable.rows[i].cells[0].children[0];                                                // grab the inner table of this row
-        var numCells = innerTable.rows[0].cells.length                                                                        // grab the number of cells in this row
-        for (var j = 0; j < numCells; j++) {                                                                                        // iterate throughout these cells
-            if (innerTable.rows[0].cells[j].innerText.indexOf("{") >= 0) {                                // if we found a '{'
-                if (!firstBrack) firstBrack = true;                                                                                // if this is the first bracket, skip it
-                else bracket++;                                                                                                                        // otherwise, count it
-            }
-            else if (innerTable.rows[0].cells[j].innerText.indexOf("}") >= 0) {                        // if we found a '}'
-                bracket--;                                                                                                                                // subtract from bracket
-            }
-            
-            innerTable.rows[0].cells[j].style.color = "#FF0000";                                                // color the current cell red as we go
-        }
-        if (bracket == 0) break;                                                                                                                // if we found matching brackets, brackets will be 0, break
-    }
+    innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
 }
 
 function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
@@ -390,6 +444,7 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                         bracket--;
                     }
                     innerTable.rows[0].cells[j].style.color = "#FF0000";
+                    innerTable.rows[0].cells[j].style.fontWeight = "bold";
                     
                     if (bracket == 0) break;
                 }
@@ -423,6 +478,7 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
                 }
                 
                 innerTable.rows[0].cells[j].style.color = "#FF0000";
+                innerTable.rows[0].cells[j].style.fontWeight = "bold";
                 
                 if (bracket == 0) break;
             }
@@ -442,6 +498,7 @@ function highlightLine(rowInd) {
     for (var i = 0; i < numCells; i++) {
         //Highlight all cells red
         innerTable.rows[0].cells[i].style.color = '#FF0000';
+        innerTable.rows[0].cells[i].style.fontWeight = "bold";
     }
 }
 
@@ -482,6 +539,44 @@ function loop() {
     addNewRow(selRow, [thisIndent + "loop"]);
     addNewRow(selRow, [thisIndent + "endloop"]);
 }
+
+//editor text parsing functions
+
+//This function detects if this line is a distance assignment
+function isDistanceAssign(row) {
+	var string = rowToString(row);
+	if (string.indexOf("d") < string.indexOf("=") && string.indexOf("d") >= 0)
+		return true;
+	else
+		return false;
+}
+
+//This function checks to see if the specified distance variable has been assignmed above the specified row
+function beenAssigned(distanceVar, row) {
+	for (var i = 0; i < row; i++) {
+		if(isDistanceAssign(i)) {
+			console.log("found distance assignment on row: " + i);
+			return true;
+		}
+	}
+	return false;
+}
+
+//This function checks to see if the user clicked on a variable value (ie X/Y/RADIUS/any number between 0-300)
+function isEditableValue(cellVal, row) {
+	var rowString = rowToString(row);
+	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1 || 
+	cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+		return true;
+	else
+		return false;
+}
+
+
+
+
+
+
 
 
 

@@ -68,7 +68,9 @@ $(document).on('click', "input.VarOKBtn" , function() {
 	var varName = $('#VarsDialogSelect :selected').text();
 	
 	if (rowToString(currRow).indexOf("draw") == -1) {
-		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1) {
+		if (varName.indexOf("d") >= 0 && varName.indexOf("=") == -1 && 
+			((rowToString(currRow).indexOf("d") < rowToString(currRow).indexOf("=") && rowToString(currRow).match("d"))) || rowToString(currRow).indexOf("VARIABLE") >= 0) {
+				
 			codeTable.deleteRow(currRow);
 			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
 			selRow--;
@@ -105,6 +107,9 @@ $(document).on('click', "input.VarOKBtn" , function() {
 				width: 350,
 				modal: true
 			});
+		}
+		else {
+			CurrentElement.html(varName);
 		}
 		$( "#dialog-modal-Vars" ).dialog("close");
 	}

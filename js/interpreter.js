@@ -212,6 +212,8 @@ function interpret(input)
 			return;
 		}
 	}
+	//NOTE: deprecated. Can no longer be called by the
+	//Watson Graphics lab UI.
 	else if (tokens[0].localeCompare("increment") == 0 ||
 		tokens[0].localeCompare("decrement") == 0)
 	{
@@ -328,26 +330,56 @@ function interpret(input)
 
 		if (assignmentVariableType.localeCompare("distance") == 0)
 		{
+			console.log(tokens[2]);
 			
 			var valid;
-			valid = validDistance(tokens[2]);
-			if (valid[0])
+			var split = tokens[2].split(/[+-]+/);
+			valid = validDistance(split[0]);
+			if (valid[0] && split.length < 2)
 			{
 				d[assignmentVariableNumber - 1] = valid[1];
 			}
 			//new functionality for increment and decrement
-			//check if right hand side of equal sign
-			else if (tokens[2].indexOf(tokens[0] != -1))
+			//check if right hand side of equal sign has the an increment statement.
+			else if (tokens[2].indexOf(tokens[0] != -1) && split.length == 2)
 			{
-				//tokenize based on + or minus
-				var split = tokens[2].split(/[=-+]+/);
-				if(tokens[2].indexof("+") != -1)
+				valid = validDistance(split[1]);
+				if(tokens[2].indexOf("+") != -1)
 				{
-					d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] + parseInt(split[1]);
+					if(valid[0])
+					{
+						if(d[assignmentVariableNumber - 1] - valid[1] <= 300)
+						{
+							d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] + valid[1];
+						}
+						else
+						{
+							handleOutOfBoundsError();
+						}
+					}
+					else
+					{
+						handleSyntaxError(tokens);
+					}
 				}
-				else if(tokens[2].indexof("-") != -1)
+				else if(tokens[2].indexOf("-") != -1)
 				{
-					d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] - parseInt(split[1]);
+					
+					if(valid[0])
+					{
+						if(d[assignmentVariableNumber - 1] - valid[1] >= 0)
+						{
+							d[assignmentVariableNumber - 1] = d[assignmentVariableNumber-1] - valid[1];
+						}
+						else
+						{
+							handleOutOfBoundsError();
+						}
+					}
+					else
+					{
+						handleSyntaxError(tokens);
+					}
 				}
 				//assignment to itself. Do nothing.
 				else if(split.length < 2)
@@ -937,4 +969,9 @@ function handleUnexpectedEndOfProgram(token)
                                     "Details:\n"                                                 + 
                                     "An unrecognized or out of place token ==> " + token  + 
                                     "<== \n was encountered.");
+}
+
+function handleOutOfBoundsError()
+{
+	alert("You have create a number which exceeds the dimensions of the canvas.");
 }
