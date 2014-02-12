@@ -43,11 +43,20 @@ programDiv.style.border = "ridge";
 programDiv.style.overflow = "auto";
 programDiv.style.cssFloat = "left";
 
+//Div for program code table
+var programCodeDiv = document.createElement('div');
+programCodeDiv.id = "programCodeDiv" + figNum;
+programCodeDiv.style.width = "220px";
+programCodeDiv.style.height = "250px";
+programCodeDiv.style.position = "relative";
+programCodeDiv.style.left = "15px";
+
 //Table for Program Code
 var codeTable = document.createElement('table');
 codeTable.id = 'editor' + figNum;
 codeTable.className = "codeTable";
 codeTable.style.fontSize = "14px";
+codeTable.style.position = "absolute";
 
 //div for insert table
 var insertDiv = document.createElement('div');
@@ -67,6 +76,15 @@ var insertTable = document.createElement('table');
 insertTable.id = "insertTable" + figNum;
 insertTable.style.fontSize = "14px";
 insertTable.style.cssFloat = "left";
+
+//Insertion bar divider div
+var dividerDiv = document.createElement('div');
+dividerDiv.id = "dividerDiv" + figNum;
+dividerDiv.style.height = "255px";
+dividerDiv.style.border = "1px solid";
+dividerDiv.style.position = "absolute";
+dividerDiv.style.left = "12px";
+dividerDiv.style.zIndex = "-1";
 
 //<div> for run and walk buttons
 var run_walkDiv = document.createElement('div');
@@ -209,11 +227,12 @@ progButtonDiv.appendChild(drawButton);
 progButtonDiv.appendChild(eraseButton);
 progButtonDiv.appendChild(colorButton);
 progButtonDiv.appendChild(loopButton);
-//test stuff here
 insertDiv.appendChild(offsetDiv);
 insertDiv.appendChild(insertTable);
+programCodeDiv.appendChild(codeTable);
 programDiv.appendChild(insertDiv);
-programDiv.appendChild(codeTable);
+programDiv.appendChild(dividerDiv);
+programDiv.appendChild(programCodeDiv);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
 

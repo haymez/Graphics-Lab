@@ -108,7 +108,7 @@ function toggleEvents() {
         	}
         }
         else if ($(this).html().indexOf(blank) >= 0) {
-        	//TODO: remove old insertion area. It's not needed anymore
+        	console.log("do nothing");
         }
         //User clicked on variable number. Generate keypad pop up
 		else if (isEditableValue(cellVal, rowNum)) {        	
