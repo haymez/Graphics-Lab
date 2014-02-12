@@ -305,8 +305,10 @@ function toggleEvents() {
 	});
 	$("#" + offsetDiv.id).off("mouseover");
 	$("#" + offsetDiv.id).on("mouseover", function() {
-		$(this).css('cursor', 'pointer');
-		$(this).html(">");
+		if (selRow >0) {
+			$(this).css('cursor', 'pointer');
+			$(this).html(">");
+		}
 	});
 	$("#" + offsetDiv.id).off("mouseout");
 	$("#" + offsetDiv.id).on("mouseout", function() {
@@ -316,6 +318,7 @@ function toggleEvents() {
 	$("#" + offsetDiv.id).on("click", function() {
 		if(selRow != 0) {
 			moveToLine(0);
+			$(this).html(blank);
 		}
 	});
 }
