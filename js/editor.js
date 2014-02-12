@@ -331,6 +331,7 @@ function returnToNormalColor() {
         var numCells = innerTable.rows[0].cells.length;
         for (var j = 0; j < numCells; j++) {
             innerTable.rows[0].cells[j].style.color = "#000000";
+            innerTable.rows[0].cells[j].style.fontWeight = "normal";
         }
     }
 }
@@ -417,7 +418,7 @@ function selectRow(rowNum) {
 function highlightCell(rowInd, colInd) {
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];               // grab the inner table at the specified row
     innerTable.rows[0].cells[colInd].style.color = "#FF0000";                   // color the cell red at specific column
-    //TODO: make bold as well so text stands out
+    innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
 }
 
 function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
@@ -443,6 +444,7 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                         bracket--;
                     }
                     innerTable.rows[0].cells[j].style.color = "#FF0000";
+                    innerTable.rows[0].cells[j].style.fontWeight = "bold";
                     
                     if (bracket == 0) break;
                 }
@@ -476,6 +478,7 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
                 }
                 
                 innerTable.rows[0].cells[j].style.color = "#FF0000";
+                innerTable.rows[0].cells[j].style.fontWeight = "bold";
                 
                 if (bracket == 0) break;
             }
@@ -495,6 +498,7 @@ function highlightLine(rowInd) {
     for (var i = 0; i < numCells; i++) {
         //Highlight all cells red
         innerTable.rows[0].cells[i].style.color = '#FF0000';
+        innerTable.rows[0].cells[i].style.fontWeight = "bold";
     }
 }
 
