@@ -373,6 +373,7 @@ function addNewRow(line, params) {
     cell.innerHTML = innerTableTemplate;
     var innerTable = codeTable.rows[line].cells[0].children[0];
     addRow(innerTable, params, 1);
+    returnToNormalColor();
     toggleEvents();
     selRow++;
     addNewInsertRow();
