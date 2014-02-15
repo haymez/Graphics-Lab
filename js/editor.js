@@ -321,6 +321,17 @@ function toggleEvents() {
 			$(this).html(blank);
 		}
 	});
+	
+	//Remove bar when scrolling right in editor
+	$("#" + programDiv.id).off("scroll");
+	$("#" + programDiv.id).on("scroll", function() {
+		if ($(this).scrollLeft() > 0) {
+			$("#" + dividerDiv.id).hide(250);
+		}
+		else {
+			$("#" + dividerDiv.id).show(250);
+		}
+	});
 }
 
 //Return everything to normal color (black)
