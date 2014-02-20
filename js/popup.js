@@ -75,7 +75,8 @@ $(document).on('click', "input.VarOKBtn" , function() {
 			addNewRow(currRow, [varName, "&nbsp;=&nbsp;", 'X']);
 			selRow--;
 		}
-		else if (varName.indexOf("p") >= 0) {
+		//TODO: fix this
+		/*else if (varName.indexOf("p") >= 0) {
 			alert("add point stuff");
 			
 		}
@@ -87,7 +88,7 @@ $(document).on('click', "input.VarOKBtn" , function() {
 		}
 		else if (varName.indexOf("g") >= 0) {
 			alert("add polygon stuff");
-		}
+		}*/
 		else if (varName.indexOf("+") >= 0) {
 			codeTable.deleteRow(currRow);
 			addNewRow(currRow, [varName.substring(0, varName.indexOf("=")), "&nbsp;=&nbsp;", varName.substring(0, varName.indexOf("=")), "+", 'X']);

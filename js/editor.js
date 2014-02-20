@@ -93,21 +93,30 @@ function toggleEvents() {
         var colNum = $(this).index();
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+        var rowString = rowToString(rowNum);
         //Delete this row if user confirms
         if (cellVal.indexOf("*") >= 0) {
         	if(confirm("Are you sure you want to delete the highlited\ntext?")) {
-        		codeTable.deleteRow(rowNum);
-            	if (rowNum < selRow) selRow--;
+        		if(rowString.indexOf("repeat") >= 0) {
+        			deleteLoop("repeat", rowNum);
+        		}
+        		else if (rowString.indexOf("endloop") >= 0) {
+        			deleteLoop("endloop", rowNum);
+        		}
+        		else if (rowString.indexOf("loop") >= 0) {
+        			deleteLoop("loop", rowNum);
+        		}
+        		else {
+        			codeTable.deleteRow(rowNum);
+            		if (rowNum < selRow) selRow--;
+        		}
         	}
         	else {
         		return;
         	}
         }
-        else if ($(this).html().indexOf(blank) >= 0) {
-        	console.log("do nothing");
-        }
         //User clicked on variable number. Generate keypad pop up
-		else if (isEditableValue(cellVal, rowNum)) {        	
+		else if (isEditableValue(cellVal, rowNum)) { 	
         	//updating a distance variable
         	if (rowToString(rowNum).indexOf("d") >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("+") == -1 && 
         		rowToString(rowNum).indexOf("-") == -1) {
@@ -271,7 +280,6 @@ function toggleEvents() {
 					width: 350,
 					modal: true
 				});
-				
             }
     });
 
@@ -623,6 +631,34 @@ function highlightLoop(type, rowNum) {
 	
 }
 
+//delete loop
+function deleteLoop(type, rowNum) {
+	if (type.indexOf("endloop") >= 0) {
+		var endloop = 1;
+		var deleteNum = 1;
+		var startDel = 0;
+		for (var i = rowNum-1; i >= 0; i--) {
+			if (endloop == 0) {
+				startDel = i;
+				break;
+			}
+			var rowString = rowToString(i);
+			if (rowString.indexOf("endloop") >= 0) {
+				endloop++;
+			}
+			else if (rowString.indexOf("repeat") >= 0) {
+				endloop--;
+			}
+			deleteNum++;
+		}
+		for (var i = 0; i < deleteNum; i++) {
+			codeTable.deleteRow(startDel);
+		}
+	}
+	else if(type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
+		console.log("top part");
+	}
+}
 
 
 

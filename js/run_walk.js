@@ -120,8 +120,6 @@ function containsCommand(input) {
 	found = found || input.indexOf("loop") != -1;
 	found = found || input.indexOf("repeat") != -1;
 	found = found || input.indexOf("endloop") != -1;
-	found = found || input.indexOf("increment") != -1;
-	found = found || input.indexOf("decrement") != -1;
 	return found;
 }
 
