@@ -48,6 +48,7 @@ function toggleEvents() {
         colNum = ($(this).index());
         // grab the row number from codeTable (this is a silly way of doing it, but it works)
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
+        var rowString = rowToString(rowNum);
         
         // we pass rowNum and colNum to tell the function where start highlighting
         if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 && 
@@ -55,25 +56,20 @@ function toggleEvents() {
             cellVal.indexOf('endloop') == -1) {
             //set cursor to pointer when hovering over clickable items
             $(this).css('cursor', 'pointer');
-            if (cellVal.indexOf('(') >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("erase") == -1 && 
-                rowToString(rowNum).indexOf("color") == -1)
+            if (cellVal.indexOf('(') >= 0 && rowString.indexOf("draw") == -1 && rowString.indexOf("erase") == -1 && 
+                rowString.indexOf("color") == -1)
                 highlightParenthesis('(', ')', rowNum, colNum);
-            else if (cellVal.indexOf(')') >= 0 && rowToString(rowNum).indexOf("draw") == -1 && rowToString(rowNum).indexOf("erase") == -1 && 
-                rowToString(rowNum).indexOf("color") == -1)
+            else if (cellVal.indexOf(')') >= 0 && rowString.indexOf("draw") == -1 && rowString.indexOf("erase") == -1 && 
+                rowString.indexOf("color") == -1)
                 highlightParenthesisBackwards('(', ')', rowNum, colNum);
             else if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
                 if (cellVal.indexOf("*") >= 0) {
-                    if (rowToString(rowNum).indexOf("repeat") >= 0) {
-                        for (var i = 0; i < codeTable.rows.length; i++) {
-                            if (rowToString(rowNum+i).indexOf("endloop") >= 0) {
-                                highlightLine(rowNum+i);
-                                break;
-                            }
-                            else {
-                                highlightLine(rowNum+i);
-                            }
-                        }
-                    }
+                	if(rowString.indexOf("repeat") >= 0)
+                		highlightLoop("repeat", rowNum);
+                	else if (rowString.indexOf("loop") >= 0 && rowString.indexOf("endloop") == -1)
+                		highlightLoop("loop", rowNum);
+                	else if (rowString.indexOf("endloop") >= 0)
+                		highlightLoop("endloop", rowNum);
                     highlightLine(rowNum);
                 }
                 else
@@ -548,7 +544,7 @@ function changeColor() {
 //Creates a loop in program window
 function loop() {
 	var thisIndent = getIndent(selRow);
-    addNewRow(selRow, [thisIndent + "repeat", "COUNTER", "times"]);
+    addNewRow(selRow, [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
     addNewRow(selRow, [thisIndent + "loop"]);
     addNewRow(selRow, [thisIndent + "endloop"]);
 }
@@ -574,7 +570,7 @@ function beenAssigned(distanceVar, row) {
 	return false;
 }
 
-//This function checks to see if the user clicked on a variable value (ie X/Y/RADIUS/any number between 0-300)
+//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300)
 function isEditableValue(cellVal, row) {
 	var rowString = rowToString(row);
 	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1 || 
@@ -582,6 +578,49 @@ function isEditableValue(cellVal, row) {
 		return true;
 	else
 		return false;
+}
+
+function highlightLoop(type, rowNum) {
+	var rowString = rowToString(rowNum);
+	//highlight all lines until correct 'endloop'
+	if (type.indexOf("repeat") >= 0 || type.indexOf("loop") >= 0 && type.indexOf("endloop") == -1) {
+		if (type.indexOf("loop") >= 0 && type.indexOf("endloop") == -1) highlightLine(rowNum - 1);
+		var loop = 1;
+		var endloop = 0;
+		for (var i = rowNum+1; i < codeTable.rows.length - 1; i++) {
+			rowString = rowToString(i);
+			if (loop == endloop) break;
+			if (rowString.indexOf("repeat") >= 0) {
+				loop++;
+				highlightLine(i);
+			}
+			else if (rowString.indexOf("endloop") >= 0) {
+				endloop++;
+				highlightLine(i);
+			}
+			else
+				highlightLine(i);
+		}
+	}
+	else {
+		var loop = 0;
+		var endloop = 1;
+		for (var i = rowNum-1; i >= 0; i--) {
+			rowString = rowToString(i);
+			if (loop == endloop) break;
+			if (rowString.indexOf("endloop") >= 0) {
+				endloop++;
+				highlightLine(i);
+			}
+			else if (rowString.indexOf("repeat") >= 0) {
+				loop++;
+				highlightLine(i);
+			}
+			else
+				highlightLine(i);
+		}
+	}
+	
 }
 
 
