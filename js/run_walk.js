@@ -135,7 +135,7 @@ function makeLoop(loopStart, i) {
 function getIndent(row) {
 	var loop = 0;
 	for (var i = 0; i < row; i++) {
-		if (rowToString(i).indexOf("loop") >= 0) loop++;
+		if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
 		if (rowToString(i).indexOf("endloop") >= 0) loop--;
 	}
 	var string = "";
