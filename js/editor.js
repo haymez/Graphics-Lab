@@ -644,24 +644,45 @@ function deleteLoop(type, rowNum) {
 				break;
 			}
 			var rowString = rowToString(i);
-			if (rowString.indexOf("endloop") >= 0) {
-				endloop++;
-			}
-			else if (rowString.indexOf("repeat") >= 0) {
-				endloop--;
-			}
+			if (rowString.indexOf("endloop") >= 0) endloop++;
+			else if (rowString.indexOf("repeat") >= 0) endloop--;
 			deleteNum++;
 		}
-		for (var i = 0; i < deleteNum; i++) {
-			codeTable.deleteRow(startDel);
-		}
 		if (rowNum < selRow) {
-			selRow = selRow-deleteNum;
-			console.log(selRow);
+			for (var i = 0; i < deleteNum; i++) codeTable.deleteRow(startDel);
+			selRow -= deleteNum;
 		}
+		else if (selRow > startDel && selRow < (startDel+deleteNum)) {
+			for (var i = 0; i < deleteNum-1; i++) codeTable.deleteRow(startDel);
+			selRow = startDel+1;
+			moveToLine(selRow);
+		}
+		else
+			for (var i = 0; i < deleteNum; i++) codeTable.deleteRow(startDel);
 	}
 	else if(type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
-		console.log("top part");
+		var repeat = 1;
+		var deleteNum = 1;
+		var startDel = rowNum;
+		if (type.indexOf("loop") >= 0) startDel--;
+		while (repeat > 0) {
+			var rowString = rowToString(startDel+1);
+			if (rowString.indexOf("repeat") >= 0) repeat++;
+			else if (rowString.indexOf("endloop") >= 0) repeat--;
+			codeTable.deleteRow(startDel);
+			deleteNum++;
+		}
+		if (selRow > startDel && selRow < startDel+deleteNum) {
+			selRow = startDel;
+			moveToLine(selRow+1);
+		}
+		else if (selRow > startDel) {
+			codeTable.deleteRow(startDel);
+			selRow -= deleteNum;
+		}
+		else {
+			codeTable.deleteRow(startDel);
+		}
 	}
 }
 
