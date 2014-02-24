@@ -636,32 +636,50 @@ function deleteLoop(type, rowNum) {
 	if (type.indexOf("endloop") >= 0) {
 		var endloop = 1;
 		var deleteNum = 1;
-		var startDel = 0;
+		var startDel = rowNum;
 
-		for (var i = rowNum-1; i >= 0; i--) {
-			if (endloop == 0) {
-				startDel = i+1;
-				break;
-			}
-			var rowString = rowToString(i);
-			if (rowString.indexOf("endloop") >= 0) {
-				endloop++;
-			}
-			else if (rowString.indexOf("repeat") >= 0) {
-				endloop--;
-			}
+		while (endloop > 0) {
+			var rowString = rowToString(startDel-1);
+			if (rowString.indexOf("endloop") >= 0) endloop++;
+			else if (rowString.indexOf("repeat") >= 0) endloop--;
+			codeTable.deleteRow(startDel);
+			startDel--;
 			deleteNum++;
 		}
-		for (var i = 0; i < deleteNum; i++) {
+		if (selRow < rowNum && selRow > ((codeTable.rows.length-1)-deleteNum)) {
+			selRow = startDel;
+			moveToLine(selRow+1);
+		}
+		else if (selRow > rowNum) {
 			codeTable.deleteRow(startDel);
+			selRow -= deleteNum;
 		}
-		if (rowNum < selRow) {
-			selRow = selRow-deleteNum;
-			console.log(selRow);
-		}
+		else
+			codeTable.deleteRow(startDel);
 	}
 	else if(type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
-		console.log("top part");
+		var repeat = 1;
+		var deleteNum = 1;
+		var startDel = rowNum;
+		if (type.indexOf("loop") >= 0) startDel--;
+		while (repeat > 0) {
+			var rowString = rowToString(startDel+1);
+			if (rowString.indexOf("repeat") >= 0) repeat++;
+			else if (rowString.indexOf("endloop") >= 0) repeat--;
+			codeTable.deleteRow(startDel);
+			deleteNum++;
+		}
+		if (selRow > startDel && selRow < startDel+deleteNum) {
+			selRow = startDel;
+			moveToLine(selRow+1);
+		}
+		else if (selRow > startDel) {
+			codeTable.deleteRow(startDel);
+			selRow -= deleteNum;
+		}
+		else {
+			codeTable.deleteRow(startDel);
+		}
 	}
 }
 
