@@ -637,9 +637,10 @@ function deleteLoop(type, rowNum) {
 		var endloop = 1;
 		var deleteNum = 1;
 		var startDel = 0;
+
 		for (var i = rowNum-1; i >= 0; i--) {
 			if (endloop == 0) {
-				startDel = i;
+				startDel = i+1;
 				break;
 			}
 			var rowString = rowToString(i);
@@ -653,6 +654,10 @@ function deleteLoop(type, rowNum) {
 		}
 		for (var i = 0; i < deleteNum; i++) {
 			codeTable.deleteRow(startDel);
+		}
+		if (rowNum < selRow) {
+			selRow = selRow-deleteNum;
+			console.log(selRow);
 		}
 	}
 	else if(type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
