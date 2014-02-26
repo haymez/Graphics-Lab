@@ -258,7 +258,7 @@ function toggleEvents() {
         
         //User clicked a variable on the left side of an assignment operator
         else if (colNum < innerTable.rows[0].cells.length-1) {
-            if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
+            if (innerTable.rows[0].cells[colNum+1].textContent.indexOf("=") >= 0) {
 				var currentElement = $(this);
             	var arr = new Array();
             	for (var i = 0; i < distanceVariables.length; i++) {
@@ -415,7 +415,7 @@ function refreshLineNumbers() {
 	var innerTable;
 	for (var i = 0; i < codeTable.rows.length-1; i++) {
 		innerTable = codeTable.rows[i].cells[0].children[0];
-		if (!isNaN(innerTable.rows[0].cells[0].innerText) || innerTable.rows[0].cells[0].innerText.length == 0) {
+		if (!isNaN(innerTable.rows[0].cells[0].textContent) || innerTable.rows[0].cells[0].textContent.length == 0) {
 			if (i < 9) innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			else innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;";
 		}
@@ -494,11 +494,11 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                 for (var j = 0; j < numCells; j++) {
                     if (firstLoop == true) { j = colInd; firstLoop = false; }
                     
-                    if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                    if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
                         if (!firstBrack) firstBrack = true;
                         else bracket++;
                     }
-                    else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                    else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
                         bracket--;
                     }
                     innerTable.rows[0].cells[j].style.color = "#FF0000";
@@ -527,10 +527,10 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
             for (var j = numCells - 1; j >= 0; j--) {
                 if (firstLoop == true) { j = colInd; firstLoop = false; }
                 
-                if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
                     bracket--;
                 }
-                else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
                     if (!firstBrack) firstBrack = true;
                     else bracket++;
                 }
@@ -565,7 +565,7 @@ function rowToString(rowInd) {
     var string = "";
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];
     for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-        string += innerTable.rows[0].cells[i].innerText;
+        string += innerTable.rows[0].cells[i].textContent;
     }
     return string.trim();
 }
