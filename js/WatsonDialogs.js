@@ -6,6 +6,7 @@ $(document).on('click', "input.Numpad" , function()
 {
 	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
 	var Val = $(this).val();
+	console.log($(parent).val());
 	var Current = $(parent).val();
 	var NewVal = Current+Val;
 	compareVal = convertBase(NewVal, $(parent).data("base"));
@@ -15,7 +16,9 @@ $(document).on('click', "input.Numpad" , function()
 			NewVal = NewVal.substring(1);
 			compareVal = convertBase(NewVal, $(parent).data("base"));
 		}
+	console.log($(parent).data("base"));
 	$(parent).val(NewVal);
+	console.log($(parent).val());
 	$("input.InputValue").val(NewVal);
 });
 
@@ -29,12 +32,15 @@ $(document).on('click', "input.ClearBtn" , function()
 $(document).on('click', "input.VarOKBtn" , function() 
 {
 	var Select = $("#VarsDialogSelect");
+	console.log(Select);
 	if(typeof Select.data("selected") == 'undefined')
 	{
 		dialogsDefer.resolve(new String());
 	}
 	else
 		dialogsDefer.resolve(Select.data("selected"));
+	console.log($("#dialog-modal-Vars"));
+	console.log(dialogmodalVars);
 	dialogmodalVars.dialog("close");
 });
 
@@ -54,6 +60,7 @@ $(document).on('click', "input.OKBtn" , function()
 {
 	var input = $("input.InputValue").val();
 	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
+	console.log(parent);
 	if ((input > $(parent).data("maxRange") && $(parent).data("maxRange")>=0 && $(parent).data("maxRange")!=null) ||
 		(input < $(parent).data("minRange") && $(parent).data("minRange")>=0 && $(parent).data("minRange")!=null)) {
 	    $(parent).dialog("close");
@@ -96,6 +103,7 @@ document.write('\
 
 $(document).on('change', 'select#VarsDialogSelect', function()
 {
+	console.log(this);
 	var Select = $("#VarsDialogSelect");
 	Select.data("selected", this.options[this.selectedIndex].value);
 });
@@ -131,9 +139,6 @@ document.write
                                             <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
                                     </ul>\
                             </div>\
-                            <label class="GeneralLabel">\
-                                    Enter Digits within range 0 to 300\
-                            </label>\
                     </div>\
     <!--\
     *************************************************************************************************\
@@ -176,7 +181,7 @@ document.write
     -->\
                     <div id="dialog-modal-hex" title="Numeric Entry Pad" style="display:none">\
                             <input id="hexInput" type="text" class="InputValue"/>\
-                            <div id="hexpadDiv">\
+                            <div id="NumpadDiv">\
                                     <ul>\
                                             <li><input type="button" class="Numpad" id="Hexpad-7" value="7"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-8" value="8"/></li>\
@@ -187,25 +192,22 @@ document.write
                                             <li><input type="button" class="Numpad" id="Hexpad-1" value="1"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-2" value="2"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-3" value="3"/></li>\
-                                            <li class="Numpad0"><input type="button" class="Numpad" id="Hexpad-0" value="0"/></li>\
 						<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-D" text = "D" value="D"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-E" value="E"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-F" value="F"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-A" value="A"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-B" value="B"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-C" value="C"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-E" value="E"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-F" value="F"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-A" value="A"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-B" value="B"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-C" value="C"/></li>\
+					<li class="Numpad0"><input type="button" class="Numpad" id="Hexpad-0" value="0"/></li>\
                                     </ul>\
                             </div>\
-                            <div id="hexpadFunctionBtns">\
+                            <div id="NumpadFunctionBtns">\
                                     <ul>\
                                             <li><input type="button" value="OK" class="OKBtn WButton"/></li>\
                                             <li><input type="button" value="Clear" class="ClearBtn WButton"/></li>\
                                             <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
                                     </ul>\
                             </div>\
-                            <label class="GeneralLabel">\
-                                    Enter Digits within range 0 to 300\
-                            </label>\
                     </div>\
     <!--\
     *************************************************************************************************\
@@ -286,6 +288,7 @@ function openNumPad(minRange, maxRange, title, instructions, decimal, base)
 		$( "#dialog-modal-hex" ).data('maxRange', this.maxRange);
 		//TODO: instructions should be a text field, not data.
 		$( "#dialog-modal-hex" ).data('instructions', this.instructions);
+		console.log($( "#dialog-modal-hex" ).data('base', this.base));
 		dialogsDefer = $.Deferred();
     		$( "#dialog-modal-hex" ).dialog(
 					{
