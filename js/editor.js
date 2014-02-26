@@ -131,7 +131,23 @@ function toggleEvents() {
 					}
 					arr.push("constant");
 					openSelector("Choice Selection Panel", arr).done(function(evt) {
-						alert("test");
+						if (evt.indexOf("+") >= 0) {
+							var currRow = rowNum;
+							codeTable.deleteRow(currRow);
+							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
+							selRow--;
+						}
+						else if (evt.indexOf("-") >= 0) {
+							var currRow = rowNum;
+							codeTable.deleteRow(currRow);
+							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;-&nbsp;", "X"]);
+							selRow--;
+						}
+						else if (evt.indexOf("constant") >= 0) {
+							openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+							currentElement.html(evt);
+							});
+						}
 					});
         		}
         		else {
@@ -147,7 +163,7 @@ function toggleEvents() {
 						});
 					}
 					else {
-						openNumPad(0, 300, "This is a test", "instructions here", false, 10).done(function(evt) {
+						openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
 						currentElement.html(evt);
 						});
 					}
@@ -155,7 +171,7 @@ function toggleEvents() {
         		
         	}
         	else {
-				openNumPad(0, 300, "This is a test", "instructions here", false, 10).done(function(evt) {
+				openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
 					currentElement.html(evt);
 				});
 			}
