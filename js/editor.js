@@ -466,7 +466,7 @@ function selectRow(rowNum) {
     
     selRow = rowNum;
     var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    if (innerTable.rows[0].cells[0].innerHTML.indexOf("*") == -1)
+    if (rowToString(selRow).trim().length == 0)
 		innerTable.rows[0].cells[0].innerHTML = arrow;
 }
 

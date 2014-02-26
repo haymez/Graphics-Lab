@@ -109,6 +109,7 @@ function walk() {
     	step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");
+    refreshLineNumbers();
 }
 
 function containsCommand(input) {
