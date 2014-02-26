@@ -159,7 +159,16 @@ function toggleEvents() {
 					arr.push("constant");
 					if (arr.length > 1) {
 						openSelector("Choice Selection Panel", arr).done(function(evt) {
-							alert("test");
+							if (evt.indexOf("constant") >= 0) {
+								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+									currentElement.html(evt);
+								});
+							}
+							else {
+								if (evt.length > 0) {
+									currentElement.html(evt);
+								}
+							}
 						});
 					}
 					else {
