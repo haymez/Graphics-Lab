@@ -6,7 +6,6 @@ $(document).on('click', "input.Numpad" , function()
 {
 	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
 	var Val = $(this).val();
-	console.log($(parent).val());
 	var Current = $(parent).val();
 	var NewVal = Current+Val;
 	compareVal = convertBase(NewVal, $(parent).data("base"));
@@ -16,9 +15,7 @@ $(document).on('click', "input.Numpad" , function()
 			NewVal = NewVal.substring(1);
 			compareVal = convertBase(NewVal, $(parent).data("base"));
 		}
-	console.log($(parent).data("base"));
 	$(parent).val(NewVal);
-	console.log($(parent).val());
 	$("input.InputValue").val(NewVal);
 });
 
@@ -32,15 +29,12 @@ $(document).on('click', "input.ClearBtn" , function()
 $(document).on('click', "input.VarOKBtn" , function() 
 {
 	var Select = $("#VarsDialogSelect");
-	console.log(Select);
 	if(typeof Select.data("selected") == 'undefined')
 	{
 		dialogsDefer.resolve(new String());
 	}
 	else
 		dialogsDefer.resolve(Select.data("selected"));
-	console.log($("#dialog-modal-Vars"));
-	console.log(dialogmodalVars);
 	dialogmodalVars.dialog("close");
 });
 
@@ -60,7 +54,6 @@ $(document).on('click', "input.OKBtn" , function()
 {
 	var input = $("input.InputValue").val();
 	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
-	console.log(parent);
 	if ((input > $(parent).data("maxRange") && $(parent).data("maxRange")>=0 && $(parent).data("maxRange")!=null) ||
 		(input < $(parent).data("minRange") && $(parent).data("minRange")>=0 && $(parent).data("minRange")!=null)) {
 	    $(parent).dialog("close");
@@ -103,7 +96,6 @@ document.write('\
 
 $(document).on('change', 'select#VarsDialogSelect', function()
 {
-	console.log(this);
 	var Select = $("#VarsDialogSelect");
 	Select.data("selected", this.options[this.selectedIndex].value);
 });
@@ -288,7 +280,6 @@ function openNumPad(minRange, maxRange, title, instructions, decimal, base)
 		$( "#dialog-modal-hex" ).data('maxRange', this.maxRange);
 		//TODO: instructions should be a text field, not data.
 		$( "#dialog-modal-hex" ).data('instructions', this.instructions);
-		console.log($( "#dialog-modal-hex" ).data('base', this.base));
 		dialogsDefer = $.Deferred();
     		$( "#dialog-modal-hex" ).dialog(
 					{

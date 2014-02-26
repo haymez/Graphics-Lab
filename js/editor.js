@@ -279,18 +279,24 @@ function toggleEvents() {
           		if (arr.length > 0) {
 					openSelector("Choice Selection Panel", arr).done(function(evt) {
 						if (evt.length > 0) {
+							var currRow = rowNum;
 							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
-								var currRow = rowNum;
 								codeTable.deleteRow(currRow);
 								insertTable.deleteRow(-1);
 								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "distanceValue"]);
 								selRow--;
 							}
 							else if (evt.indexOf("p") >= 0) {
-								console.log("stuff for point");
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ")"]);
+								selRow--;
 							}
 							else if (evt.indexOf("l") >= 0) {
-								console.log("stuff for line");
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ",", "(", "X", ",", "Y", ")", ")"]);
+								selRow--;
 							}
 							else if (evt.indexOf("g") >= 0) {
 								console.log("stuff for polygon");
