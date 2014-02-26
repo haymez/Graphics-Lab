@@ -4,39 +4,36 @@
 
 //The current selected row
 var selRow = 0; 
+
 //Blank template for unselected row
 var blank = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
 //arrow template for selected row
 var arrow = "&#8594;";
+
 //Indentation used for inside brackets
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+
 //Template used for a newly added row in the codeTable
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
+var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'></td></tr></table>";
+
 //Template used for a newly selected row
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 
-var currRow = 0;
+//Make a blank row where the program starts
+var row = codeTable.insertRow(0);
+// make a new cell here
+var cell = row.insertCell(0);
+var innerTable;
+//Set the cell with arrow template
+cell.innerHTML = innerTableArrowTemplate;
+selRow = 0;
+selectRow(selRow);
 
-init();
-
-function init() { //Initializes variables
-    var row;
-    var cell;
-    var innerTable;
-    
-    //Make a blank row where the program starts
-    row = codeTable.insertRow(0);
-    // make a new cell here
-    cell = row.insertCell(0);
-    //Set the cell with arrow template
-    cell.innerHTML = innerTableArrowTemplate;
-    //Selected row is line 2
-    selRow = 0;
-    selectRow(selRow);
-}
 
 //We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
 function toggleEvents() {
+	refreshLineNumbers();
     //Turn off mouseover event
     $('.innerTable' + figNum).off('mouseover');
     //Turn mouseover event back on
@@ -93,8 +90,9 @@ function toggleEvents() {
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
         var rowString = rowToString(rowNum);
-        //Delete this row if user confirms
-        if (cellVal.indexOf("*") >= 0) {
+        
+        //User clicked on line number. Prompt for delete.
+        if (colNum == 0 && rowNum != selRow && cellVal.trim().length > 0) {
         	if(confirm("Are you sure you want to delete the highlighted\ntext?")) {
         		if(rowString.indexOf("repeat") >= 0) {
         			deleteLoop("repeat", rowNum);
@@ -109,6 +107,7 @@ function toggleEvents() {
         			codeTable.deleteRow(rowNum);
             		if (rowNum < selRow) selRow--;
         		}
+				refreshLineNumbers();
         	}
         	else {
         		return;
@@ -123,10 +122,36 @@ function toggleEvents() {
         		var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=") - 1);
         		//find if another instance of this distance variable has occurred already
     			if(beenAssigned(distanceVar, rowNum)) {
-					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three digits", false, 10).done(function(evt) {
-						currentElement.html(evt);
+					var arr = new Array();
+					arr.push(distanceVar + " + distanceValue");
+					arr.push(distanceVar + " - distanceValue");
+					for (var i = 0; i < distanceVariables.length; i++) {
+						if (beenAssigned(distanceVariables[i], rowNum))
+							arr.push(distanceVariables[i]);
+					}
+					arr.push("constant");
+					openSelector("Choice Selection Panel", arr).done(function(evt) {
+						alert("test");
 					});
         		}
+        		else {
+					var arr = new Array();
+					for (var i = 0; i < distanceVariables.length; i++) {
+						if (beenAssigned(distanceVariables[i], rowNum))
+							arr.push(distanceVariables[i]);
+					}
+					arr.push("constant");
+					if (arr.length > 1) {
+						openSelector("Choice Selection Panel", arr).done(function(evt) {
+							alert("test");
+						});
+					}
+					else {
+						openNumPad(0, 300, "This is a test", "instructions here", false, 10).done(function(evt) {
+						currentElement.html(evt);
+						});
+					}
+				}
         		
         	}
         	else {
@@ -228,8 +253,27 @@ function toggleEvents() {
             	}
           		if (arr.length > 0) {
 					openSelector("Choice Selection Panel", arr).done(function(evt) {
-						if (evt.length > 0)
-							currentElement.html(evt);
+						if (evt.length > 0) {
+							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
+								var currRow = rowNum;
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "distanceValue"]);
+								selRow--;
+							}
+							else if (evt.indexOf("p") >= 0) {
+								console.log("stuff for point");
+							}
+							else if (evt.indexOf("l") >= 0) {
+								console.log("stuff for line");
+							}
+							else if (evt.indexOf("g") >= 0) {
+								console.log("stuff for polygon");
+							}
+							else if (evt.indexOf("c") >= 0) {
+								console.log("stuff for circle");
+							}
+						}
 					});
 				}
             }
@@ -332,6 +376,19 @@ function moveToLine(rowNum) {
         cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
         selectRow(rowNum-1);                                            // select newly inserted row
     }
+    refreshLineNumbers();
+}
+
+//refreshes line numbers
+function refreshLineNumbers() {
+	var innerTable;
+	for (var i = 0; i < codeTable.rows.length-1; i++) {
+		innerTable = codeTable.rows[i].cells[0].children[0];
+		if (!isNaN(innerTable.rows[0].cells[0].innerText) || innerTable.rows[0].cells[0].innerText.length == 0) {
+			if (i < 9) innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+			else innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;";
+		}
+	}
 }
 
 //Adds new row on line <line> and creates cells bases on <params> array
@@ -523,20 +580,20 @@ function isDistanceAssign(row) {
 }
 
 //This function checks to see if the specified distance variable has been assignmed above the specified row
-function beenAssigned(distanceVar, row) {
+function beenAssigned(variable, row) {
 	for (var i = 0; i < row; i++) {
-		if(isDistanceAssign(i)) {
+		var string = rowToString(i);
+		if(string.indexOf(variable) < string.indexOf("=") && string.indexOf(variable) >= 0)
 			return true;
-		}
 	}
 	return false;
 }
 
-//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300)
+//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
 function isEditableValue(cellVal, row) {
 	var rowString = rowToString(row);
-	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1 || 
-	cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) && colNum > 0 || (cellVal.indexOf('distanceValue') >= 0 && 
+	cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
 		return true;
 	else
 		return false;
