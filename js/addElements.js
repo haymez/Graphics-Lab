@@ -100,6 +100,33 @@ buttonDiv.style.width = "70px";
 buttonDiv.style.height = "130px";
 buttonDiv.style.cssFloat = "right";
 
+/*************************************************************/
+//<p> for variable value title
+var varValueTitle = document.createElement('p');
+varValueTitle.id = "varValOuterP";
+varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
+varValueTitle.style.position = "relative";
+varValueTitle.style.top = "15px";
+
+//<div> for variable value window
+var varValueDiv = document.createElement('div');
+varValueDiv.id = "varValDiv" + figNum;
+varValueDiv.style.overflow = "auto";
+varValueDiv.style.width = "650px";
+varValueDiv.style.height = "100px";
+varValueDiv.style.resize = "none";
+varValueDiv.style.border = "1px solid #000";
+
+// <div> holder for varValueDiv <div> and varValueTitle <p>
+var vvDivHolder = document.createElement('div');
+vvDivHolder.id ="vvDivHolder";
+vvDivHolder.appendChild(varValueTitle);
+vvDivHolder.appendChild(varValueDiv);
+vvDivHolder.style.display = "none";
+vvDivHolder.style.position = "absolute";
+vvDivHolder.style.top = "410px";
+/*************************************************************/
+
 //<div> for program buttons
 var progButtonDiv = document.createElement('div');
 progButtonDiv.id = "program_buttons" + figNum;
@@ -242,8 +269,8 @@ container.style.height = "450px";
 container.appendChild(drawDiv);
 container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
-
-//document.body.appendChild(numpadDiv);
+container.style.position = "relative"; //Teel's code <--
+container.appendChild(vvDivHolder);
 
 //Add listeners for walk and run
 $("#" + runButton.id).click(function() { run(); });

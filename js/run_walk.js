@@ -1,29 +1,40 @@
 /*
  * Controls the Run and Walk features of the Watson Graphcis Lab
+ * Author: James Miltenberger
+ * Co-Authors: Mitchell Martin, Jonathan Teel
  */
 //Assign all global variables
 var step = 0;
 var programRunning = false;
+var runMode = false;
 var fresh = true;
 var loopArray = new Array();
 
 //Allows users to run the program slowly
 function run() {
+	runMode = true;
     paintbrush++;
     walk();
     var delay = setInterval(function() {
-        if (!programRunning) clearInterval(delay);
+        if (!programRunning) {
+			runMode = false;
+			clearInterval(delay);
+		}
         else {
+			runMode = true;
             walk();
         }
     }, 100);
     //Reset
     $("#" + walkButton.id).html("Reset").off("click").click(function() {
+		fresh = true;
         clearInterval(delay);
         step = 0;
         returnToNormalColor()
         selectRow(codeTable.rows.length-1);
-        $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
+        $("#" + runButton.id).html("Run").off("click").click(function() { 
+			run(); 
+		});
         $(this).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
     });
@@ -62,6 +73,7 @@ function walk() {
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
+        $("#vvDivHolder").slideUp("medium"); // Teel's code <--
         programRunning = false;
         fresh = true;
         return;
@@ -110,6 +122,8 @@ function walk() {
     }
     $("#drawCanvas" + figNum).trigger("mousemove");
     refreshLineNumbers();
+    updateVarValueWindow(); //Teel's code <--
+    runMode = false;
 }
 
 function containsCommand(input) {
@@ -130,7 +144,7 @@ function makeLoop(loopStart, i) {
 	this.i = i;
 }
 
-//return string with correct number of indents
+//return string with correct number of indents.
 function getIndent(row) {
 	var loop = 0;
 	for (var i = 0; i < row; i++) {
@@ -144,7 +158,68 @@ function getIndent(row) {
 	return string;
 }
 
-
+//Updates the variables in the variables tracker. Author: Jonathan Teel
+function updateVarValueWindow(){
+	
+	var vvDiv = document.getElementById("varValDiv" + figNum);
+	var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level&#09</td><td>variable\t</td><td>type	</td><td>value</td></tr>';
+	var i, canShow = 0;
+	
+	for(i = 0; i < d.length; i++)
+	{
+		html += '<tr><td>0</td><td>d' + (i+1) + '</td><td>distance</td><td>' + d[i] + '</td></tr>';
+		canShow++;
+	}
+	for(i = 0; i < p.length; i++)
+	{
+		if(p[i].type != undefined)
+		{
+			html += '<tr><td>0</td><td>p' + (i+1) + '</td><td>' + p[i].type + '</td><td>( ' + p[i].startX + ', ' + Math.abs(p[i].startY-300) + ' )</td></tr>';
+			canShow++;
+		}
+	}
+	for(i = 0; i < l.length; i++)
+	{
+		if(l[i].type != undefined)
+		{
+			html += '<tr><td>0</td><td>l' + (i+1) + '</td><td>' + l[i].type + '</td><td>' + '( ( ' + l[i].startX + ', ' + Math.abs(l[i].startY-300) + ' ) ( ' + l[i].endX + ', ' + Math.abs(l[i].endY-300) + ' ) )' +'</td></tr>';
+			canShow++;
+		}
+	}
+	for(i = 0; i < g.length; i++)
+	{
+		if(g[i].type != undefined)
+		{
+			html += '<tr><td>0</td><td>g' + (i+1) + '</td><td>' + g[i].type + '</td>';
+			html += '<td>';
+			for(var j=0; j<g[i].angles.length; j++)
+			{
+				html += ((j==0)?'( ( ':'( ') + g[i].angles[j].startX + ', ' + Math.abs(g[i].angles[j].startY-300) + ' ) ';
+				if(j != g[i].angles.length -1)
+					html += ', ';
+				else
+					html += ' ( ' + g[i].angles[0].startX + '. ' + Math.abs(g[i].angles[0].startY-300) + ' ) ) ';
+			}
+			html += '</td></tr>';
+			canShow++;
+		}
+	}
+	for(i = 0; i < c.length; i++)
+	{
+		if(c[i].type != undefined && c[i].startX != 0 && c[i].startY != 0) 
+		{
+			canShow++;
+			html += '<tr><td>0</td><td>c' + (i+1) + '</td><td>' + c[i].type + '</td><td>' + '( ( ' + c[i].startX + ', ' + Math.abs(c[i].startY-300) + ' ) ' + c[i].diameter + ' )</td></tr>';
+		}
+	}
+	if(canShow > 0 && !runMode)
+	{
+		vvDiv.innerHTML = html;
+		$("#vvDivHolder").slideDown("medium");
+	}
+	else
+		$("#vvDivHolder").slideUp("medium");
+}
 
 
 

@@ -330,21 +330,19 @@ function interpret(input)
 
 		if (assignmentVariableType.localeCompare("distance") == 0)
 		{
-			console.log(tokens[2]);
 			
 			var valid;
-			var split = tokens[2].split(/[+-]+/);
-			valid = validDistance(split[0]);
-			if (valid[0] && split.length < 2)
+			valid = validDistance(tokens[2]);
+			if (valid[0] && tokens.length < 4)
 			{
 				d[assignmentVariableNumber - 1] = valid[1];
 			}
 			//new functionality for increment and decrement
 			//check if right hand side of equal sign has the an increment statement.
-			else if (tokens[2].indexOf(tokens[0] != -1) && split.length == 2)
+			else if (tokens.length > 4)
 			{
-				valid = validDistance(split[1]);
-				if(tokens[2].indexOf("+") != -1)
+				valid = validDistance(tokens[4]);
+				if(tokens[3].indexOf("+") != -1)
 				{
 					if(valid[0])
 					{
@@ -362,7 +360,7 @@ function interpret(input)
 						handleSyntaxError(tokens);
 					}
 				}
-				else if(tokens[2].indexOf("-") != -1)
+				else if(tokens[3].indexOf("-") != -1)
 				{
 					
 					if(valid[0])
@@ -381,10 +379,7 @@ function interpret(input)
 						handleSyntaxError(tokens);
 					}
 				}
-				//assignment to itself. Do nothing.
-				else if(split.length < 2)
-				{
-				}
+				//Error.
 				else
 				{
 					handleSyntaxError(tokens);
