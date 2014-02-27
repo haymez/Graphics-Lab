@@ -341,7 +341,6 @@ function interpret(input)
 			//check if right hand side of equal sign has the an increment statement.
 			else if (tokens.length > 4)
 			{
-				console.log(tokens);
 				valid = validDistance(tokens[4]);
 				if(tokens[3].indexOf("+") != -1)
 				{
