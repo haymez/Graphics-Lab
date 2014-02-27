@@ -172,17 +172,37 @@ function toggleEvents() {
 						});
 					}
 					else {
-						openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
-						currentElement.html(evt);
-						});
+						
 					}
 				}
         		
         	}
         	else {
-				openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+				var arr = new Array();
+				for (var i = 0; i < distanceVariables.length; i++) {
+					if (beenAssigned(distanceVariables[i], rowNum))
+						arr.push(distanceVariables[i]);
+				}
+				arr.push("constant");
+				if (arr.length > 1) {
+					openSelector("Choice Selection Panel", arr).done(function(evt) {
+						if (evt.length > 0) {
+							if (evt.indexOf("constant") >= 0) {
+								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+									currentElement.html(evt);
+								});
+							}
+							else {
+								currentElement.html(evt);
+							}
+						}
+					});
+				}
+				else {
+					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
 					currentElement.html(evt);
-				});
+					});
+				}
 			}
         }
         
@@ -234,7 +254,7 @@ function toggleEvents() {
         	var arr = new Array();
         	var currentElement = $(this);
         	arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
-        	openSelector("test title", arr).done(function(evt) {
+        	openSelector("Choice Selection Panel", arr).done(function(evt) {
 				if (evt.length > 0)
 					currentElement.html(evt);
 			});
@@ -610,7 +630,7 @@ function isDistanceAssign(row) {
 		return false;
 }
 
-//This function checks to see if the specified distance variable has been assignmed above the specified row
+//This function checks to see if the specified variable has been assigned above the specified row
 function beenAssigned(variable, row) {
 	for (var i = 0; i < row; i++) {
 		var string = rowToString(i);
@@ -624,7 +644,7 @@ function beenAssigned(variable, row) {
 function isEditableValue(cellVal, row) {
 	var rowString = rowToString(row);
 	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) && colNum > 0 || (cellVal.indexOf('distanceValue') >= 0 && 
-	cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+	cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("X") >= 0 || cellVal.indexOf("RADIUS") >= 0))
 		return true;
 	else
 		return false;
@@ -725,8 +745,23 @@ function deleteLoop(type, rowNum) {
 	}
 }
 
-
-
+function fixPolygons() {
+	var x = 0;
+	var y = 0;
+	for (var i = 0; i < codeTable.rows.length-1; i++) {
+		var rowString = rowToString(i);
+		if (rowString.indexOf("g") < rowString.indexOf("=") && rowString.indexOf("g") >= 0) {
+			x = rowString.substring(rowString.indexOf("(") + 2, rowString.indexOf(","));
+			y = rowString.substring(rowString.indexOf(",") + 1, rowString.indexOf(")"));
+		}
+		else if (rowString.indexOf("))") >= 0 && rowString.indexOf("((") == -1) {
+			codeTable.deleteRow(i);
+			insertTable.deleteRow(-1);
+			addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
+			selRow--;
+		}
+	}
+}
 
 
 

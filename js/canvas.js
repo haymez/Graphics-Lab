@@ -329,7 +329,7 @@ function drawPolygon() {
                         "(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
                     for(var i = 1; i < coor.length; i++) {
                         if (i == coor.length-1) {
-                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")"]);
+                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
                             addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
                         }
                         else

@@ -73,7 +73,7 @@ function walk() {
     $("#drawCanvas" + figNum).trigger("mousemove");
     
     //Polygon found
-    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1) {
+    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString.indexOf("color") == -1) {
     	var string = rowToString(step).trim();
     	step++;
     	while (!containsCommand(rowToString(step+1))) {
