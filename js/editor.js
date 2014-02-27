@@ -59,7 +59,7 @@ function toggleEvents() {
                 rowString.indexOf("color") == -1)
                 highlightParenthesisBackwards('(', ')', rowNum, colNum);
             else if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-                if (cellVal.indexOf("*") >= 0) {
+                if (colNum == 0) {
                 	if(rowString.indexOf("repeat") >= 0)
                 		highlightLoop("repeat", rowNum);
                 	else if (rowString.indexOf("loop") >= 0 && rowString.indexOf("endloop") == -1)
@@ -172,7 +172,9 @@ function toggleEvents() {
 						});
 					}
 					else {
-						
+						openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+							currentElement.html(evt);
+						});
 					}
 				}
         		
@@ -190,17 +192,20 @@ function toggleEvents() {
 							if (evt.indexOf("constant") >= 0) {
 								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
 									currentElement.html(evt);
+									fixPolygons();
 								});
 							}
 							else {
 								currentElement.html(evt);
+								fixPolygons();
 							}
 						}
 					});
 				}
 				else {
 					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
-					currentElement.html(evt);
+						currentElement.html(evt);
+						fixPolygons();
 					});
 				}
 			}
@@ -250,7 +255,8 @@ function toggleEvents() {
         }
         
         //User clicked on an item within color(). Generate list of supported colors.
-        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1) {
+        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1 && cellVal.indexOf("(") == -1 && 
+        cellVal.indexOf(")") == -1) {
         	var arr = new Array();
         	var currentElement = $(this);
         	arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
@@ -319,10 +325,20 @@ function toggleEvents() {
 								selRow--;
 							}
 							else if (evt.indexOf("g") >= 0) {
-								console.log("stuff for polygon");
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X",  ",", "Y", ")", ","]);
+								selRow--;
+								addNewRow(currRow+1, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+2, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+3, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+4, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ")"]);
 							}
 							else if (evt.indexOf("c") >= 0) {
-								console.log("stuff for circle");
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
+								selRow--;
 							}
 						}
 					});
