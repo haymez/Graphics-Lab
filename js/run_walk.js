@@ -73,7 +73,7 @@ function walk() {
     $("#drawCanvas" + figNum).trigger("mousemove");
     
     //Polygon found
-    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1) {
+    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString(step).indexOf("color") == -1) {
     	var string = rowToString(step).trim();
     	step++;
     	while (!containsCommand(rowToString(step+1))) {
@@ -109,6 +109,7 @@ function walk() {
     	step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");
+    refreshLineNumbers();
 }
 
 function containsCommand(input) {

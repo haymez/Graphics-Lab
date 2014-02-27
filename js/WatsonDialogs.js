@@ -131,9 +131,6 @@ document.write
                                             <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
                                     </ul>\
                             </div>\
-                            <label class="GeneralLabel">\
-                                    Enter Digits within range 0 to 300\
-                            </label>\
                     </div>\
     <!--\
     *************************************************************************************************\
@@ -176,7 +173,7 @@ document.write
     -->\
                     <div id="dialog-modal-hex" title="Numeric Entry Pad" style="display:none">\
                             <input id="hexInput" type="text" class="InputValue"/>\
-                            <div id="hexpadDiv">\
+                            <div id="NumpadDiv">\
                                     <ul>\
                                             <li><input type="button" class="Numpad" id="Hexpad-7" value="7"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-8" value="8"/></li>\
@@ -187,25 +184,22 @@ document.write
                                             <li><input type="button" class="Numpad" id="Hexpad-1" value="1"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-2" value="2"/></li>\
                                             <li><input type="button" class="Numpad" id="Hexpad-3" value="3"/></li>\
-                                            <li class="Numpad0"><input type="button" class="Numpad" id="Hexpad-0" value="0"/></li>\
 						<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-D" text = "D" value="D"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-E" value="E"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-F" value="F"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-A" value="A"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-B" value="B"/></li>\
-					<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-C" value="C"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-E" value="E"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-F" value="F"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-A" value="A"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-B" value="B"/></li>\
+					<li><input type="button" class="Numpad" id="Hexpad-C" value="C"/></li>\
+					<li class="Numpad0"><input type="button" class="Numpad" id="Hexpad-0" value="0"/></li>\
                                     </ul>\
                             </div>\
-                            <div id="hexpadFunctionBtns">\
+                            <div id="NumpadFunctionBtns">\
                                     <ul>\
                                             <li><input type="button" value="OK" class="OKBtn WButton"/></li>\
                                             <li><input type="button" value="Clear" class="ClearBtn WButton"/></li>\
                                             <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
                                     </ul>\
                             </div>\
-                            <label class="GeneralLabel">\
-                                    Enter Digits within range 0 to 300\
-                            </label>\
                     </div>\
     <!--\
     *************************************************************************************************\

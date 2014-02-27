@@ -4,39 +4,36 @@
 
 //The current selected row
 var selRow = 0; 
+
 //Blank template for unselected row
 var blank = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
 //arrow template for selected row
 var arrow = "&#8594;";
+
 //Indentation used for inside brackets
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+
 //Template used for a newly added row in the codeTable
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>" + "*" + "&nbsp;&nbsp;</td></tr></table>";
+var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'></td></tr></table>";
+
 //Template used for a newly selected row
 var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
 
-var currRow = 0;
+//Make a blank row where the program starts
+var row = codeTable.insertRow(0);
+// make a new cell here
+var cell = row.insertCell(0);
+var innerTable;
+//Set the cell with arrow template
+cell.innerHTML = innerTableArrowTemplate;
+selRow = 0;
+selectRow(selRow);
 
-init();
-
-function init() { //Initializes variables
-    var row;
-    var cell;
-    var innerTable;
-    
-    //Make a blank row where the program starts
-    row = codeTable.insertRow(0);
-    // make a new cell here
-    cell = row.insertCell(0);
-    //Set the cell with arrow template
-    cell.innerHTML = innerTableArrowTemplate;
-    //Selected row is line 2
-    selRow = 0;
-    selectRow(selRow);
-}
 
 //We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
 function toggleEvents() {
+	refreshLineNumbers();
     //Turn off mouseover event
     $('.innerTable' + figNum).off('mouseover');
     //Turn mouseover event back on
@@ -62,7 +59,7 @@ function toggleEvents() {
                 rowString.indexOf("color") == -1)
                 highlightParenthesisBackwards('(', ')', rowNum, colNum);
             else if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-                if (cellVal.indexOf("*") >= 0) {
+                if (colNum == 0) {
                 	if(rowString.indexOf("repeat") >= 0)
                 		highlightLoop("repeat", rowNum);
                 	else if (rowString.indexOf("loop") >= 0 && rowString.indexOf("endloop") == -1)
@@ -93,8 +90,9 @@ function toggleEvents() {
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
         var innerTable = codeTable.rows[rowNum].cells[0].children[0];
         var rowString = rowToString(rowNum);
-        //Delete this row if user confirms
-        if (cellVal.indexOf("*") >= 0) {
+        
+        //User clicked on line number. Prompt for delete.
+        if (colNum == 0 && rowNum != selRow && cellVal.trim().length > 0) {
         	if(confirm("Are you sure you want to delete the highlighted\ntext?")) {
         		if(rowString.indexOf("repeat") >= 0) {
         			deleteLoop("repeat", rowNum);
@@ -109,6 +107,7 @@ function toggleEvents() {
         			codeTable.deleteRow(rowNum);
             		if (rowNum < selRow) selRow--;
         		}
+				refreshLineNumbers();
         	}
         	else {
         		return;
@@ -123,16 +122,92 @@ function toggleEvents() {
         		var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=") - 1);
         		//find if another instance of this distance variable has occurred already
     			if(beenAssigned(distanceVar, rowNum)) {
-					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three digits", false, 10).done(function(evt) {
-						currentElement.html(evt);
+					var arr = new Array();
+					arr.push(distanceVar + " + distanceValue");
+					arr.push(distanceVar + " - distanceValue");
+					for (var i = 0; i < distanceVariables.length; i++) {
+						if (beenAssigned(distanceVariables[i], rowNum))
+							arr.push(distanceVariables[i]);
+					}
+					arr.push("constant");
+					openSelector("Choice Selection Panel", arr).done(function(evt) {
+						if (evt.indexOf("+") >= 0) {
+							var currRow = rowNum;
+							codeTable.deleteRow(currRow);
+							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
+							selRow--;
+						}
+						else if (evt.indexOf("-") >= 0) {
+							var currRow = rowNum;
+							codeTable.deleteRow(currRow);
+							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;-&nbsp;", "X"]);
+							selRow--;
+						}
+						else if (evt.indexOf("constant") >= 0) {
+							openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+							currentElement.html(evt);
+							});
+						}
 					});
         		}
+        		else {
+					var arr = new Array();
+					for (var i = 0; i < distanceVariables.length; i++) {
+						if (beenAssigned(distanceVariables[i], rowNum))
+							arr.push(distanceVariables[i]);
+					}
+					arr.push("constant");
+					if (arr.length > 1) {
+						openSelector("Choice Selection Panel", arr).done(function(evt) {
+							if (evt.indexOf("constant") >= 0) {
+								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+									currentElement.html(evt);
+								});
+							}
+							else {
+								if (evt.length > 0) {
+									currentElement.html(evt);
+								}
+							}
+						});
+					}
+					else {
+						openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+							currentElement.html(evt);
+						});
+					}
+				}
         		
         	}
         	else {
-				openNumPad(0, 300, "This is a test", "instructions here", false, 10).done(function(evt) {
-					currentElement.html(evt);
-				});
+				var arr = new Array();
+				for (var i = 0; i < distanceVariables.length; i++) {
+					if (beenAssigned(distanceVariables[i], rowNum))
+						arr.push(distanceVariables[i]);
+				}
+				arr.push("constant");
+				if (arr.length > 1) {
+					openSelector("Choice Selection Panel", arr).done(function(evt) {
+						if (evt.length > 0) {
+							if (evt.indexOf("constant") >= 0) {
+								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+									currentElement.html(evt);
+									fixPolygons();
+								});
+							}
+							else {
+								currentElement.html(evt);
+								fixPolygons();
+							}
+						}
+					});
+				}
+				else {
+					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+						currentElement.html(evt);
+						fixPolygons();
+					});
+				}
 			}
         }
         
@@ -180,11 +255,12 @@ function toggleEvents() {
         }
         
         //User clicked on an item within color(). Generate list of supported colors.
-        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1) {
+        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1 && cellVal.indexOf("(") == -1 && 
+        cellVal.indexOf(")") == -1) {
         	var arr = new Array();
         	var currentElement = $(this);
         	arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
-        	openSelector("test title", arr).done(function(evt) {
+        	openSelector("Choice Selection Panel", arr).done(function(evt) {
 				if (evt.length > 0)
 					currentElement.html(evt);
 			});
@@ -208,7 +284,7 @@ function toggleEvents() {
         
         //User clicked a variable on the left side of an assignment operator
         else if (colNum < innerTable.rows[0].cells.length-1) {
-            if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
+            if (innerTable.rows[0].cells[colNum+1].textContent.indexOf("=") >= 0) {
 				var currentElement = $(this);
             	var arr = new Array();
             	for (var i = 0; i < distanceVariables.length; i++) {
@@ -228,8 +304,43 @@ function toggleEvents() {
             	}
           		if (arr.length > 0) {
 					openSelector("Choice Selection Panel", arr).done(function(evt) {
-						if (evt.length > 0)
-							currentElement.html(evt);
+						if (evt.length > 0) {
+							var currRow = rowNum;
+							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "distanceValue"]);
+								selRow--;
+							}
+							else if (evt.indexOf("p") >= 0) {
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ")"]);
+								selRow--;
+							}
+							else if (evt.indexOf("l") >= 0) {
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ",", "(", "X", ",", "Y", ")", ")"]);
+								selRow--;
+							}
+							else if (evt.indexOf("g") >= 0) {
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X",  ",", "Y", ")", ","]);
+								selRow--;
+								addNewRow(currRow+1, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+2, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+3, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
+								addNewRow(currRow+4, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ")"]);
+							}
+							else if (evt.indexOf("c") >= 0) {
+								codeTable.deleteRow(currRow);
+								insertTable.deleteRow(-1);
+								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
+								selRow--;
+							}
+						}
 					});
 				}
             }
@@ -332,6 +443,19 @@ function moveToLine(rowNum) {
         cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
         selectRow(rowNum-1);                                            // select newly inserted row
     }
+    refreshLineNumbers();
+}
+
+//refreshes line numbers
+function refreshLineNumbers() {
+	var innerTable;
+	for (var i = 0; i < codeTable.rows.length-1; i++) {
+		innerTable = codeTable.rows[i].cells[0].children[0];
+		if (!isNaN(innerTable.rows[0].cells[0].textContent) || innerTable.rows[0].cells[0].textContent.length == 0) {
+			if (i < 9) innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+			else innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;";
+		}
+	}
 }
 
 //Adds new row on line <line> and creates cells bases on <params> array
@@ -378,7 +502,7 @@ function selectRow(rowNum) {
     
     selRow = rowNum;
     var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    if (innerTable.rows[0].cells[0].innerHTML.indexOf("*") == -1)
+    if (rowToString(selRow).trim().length == 0)
 		innerTable.rows[0].cells[0].innerHTML = arrow;
 }
 
@@ -406,11 +530,11 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                 for (var j = 0; j < numCells; j++) {
                     if (firstLoop == true) { j = colInd; firstLoop = false; }
                     
-                    if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                    if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
                         if (!firstBrack) firstBrack = true;
                         else bracket++;
                     }
-                    else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                    else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
                         bracket--;
                     }
                     innerTable.rows[0].cells[j].style.color = "#FF0000";
@@ -439,10 +563,10 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
             for (var j = numCells - 1; j >= 0; j--) {
                 if (firstLoop == true) { j = colInd; firstLoop = false; }
                 
-                if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
                     bracket--;
                 }
-                else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
                     if (!firstBrack) firstBrack = true;
                     else bracket++;
                 }
@@ -477,7 +601,7 @@ function rowToString(rowInd) {
     var string = "";
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];
     for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-        string += innerTable.rows[0].cells[i].innerText;
+        string += innerTable.rows[0].cells[i].textContent;
     }
     return string.trim();
 }
@@ -522,21 +646,21 @@ function isDistanceAssign(row) {
 		return false;
 }
 
-//This function checks to see if the specified distance variable has been assignmed above the specified row
-function beenAssigned(distanceVar, row) {
+//This function checks to see if the specified variable has been assigned above the specified row
+function beenAssigned(variable, row) {
 	for (var i = 0; i < row; i++) {
-		if(isDistanceAssign(i)) {
+		var string = rowToString(i);
+		if(string.indexOf(variable) < string.indexOf("=") && string.indexOf(variable) >= 0)
 			return true;
-		}
 	}
 	return false;
 }
 
-//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300)
+//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
 function isEditableValue(cellVal, row) {
 	var rowString = rowToString(row);
-	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('X') >= 0 && cellVal.indexOf("EXPRESSION") == -1 || 
-	cellVal.indexOf("Y") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) && colNum > 0 || (cellVal.indexOf('distanceValue') >= 0 && 
+	cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("X") >= 0 || cellVal.indexOf("RADIUS") >= 0))
 		return true;
 	else
 		return false;
@@ -637,8 +761,23 @@ function deleteLoop(type, rowNum) {
 	}
 }
 
-
-
+function fixPolygons() {
+	var x = 0;
+	var y = 0;
+	for (var i = 0; i < codeTable.rows.length-1; i++) {
+		var rowString = rowToString(i);
+		if (rowString.indexOf("g") < rowString.indexOf("=") && rowString.indexOf("g") >= 0) {
+			x = rowString.substring(rowString.indexOf("(") + 2, rowString.indexOf(","));
+			y = rowString.substring(rowString.indexOf(",") + 1, rowString.indexOf(")"));
+		}
+		else if (rowString.indexOf("))") >= 0 && rowString.indexOf("((") == -1) {
+			codeTable.deleteRow(i);
+			insertTable.deleteRow(-1);
+			addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
+			selRow--;
+		}
+	}
+}
 
 
 
