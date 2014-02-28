@@ -100,7 +100,6 @@ buttonDiv.style.width = "70px";
 buttonDiv.style.height = "130px";
 buttonDiv.style.cssFloat = "right";
 
-/*************************************************************/
 //<p> for variable value title
 var varValueTitle = document.createElement('p');
 varValueTitle.id = "varValOuterP";
@@ -125,7 +124,6 @@ vvDivHolder.appendChild(varValueDiv);
 vvDivHolder.style.display = "none";
 vvDivHolder.style.position = "absolute";
 vvDivHolder.style.top = "410px";
-/*************************************************************/
 
 //<div> for program buttons
 var progButtonDiv = document.createElement('div');
@@ -269,7 +267,7 @@ container.style.height = "450px";
 container.appendChild(drawDiv);
 container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
-container.style.position = "relative"; //Teel's code <--
+container.style.position = "relative"; 
 container.appendChild(vvDivHolder);
 
 //Add listeners for walk and run
