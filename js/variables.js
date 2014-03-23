@@ -21,40 +21,38 @@ function printVars() {
 	var g = "";
 	var total = "";
 	
-	for (var i = 0; i < distanceVariables.length; i++) //Add all declared distance variables to the total string
-		d += distanceVariables[i] + ', ';
-	if (d.length > 0)
-		total += 'Distance: ' + d + '<br>';
-	
-	for (var i = 0; i < pointVariables.length; i++) //Add all declared point variables to the total string
-		p += pointVariables[i] + ', ';
-	if (p.length > 0)
-		total += 'Point: ' + p + '<br>';
-	
-	for (var i = 0; i < lineVariables.length; i++) //Add all declared line variables to the total string
-		l += lineVariables[i] + ', ';
-	if (l.length > 0)
-		total += 'Line: ' + l + '<br>';
-	
-	for (var i = 0; i < circleVariables.length; i++) //Add all declared circle variables to the total string
-		c += circleVariables[i] + ', ';
-	if (c.length > 0)
-		total += 'Circle: ' + c + '<br>';
-	
-	for (var i = 0; i < polygonVariables.length; i++) //Add all declared polygon variables to the total string
-		g += polygonVariables[i] + ', ';
-	if (g.length > 0)
-		total += 'Polygon: ' + g + '<br>';
-	
 	if(rowToString(0).indexOf("//Declared") >= 0) {
-		for(var i = 0; i < 3; i++) {
+		//for(var i = 0; i < 3; i++) {
+		while(rowToString(0).indexOf("//Program") == -1) {
 			codeTable.deleteRow(0);
 			if (selRow > 0) selRow--;
 		}
+		codeTable.deleteRow(0);
+		if (selRow > 0) selRow--;
 	}
+	for(var i = 1; i < distanceVariables.length; i++) {
+		if(distanceVariables[i-1].indexOf(",") == -1) distanceVariables[i-1] += ",&nbsp;";
+	}
+	for(var i = 1; i < pointVariables.length; i++) {
+		if(pointVariables[i-1].indexOf(",") == -1) pointVariables[i-1] += ",&nbsp;";
+	}
+	for(var i = 1; i < lineVariables.length; i++) {
+		if(lineVariables[i-1].indexOf(",") == -1) lineVariables[i-1] += ",&nbsp;";
+	}
+	for(var i = 1; i < polygonVariables.length; i++) {
+		if(polygonVariables[i-1].indexOf(",") == -1) polygonVariables[i-1] += ",&nbsp;";
+	}
+	for(var i = 1; i < circleVariables.length; i++) {
+		if(circleVariables[i-1].indexOf(",") == -1) circleVariables[i-1] += ",&nbsp;";
+	}
+	
+	addNewRow(0, ["//Program Code"]);
+	if(circleVariables.length > 0) addNewRow(0, circleVariables);
+	if(polygonVariables.length > 0) addNewRow(0, polygonVariables);
+	if(lineVariables.length > 0) addNewRow(0, lineVariables);
+	if(pointVariables.length > 0) addNewRow(0, pointVariables);
+	if(distanceVariables.length > 0) addNewRow(0, distanceVariables);
 	addNewRow(0,["//Declared Variables"]); 
-	addNewRow(1, [total]);
-	addNewRow(2, ["//Program Code"]);
 }
 
 //New Distance variable
