@@ -46,7 +46,15 @@ function printVars() {
 	if (g.length > 0)
 		total += 'Polygon: ' + g + '<br>';
 	
-	$("#" + variableDiv.id).empty().append(total); //Add all variables to variable window
+	if(rowToString(0).indexOf("//Declared") >= 0) {
+		for(var i = 0; i < 3; i++) {
+			codeTable.deleteRow(0);
+			if (selRow > 0) selRow--;
+		}
+	}
+	addNewRow(0,["//Declared Variables"]); 
+	addNewRow(1, [total]);
+	addNewRow(2, ["//Program Code"]);
 }
 
 //New Distance variable

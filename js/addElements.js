@@ -10,23 +10,6 @@ drawDiv.style.width = "300px";
 drawDiv.style.height = "350px";
 drawDiv.style.cssFloat = "right";
 
-//Variable window area <div>
-var variableWindowDiv = document.createElement('div');
-variableWindowDiv.id = "variable_window" + figNum;
-variableWindowDiv.style.width = "335px"; //added 35
-variableWindowDiv.style.height = "150px";
-variableWindowDiv.style.cssFloat = "left";
-
-//<div> for variable window
-var variableDiv = document.createElement('div');
-variableDiv.id = "var_win" + figNum;
-variableDiv.style.width = "245px"; //added 35
-variableDiv.style.height = "128px";
-variableDiv.style.border = "ridge";
-variableDiv.style.overflow = "auto";
-variableDiv.style.cssFloat = "left";
-variableDiv.style.fontSize = "13px";
-
 //Program window <div>
 var programWindowDiv = document.createElement('div');
 programWindowDiv.id = "program_window" + figNum;
@@ -38,7 +21,7 @@ programWindowDiv.style.cssFloat = "left";
 var programDiv = document.createElement('div');
 programDiv.id = "program_code" + figNum;
 programDiv.style.width = "245px"; //added 35
-programDiv.style.height = "260px";
+programDiv.style.height = "300px";
 programDiv.style.border = "ridge";
 programDiv.style.overflow = "auto";
 programDiv.style.cssFloat = "left";
@@ -80,7 +63,7 @@ insertTable.style.cssFloat = "left";
 //Insertion bar divider div
 var dividerDiv = document.createElement('div');
 dividerDiv.id = "dividerDiv" + figNum;
-dividerDiv.style.height = "255px";
+dividerDiv.style.height = "296px";
 dividerDiv.style.border = "1px solid #000000";
 dividerDiv.style.position = "absolute";
 dividerDiv.style.left = "12px";
@@ -92,13 +75,6 @@ run_walkDiv.id = "run_walk" + figNum;
 run_walkDiv.style.width = "220px";
 run_walkDiv.style.height = "25px";
 run_walkDiv.style.cssFloat = "right";
-
-//<div> for variable window buttons
-var buttonDiv = document.createElement('div');
-buttonDiv.id = "buttons" + figNum;
-buttonDiv.style.width = "70px";
-buttonDiv.style.height = "130px";
-buttonDiv.style.cssFloat = "right";
 
 //<p> for variable value title
 var varValueTitle = document.createElement('p');
@@ -125,11 +101,11 @@ vvDivHolder.style.display = "none";
 vvDivHolder.style.position = "absolute";
 vvDivHolder.style.top = "410px";
 
-//<div> for program buttons
+//<div> for buttons
 var progButtonDiv = document.createElement('div');
 progButtonDiv.id = "program_buttons" + figNum;
 progButtonDiv.style.width = "83px";
-progButtonDiv.style.height = "155px";
+progButtonDiv.style.height = "300px";
 progButtonDiv.style.cssFloat = "right";
 
 //<canvas> element for drawing window
@@ -184,47 +160,52 @@ circleButton.id = "circleButton" + figNum;
 circleButton.style.width = "70px";
 circleButton.onclick = function() {drawCircle();};
 circleButton.innerHTML = "Circle";
-circleButton.className = "button";
+circleButton.className = "btn btn-default";
+
+//sepparate variables from graphics functions
+var buttonSepparater = document.createElement('div');
+buttonSepparater.id = "buttonSepparater" + figNum;
+buttonSepparater.style.width = "70px";
+buttonSepparater.style.height = "20px";
 
 var assignButton = document.createElement('button');
 assignButton.id = "assignButton" + figNum;
 assignButton.style.width = "70px";
 assignButton.onclick = function() {assign();};
 assignButton.innerHTML = "Assign";
-assignButton.style.cssFloat = "right";
-assignButton.className = "button";
+//assignButton.style.cssFloat = "right";
+assignButton.className = "btn btn-default";
 
 var drawButton = document.createElement('button');
 drawButton.id = "drawButton" + figNum;
 drawButton.style.width = "70px";
 drawButton.onclick = function() {drawShape();};
 drawButton.innerHTML = "Draw";
-drawButton.style.cssFloat = "right";
-drawButton.className = "button";
+//drawButton.style.cssFloat = "right";
+drawButton.className = "btn btn-default";
 
 var eraseButton = document.createElement('button');
 eraseButton.id = "eraseButton" + figNum;
 eraseButton.style.width = "70px";
 eraseButton.onclick = function() {erase();};
 eraseButton.innerHTML = "Erase";
-eraseButton.style.cssFloat = "right";
-eraseButton.className = "button";
+eraseButton.className = "btn btn-default";
 
 var colorButton = document.createElement('button');
 colorButton.id = "colorButton" + figNum;
 colorButton.style.width = "70px";
 colorButton.onclick = function() {changeColor();};
 colorButton.innerHTML = "Color";
-colorButton.style.cssFloat = "right";
-colorButton.className = "button";
+//colorButton.style.cssFloat = "right";
+colorButton.className = "btn btn-default";
 
 var loopButton = document.createElement('button');
 loopButton.id = "loopButton" + figNum;
 loopButton.style.width = "70px";
 loopButton.onclick = function() {loop();};
 loopButton.innerHTML = "Loop";
-loopButton.style.cssFloat = "right";
-loopButton.className = "button";
+//loopButton.style.cssFloat = "right";
+loopButton.className = "btn btn-default";
 
 //Define window label
 var drawLabel = "Drawing Window";
@@ -237,16 +218,13 @@ run_walkDiv.appendChild(runButton);
 run_walkDiv.appendChild(walkButton);
 drawDiv.appendChild(run_walkDiv);
 
-//Add everything to the Variable Window <div>
-variableWindowDiv.appendChild(variableDiv);
-buttonDiv.appendChild(distanceButton);
-buttonDiv.appendChild(pointButton);
-buttonDiv.appendChild(lineButton);
-buttonDiv.appendChild(polygonButton);
-buttonDiv.appendChild(circleButton);
-variableWindowDiv.appendChild(buttonDiv);
-
 //Add everything to the Program Code <div>
+progButtonDiv.appendChild(distanceButton);
+progButtonDiv.appendChild(pointButton);
+progButtonDiv.appendChild(lineButton);
+progButtonDiv.appendChild(polygonButton);
+progButtonDiv.appendChild(circleButton);
+progButtonDiv.appendChild(buttonSepparater);
 progButtonDiv.appendChild(assignButton);
 progButtonDiv.appendChild(drawButton);
 progButtonDiv.appendChild(eraseButton);
@@ -265,7 +243,6 @@ var container = document.getElementById("container");
 container.style.width = "650px";
 container.style.height = "450px";
 container.appendChild(drawDiv);
-container.appendChild(variableWindowDiv);
 container.appendChild(programWindowDiv);
 container.style.position = "relative"; 
 container.appendChild(vvDivHolder);
