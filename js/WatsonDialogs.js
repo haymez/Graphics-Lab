@@ -1,513 +1,489 @@
-//holds a .Deferred() object
-var dialogsDefer;
-var dialogmodalVars;
-
-$(document).on('click', "input.Numpad" , function() 
-{
-	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
-	var Val = $(this).val();
-	var Current = $(parent).val();
-	var NewVal = Current+Val;
-	compareVal = convertBase(NewVal, $(parent).data("base"));
-	//truncates the values under certain conditions.
-	while (compareVal > $(parent).data("maxRange") && $(parent).data("maxRange")>=0 && $(parent).data("maxRange")!=null)
-		{
-			NewVal = NewVal.substring(1);
-			compareVal = convertBase(NewVal, $(parent).data("base"));
+/**********************************************************************************************
+ * Authors: Mitchell Martin, James Miltenburger, Bidur Shrestha, Jonathan Teel Neil Vosburg
+ *
+ * Entity: Watson Dialog Library (WatsonDialogs.js)
+ *
+ * This file contains the four components to the Watson Dialog Library: NumberPad, StringPad,
+ * Selector, and Alert. Each component has one public method, open(), that has different
+ * parameters depending on the component. Please refer to the Watson Dialog Library API document
+ * for each component's functionalities and parameter specifications.
+ **********************************************************************************************/
+ 
+function NumberPad() {
+	this.open = open;
+	
+	var thisID = NumberPad.nextDialogID;
+	NumberPad.nextDialogID++;
+	var callback;
+	
+	var minValue;
+	var maxValue;
+	var decimalAllowed;
+	var base;
+	
+	var dialogHTML =
+		 '<div id="numpadInstructDiv' + thisID + '">\
+		 <font size="2">Insert some numbers.</font>\
+		 </div>\
+		 <input id="numpadInput' + thisID + '" class="NumpadInputBox" readonly></input>\
+		 <table id="outerTable">\
+			<tr>\
+			<td><table id="numpadTable' + thisID + '"></table></td>\
+			<td><table id="numpadFuncTable' + thisID + '"></table></td>\
+			</tr>\
+		</table>';
+	 
+	function open(_minValue, _maxValue, title, instruction, _decimalAllowed, _base, _callbackFunc) {
+		base = _base;
+		if (base == 10) openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, _callbackFunc);
+		else if (base == 16) openHexpad(_minValue, _maxValue, title, instruction, _callbackFunc);
+		else alert("Unsupported base.");
+	}
+	
+	function openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, callbackFunc) {
+		minValue = _minValue;
+		maxValue = _maxValue;
+		if (minValue !== null && maxValue !== null) {
+			if (_minValue >= _maxValue) {
+				alert("Error: Minimum value is greater than maximum value.");
+				return;
+			}
 		}
-	$(parent).val(NewVal);
-	$("input.InputValue").val(NewVal);
-});
-
-$(document).on('click', "input.ClearBtn" , function() 
-{
-	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
-	$(parent).val("0");
-	$("input.InputValue").val(0);
-});
-
-$(document).on('click', "input.VarOKBtn" , function() 
-{
-	var Select = $("#VarsDialogSelect");
-	if(typeof Select.data("selected") == 'undefined')
-	{
-		dialogsDefer.resolve(new String());
-	}
-	else
-		dialogsDefer.resolve(Select.data("selected"));
-	dialogmodalVars.dialog("close");
-});
-
-$(document).on('click', "input.VarCancelBtn" , function() 
-{
-	dialogsDefer.resolve(new String());
-	dialogmodalVars.dialog("close");
-});
-
-$(document).on('click', "input.CancelBtn" , function() 
-{
-	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
-	$(parent).dialog("close");
-});
-
-$(document).on('click', "input.OKBtn" , function() 
-{
-	var input = $("input.InputValue").val();
-	var parent = "#"+$(this).parent().parent().parent().parent().attr("id");
-	if ((input > $(parent).data("maxRange") && $(parent).data("maxRange")>=0 && $(parent).data("maxRange")!=null) ||
-		(input < $(parent).data("minRange") && $(parent).data("minRange")>=0 && $(parent).data("minRange")!=null)) {
-	    $(parent).dialog("close");
-		//maxRange is unbounded. Should never be triggered.
-		if($(parent).data("maxRange")<0 || $(parent).data("maxRange")==null)
-			alert("Please choose a value greater than or equal to "+$(parent).data("minRange").toString()+".");
-		//minRange is unbounded
-		else if($(parent).data("minRange")<0 || $(parent).data("minRange")==null)
-			alert("Please choose a value less than "+$(parent).data("maxRange").toString()+".");
-		//There should be no errors if both are unbounded, so the only
-		//other option is to print both.
-		else
-		{
-			alert("Please choose a value between "+$(parent).data("minRange").toString()+"and "+$(parent).data("maxRange").toString()+".");
+		if (boundsCheck(0) == false) {
+			alert("Error: Zero must be included within these bounds.");
+			return;
 		}
-	    $(parent).val(0);
-	    $(parent).dialog("open");
-	}
-	else {
-		dialogsDefer.resolve(convertBase(input, $(parent).data("base")));
-        $(parent).dialog("close");
-	}
-	//return;	
-});
+		
+		callback = callbackFunc;
 
-document.write('\
-                    <div id="dialog-modal-Vars" title="Choice Selection Panel" style="display:none">\
-                            <div id="VarsSelectHolder">\
-                                    <select size=8 id="VarsDialogSelect">\
-					</select>\
-                            </div>\
-                            <div id="VarButtons">\
-                                    <ul>\
-                                            <li><input type="button" value="OK" class="VarOKBtn VarBtn"/></li>\
-                                            <li><input type="button" value="Cancel" class="VarCancelBtn VarBtn"/></li>\
-                                    </ul>\
-                            </div>\
-                    </div>\
-					');
-
-$(document).on('change', 'select#VarsDialogSelect', function()
-{
-	var Select = $("#VarsDialogSelect");
-	Select.data("selected", this.options[this.selectedIndex].value);
-});
-
-
-document.write
-('\
-    <!--\
-    *************************************************************************************************\
-             ************ This is numpad html. Add this anywhere in index page **************************\
-    *************************************************************************************************\
-    -->\
-                    <div id="dialog-modal-num" title="Numeric Entry Pad" style="display:none">\
-                            <input type="text" class="InputValue"/>\
-                            <div id="NumpadDiv">\
-                                    <ul>\
-                                            <li><input type="button" class="Numpad" id="Numpad-7" value="7"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-8" value="8"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-9" value="9"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-4" value="4"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-5" value="5"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-6" value="6"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-1" value="1"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-2" value="2"/></li>\
-                                            <li><input type="button" class="Numpad" id="Numpad-3" value="3"/></li>\
-                                            <li class="Numpad0"><input type="button" class="Numpad" id="Numpad-0" value="0"/></li>\
-                                    </ul>\
-                            </div>\
-                            <div id="NumpadFunctionBtns">\
-                                    <ul>\
-                                            <li><input type="button" value="OK" class="OKBtn WButton"/></li>\
-                                            <li><input type="button" value="Clear" class="ClearBtn WButton"/></li>\
-                                            <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
-                                    </ul>\
-                            </div>\
-                    </div>\
-    <!--\
-    *************************************************************************************************\
-            *********************************** Numpad html end ****************************************\
-    *************************************************************************************************\
-    -->\
-\
-    <!--\
-    *************************************************************************************************\
-             ************ This is variable selection html. Add this anywhere in index page **************\
-    *************************************************************************************************\
-    -->\
-                    <div id="dialog-modal-Vars" title="Choice Selection Panel" style="display:none">\
-                            <div id="VarsSelectHolder">\
-                                    <select size=8 id="VarsDialogSelect">\
-                    \
-                                    </select>\
-                            </div>\
-                            <div id="VarButtons">\
-                                    <ul>\
-                                            <li><input type="button" value="OK" class="VarOKBtn VarBtn"/></li>\
-                                            <li><input type="button" value="Cancel" class="VarCancelBtn VarBtn"/></li>\
-                                    </ul>\
-                            </div>\
-                    </div>\
-    <!--\
-    *************************************************************************************************\
-             ***************************** Variable selection html end *********************************\
-    *************************************************************************************************\
-    -->\
-\
-');
-
-document.write
-('\
-	<!--\
-    *************************************************************************************************\
-             ************ This is hexpad html. Add this anywhere in index page **************************\
-    *************************************************************************************************\
-    -->\
-                    <div id="dialog-modal-hex" title="Numeric Entry Pad" style="display:none">\
-                            <input id="hexInput" type="text" class="InputValue"/>\
-                            <div id="NumpadDiv">\
-                                    <ul>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-7" value="7"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-8" value="8"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-9" value="9"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-4" value="4"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-5" value="5"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-6" value="6"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-1" value="1"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-2" value="2"/></li>\
-                                            <li><input type="button" class="Numpad" id="Hexpad-3" value="3"/></li>\
-						<li class="HexNumpad"><input type="button" class="Numpad" id="Hexpad-D" text = "D" value="D"/></li>\
-					<li><input type="button" class="Numpad" id="Hexpad-E" value="E"/></li>\
-					<li><input type="button" class="Numpad" id="Hexpad-F" value="F"/></li>\
-					<li><input type="button" class="Numpad" id="Hexpad-A" value="A"/></li>\
-					<li><input type="button" class="Numpad" id="Hexpad-B" value="B"/></li>\
-					<li><input type="button" class="Numpad" id="Hexpad-C" value="C"/></li>\
-					<li class="Numpad0"><input type="button" class="Numpad" id="Hexpad-0" value="0"/></li>\
-                                    </ul>\
-                            </div>\
-                            <div id="NumpadFunctionBtns">\
-                                    <ul>\
-                                            <li><input type="button" value="OK" class="OKBtn WButton"/></li>\
-                                            <li><input type="button" value="Clear" class="ClearBtn WButton"/></li>\
-                                            <li><input type="button" value="Cancel" class="CancelBtn WButton"/></li>\
-                                    </ul>\
-                            </div>\
-                    </div>\
-    <!--\
-    *************************************************************************************************\
-            *********************************** hexpad html end ****************************************\
-    *************************************************************************************************\
-    -->\
-\
-');
-
-function openNumPad(minRange, maxRange, title, instructions, decimal, base)
-{    
-	//set variables to input or defaults.
-	if(typeof minRange === 'undefined')
-	{
-  		this.minRange = 0;	
-	}
-	else
-	{
-		this.minRange = minRange;	
-	}
-
-	if(typeof maxRange === 'undefined')
-	{
-  		this.maxRange = 300;
-	}
-	else
-	{
-		this.maxRange = maxRange;
-	}
-
-	if(typeof title === 'undefined')
-	{
-  		this.title = "Bravely Default";	
-	}
-	else
-	{
-		this.title = title;
-	}
-
-	if(typeof instructions === 'undefined')
-	{
-  		this.instructions = "do things";
-	}
-	else
-	{
-		this.instructions = instructions;
-	}
-
-	if(typeof decimal === 'undefined')
-	{
-  		this.decimal = false;
-	}
-	else
-	{
-		this.decimal = decimal;
-	}
-	if(typeof base === 'undefined')
-	{
-  		this.base = 10;	
-	}
-	else
-	{
-		this.base = base;
-	}
-	if(this.base == 2)
-	{
-		//does nothing as of yet.
-		dialogsDefer = $.Deferred();
-		return dialogsDefer;
-	}
-	else if(this.base == 16)
-	{
-		//set variables
-		$( "#dialog-modal-hex" ).title =this.title;
-		$( "#dialog-modal-hex" ).val(0);
-		$("input.InputValue").val(0);
-		$( "#dialog-modal-hex" ).data('minRange', this.minRange);
-		$( "#dialog-modal-hex" ).data('maxRange', this.maxRange);
-		//TODO: instructions should be a text field, not data.
-		$( "#dialog-modal-hex" ).data('instructions', this.instructions);
-		dialogsDefer = $.Deferred();
-    		$( "#dialog-modal-hex" ).dialog(
-					{
-						height: 280,
-						width: 350,
-						modal: true
-					});
-		return dialogsDefer.promise();
-	}
-	else //Default of base 10
-	{
-		//set variables
-		$( "#dialog-modal-num" ).title =this.title;
-		$( "#dialog-modal-num" ).val(0);
-		$("input.InputValue").val(0);
-		$( "#dialog-modal-num" ).data('minRange', this.minRange);
-		$( "#dialog-modal-num" ).data('maxRange', this.maxRange);
-		$( "#dialog-modal-num" ).data('instructions', this.instructions);
-		$( "#dialog-modal-num" ).data('base', this.base);
-		dialogsDefer = $.Deferred();
-    		$( "#dialog-modal-num" ).dialog(
-					{
-						height: 280,
-						width: 350,
-						modal: true
-					});
-		return dialogsDefer.promise();
-	}
-}
-
-//Does nothing as of yet.
-function openAlert(title, alert)
-{
-	dialogsDefer = $.Deferred();
-	return dialogsDefer.promise();
-}
-
-//Does nothing as of yet.
-function openSelector(title, array)
-{
-	dialogsDefer = $.Deferred();
-	//clear options.
-	$("#VarsDialogSelect").find('option').remove();
-	for(var i=0; i<array.length;i++)
-	{
-		$("#VarsDialogSelect")
-         .append($("<option></option>")
-         .val(array[i])
-         .text(array[i]));
-	}
-	//Resets data string.
-	$( "#VarsDialogSelect" ).data("selected", new String());
-	dialogmodalVars = $( "#dialog-modal-Vars" ).dialog({
-						height: 280,
-						width: 350,
-						modal: true
-					});
-	//Note: although it appears strange,
-	//using.dialog seems to create the dialog
-	//with all elements visually present, but 
-	//then removes all of them.
-	$("#VarsDialogSelect").find('option').remove();
-	for(var i=0; i<array.length;i++)
-	{
-		$("#VarsDialogSelect")
-         .append($("<option></option>")
-         .val(array[i])
-         .text(array[i]));
-	}
-	return dialogsDefer.promise();
-}
-
-//Does nothing as of yet.
-function opentringPad(title, instructions)
-{
-	dialogsDefer = $.Deferred();
-	return dialogsDefer.promise();
-}
-
-function numExample()
-{
-	openNumPad(30, null, "This is a test", "Do things", false, 10).done(function(returned) {
-		alert(returned);
-	});
-}
-
-function hexExample()
-{
-	openNumPad(-1, 1000, "Hexpad test", "Do more things", false, 16).done(function(returned) {
-		alert(returned);
-	});
-}
-
-function selectorExample()
-{
-	var list = new Array();
-	list[0] = "pick me";
-	list[1] = "don't pick me";
-	list[2] = "I have no strong feelings one way or the other.";
-	openSelector("This is a selector", list).done(function(returned)
-	{
-		alert(returned);
-	});
-}
-
-function convertBase(number, base)
-{
-	var total = 0;
-	for(var i =0; i<=number.length-1; i++)
-	{
-		switch(number.charAt(number.length-1-i))
-		{
-			case '0':
-				total = total+Math.pow(base,i)*0;
-				break;
-			case '1':
-				total = total+Math.pow(base,i)*1;
-				break;
-			case '2':
-				total = total+Math.pow(base,i)*2;
-				break;
-			case '3':
-				total = total+Math.pow(base,i)*3;
-				break;
-			case '4':
-				total = total+Math.pow(base,i)*4;
-				break;
-			case '5':
-				total = total+Math.pow(base,i)*5;
-				break;
-			case '6':
-				total = total+Math.pow(base,i)*6;
-				break;
-			case '7':
-				total = total+Math.pow(base,i)*7;
-				break;
-			case '8':
-				total = total+Math.pow(base,i)*8;
-				break;
-			case '9':
-				total = total+Math.pow(base,i)*9;
-				break;
-			case 'A':
-				total = total+Math.pow(base,i)*10;
-				break;
-			case 'B':
-				total = total+Math.pow(base,i)*11;
-				break;
-			case 'C':
-				total = total+Math.pow(base,i)*12;
-				break;
-			case 'D':
-				total = total+Math.pow(base,i)*13;
-				break;
-			case 'E':
-				total = total+Math.pow(base,i)*14;
-				break;
-			case 'F':
-				total = total+Math.pow(base,i)*15;
-				break;
-			default:
-				total = 0;
+		var dialogDiv = document.createElement("div");
+		dialogDiv.id = "numpadDialog" + thisID;
+		dialogDiv.setAttribute("title", title);
+		dialogDiv.innerHTML = dialogHTML;
+		document.body.appendChild(dialogDiv);
+		
+		var input = document.getElementById("numpadInput" + thisID);
+		input.value = 0;
+			
+		decimalAllowed = _decimalAllowed;
+		
+		var instructDiv = document.getElementById("numpadInstructDiv" + thisID);
+		if (instruction == null) instructDiv.innerHTML = "";
+		else instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';
+		
+		var input = document.getElementById("numpadInput" + thisID);
+		
+		var numpadTable = document.getElementById("numpadTable" + thisID);
+		
+		$( "#numpadDialog" + thisID ).dialog({width: "295px", resizable: false});
+		var row;
+		var iters = [ 3, 3, 3, 3 ];
+		var vals = [ [ ".", "0", "-" ], [ "3", "2", "1", ], [ "6", "5", "4" ], [ "9", "8", "7" ]  ]; 
+		var firstRow;
+		
+		for (var i = 0; i < 4; i++) {
+			row = numpadTable.insertRow();
+			for (var j = 0; j < 3; j++) {
+				cell = row.insertCell();
+				if (i == 0) {
+					var id;
+					if (vals[i][j] == ".") id = "numPadNumButtonDecimal" + thisID;
+					else id = "numpadNumButton" + thisID + "-" + vals[i][j];
+					
+					cell.innerHTML = "<button id='" + id + "' class='NumpadNumButton'>" + vals[i][j] + "</button>"
+					$( "#" + id ).button();
+					addNumpadButtonEventListener(id, vals[i][j]);
+				}
+				else {
+					var id = "numpadNumButton" + thisID + "-" + vals[i][j];
+					cell.innerHTML = "<button id='" + id + "' class='NumpadNumButton'>" + vals[i][j] + "</button>";
+					$( "#" + id ).button();
+					addNumpadButtonEventListener(id, vals[i][j]);
+				}
+			}
+		}
+		
+		var funcTable = document.getElementById("numpadFuncTable" + thisID);
+		var button;
+		var buttonIDs = [ "numpadNumButtonCancel", "numpadNumButtonClear", "numpadNumButtonEnter" ];
+		
+		for (var i = 0; i < 3; i++) {
+			cell = funcTable.insertRow().insertCell();
+			cell.innerHTML = "<button id='" + buttonIDs[i] + thisID + "' class='WatsonLibraryFuncButton'>" + buttonIDs[i].slice(15) + "</button>";
+			button = document.getElementById(buttonIDs[i] + thisID);
+			if (i == 0) addCancelButtonEventListener(buttonIDs[i] + thisID);
+			else if (i == 1) addClearButtonEventListener(buttonIDs[i] + thisID);
+			else addEnterButtonEventListener(buttonIDs[i] + thisID);
+			$( "#" + buttonIDs[i] + thisID).button();
 		}
 	}
-	return total;
+	
+	function openHexpad(_minValue, _maxValue, title, instruction, callbackFunc) {
+		minValue = _minValue;
+		maxValue = _maxValue;
+		if (minValue !== null && maxValue !== null) {
+			if (_minValue >= _maxValue) {
+				alert("Error: Minimum value is greater than maximum value.");
+				return;
+			}
+		}
+		if (boundsCheck(0) == false) {
+			alert("Error: Zero must be included within these bounds.");
+			return;
+		}
+		
+		callback = callbackFunc;
+		
+		var dialogDiv = document.createElement("div");
+		dialogDiv.id = "numpadDialog" + thisID;
+		dialogDiv.setAttribute("title", title);
+		dialogDiv.innerHTML = dialogHTML;
+		document.body.appendChild(dialogDiv);
+		
+		var input = document.getElementById("numpadInput" + thisID);
+		input.value = 0;
+		
+		var instructDiv = document.getElementById("numpadInstructDiv" + thisID);
+		if (instruction == null) instructDiv.innerHTML = "";
+		else instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';
+		
+		var input = document.getElementById("numpadInput" + thisID);
+		
+		var hexpadTable = document.getElementById("numpadTable" + thisID);
+		
+		$( "#numpadDialog" + thisID ).dialog({width: "295px", resizable: false});
+		var row;
+		var iters = [ 2, 3, 3, 3, 3, 3 ];
+		var vals = [ [ "0", "S" ], ["3", "2", "1" ], ["6", "5", "4"], [ "9", "8", "7", ], [ "C", "B", "A" ], [ "F", "E", "D" ]  ]; 
+		var firstRow;
+		
+		for (var i = 0; i < 6; i++) {
+			row = hexpadTable.insertRow();
+			for (var j = 0; j < iters[i]; j++) {
+				cell = row.insertCell();
+				var id = "numpadNumButton" + thisID + "-" + vals[i][j];
+				cell.innerHTML = "<button id='" + id + "' class='NumpadNumButton'>" + vals[i][j] + "</button>";
+				if (id == "numpadNumButton" + thisID + "-S") {
+					document.getElementById("numpadNumButton" + thisID + "-S").style.visibility = "hidden";
+				}
+				else $( "#" + id ).button();
+				addHexpadButtonEventListener(id, vals[i][j]);
+			}
+		}
+		
+		var funcTable = document.getElementById("numpadFuncTable" + thisID);
+		var button;
+		var buttonIDs = [ "numpadNumButtonCancel", "numpadNumButtonClear", "numpadNumButtonEnter" ];
+		
+		for (var i = 0; i < 3; i++) {
+			cell = funcTable.insertRow().insertCell();
+			cell.innerHTML = "<button id='" + buttonIDs[i] + thisID + "' class='WatsonLibraryFuncButton'>" + buttonIDs[i].slice(15) + "</button>";
+			button = document.getElementById(buttonIDs[i] + thisID);
+			if (i == 0) { addCancelButtonEventListener(buttonIDs[i] + thisID); button.style.marginBottom = "100px"; }
+			else if (i == 1) addClearButtonEventListener(buttonIDs[i] + thisID);
+			else addEnterButtonEventListener(buttonIDs[i] + thisID);
+			$( "#" + buttonIDs[i] + thisID).button();
+		}
+	}
+	
+	function addNumpadButtonEventListener(buttonID, value) {
+		var button = document.getElementById(buttonID);
+		button.addEventListener("click", function() {
+			var input = document.getElementById("numpadInput" + thisID);
+			
+			if (value == "-") {
+				if (input.value.charAt(0) != '-' && input.value != '0') {
+					var temp = input.value;
+					if (boundsCheck("-" + temp) == true) input.value = "-" + temp;
+				}
+				else {
+					var temp = input.value.slice(1);
+					if (boundsCheck(temp) == true) input.value = input.value.slice(1);
+				}
+			}
+			else if (value == ".") {
+				if (input.value.indexOf(".") < 0 && decimalAllowed == true) input.value += value;
+			}
+			else {
+				if (boundsCheck(input.value + value) == true) {
+					if (input.value == "0") input.value = value;
+					else input.value += value;
+				}
+			}
+			
+			$( "#" + buttonID).blur();
+		});
+	}
+	
+	function addHexpadButtonEventListener(buttonID, value) {
+		var button = document.getElementById(buttonID);
+		button.addEventListener("click", function() {
+			var input = document.getElementById("numpadInput" + thisID);
+			
+			if (boundsCheck(input.value + value) == true) {
+				if (input.value == "0") input.value = value;
+				else input.value += value;
+			}
+			
+			$( "#" + buttonID).blur();
+		});
+	}
+	
+	function addEnterButtonEventListener(buttonID) {
+		var button = document.getElementById(buttonID);
+		button.addEventListener("click", function() {
+			var input = document.getElementById("numpadInput" + thisID);
+			callback(input.value);
+			$( "#numpadDialog" + thisID).dialog('close');
+		});
+	}
+	
+	function addClearButtonEventListener(buttonID) {
+		var button = document.getElementById(buttonID);
+		button.addEventListener("click", function() {
+			var input = document.getElementById("numpadInput" + thisID);
+			input.value = "0";
+			
+			$( "#" + buttonID).blur();
+		});
+	}
+	
+	function addCancelButtonEventListener(buttonID) {
+		var button = document.getElementById(buttonID);
+		button.addEventListener("click", function() {
+			$( "#numpadDialog" + thisID).dialog('close');
+			callback(null);
+		});
+	}
+	
+	function boundsCheck(value) {
+		if (base == 10)	value = parseFloat(value);
+		else value = parseInt(value, 16);
+		
+		if (minValue === null && maxValue === null) return true;
+		else if (minValue !== null && maxValue !== null) {
+			if (value <= maxValue && value >= minValue) return true;
+		}
+		else if (minValue === null && maxValue !== null) {
+			if (value <= maxValue) return true;
+		}
+		else if (minValue !== null && maxValue === null) {
+			if (value >= minValue) return true;
+		}
+		
+		return false;
+	}
 }
 
-function translateBase(number, base)
-{
-	var returned = new String();
-	var currentPlace;
-	while(number>base)
-	{
-		currentPlace = number%base;
-		if(currentPlace<10)
-		{
-			returned = currentPlace.toString() + returned;
-		}
-		switch(currentPlace)
-		{
-			case 10:
-				returned = "A"+returned;
-				break;
-			case 11:
-				returned = "B"+returned;
-				break;
-			case 12:
-				returned = "C"+returned;
-				break;
-			case 13:
-				returned = "D"+returned;
-				break;
-			case 14:
-				returned = "E"+returned;
-				break;
-			case 15:
-				returned = "F"+returned;
-				break;
-		}
-		number = Math.floor(number/base);
+function StringPad() {
+	this.open = open;
+	
+	var thisID = StringPad.nextDialogID;
+	StringPad.nextDialogID++;
+	var callback;
+	
+	var dialogHTML =
+		'<table id="selectorTable">\
+		<tr>\
+		<td>\
+		<div id="stringPadInstructDiv' + thisID + '"></div>\
+		<input id="stringInput' + thisID + '" style="width:270px"></select>\
+		</td>\
+		<td>\
+		<table id="innerTable">\
+		<tr>\
+		<td><button id="stringPadOkay' + thisID + '" class="WatsonLibraryFuncButton">Okay</button></td>\
+		</tr>\
+		<tr>\
+		<td><button id="stringPadClear' + thisID + '" class="WatsonLibraryFuncButton">Clear</button></td>\
+		</tr>\
+		<tr>\
+		<td><button id="stringPadCancel' + thisID + '" class="WatsonLibraryFuncButton">Cancel</button></td>\
+		</tr>\
+		</table>\
+		</td>\
+		</table>';
+		
+	function open(title, instruction, callback) {
+		var dialogDiv = document.createElement("div");
+		dialogDiv.id = "stringPadDialog" + thisID;
+		dialogDiv.setAttribute("title", title);
+		dialogDiv.innerHTML = dialogHTML;
+		document.body.appendChild(dialogDiv);
+		
+		var instructDiv = document.getElementById("stringPadInstructDiv" + thisID);
+		if (instruction == null) instructDiv.innerHTML = "";
+		else instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';
+	
+		$( "#stringPadDialog" + thisID ).dialog({width: "400px", resizable: false});
+		
+		var input = document.getElementById("stringInput" + thisID);
+		var button;
+		button = document.getElementById("stringPadOkay" + thisID);
+		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); callback(input.value); });
+		$( "#stringPadOkay" + thisID).button();
+	
+		button = document.getElementById("stringPadClear" + thisID);
+		button.addEventListener("click", function() { input.value = ""; });
+		$( "#stringPadClear" + thisID).button();
+		
+		button = document.getElementById("stringPadCancel" + thisID);
+		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); callback(null); });
+		$( "#stringPadCancel" + thisID).button();
 	}
-		currentPlace = number;
-		if(currentPlace<10)
-		{
-			returned = currentPlace.toString() + returned;
-		}
-		switch(currentPlace)
-		{
-			case 10:
-				returned = "A"+returned;
-				break;
-			case 11:
-				returned = "B"+returned;
-				break;
-			case 12:
-				returned = "C"+returned;
-				break;
-			case 13:
-				returned = "D"+returned;
-				break;
-			case 14:
-				returned = "E"+returned;
-				break;
-			case 15:
-				returned = "F"+returned;
-				break;
-			default:
-				returned = currentPlace.toString() + returned;
-		}
-		return returned;
 }
+
+function Selector() {
+	this.open = open;
+	
+	var thisID = Selector.nextDialogID;
+	Selector.nextDialogID++;
+	var callback;
+	
+	var dialogHTML =
+		'<table id="selectorTable">\
+		<tr>\
+		<td><select id="selector' + thisID + '" size="5" style="width:200px;"></select></td>\
+		<td>\
+		<table id="innerTable">\
+		<tr>\
+		<td><button id="selectorOkay' + thisID + '" class="WatsonLibraryFuncButton">Okay</button></td>\
+		</tr>\
+		<tr>\
+		<td><button id="selectorCancel' + thisID + '" class="WatsonLibraryFuncButton">Cancel</button></td>\
+		</tr>\
+		</table>\
+		</td>\
+		</table>';
+		
+	function open(title, options, callback) {
+		var dialogDiv = document.createElement("div");
+		dialogDiv.id = "selectorDialog" + thisID;
+		dialogDiv.setAttribute("title", title);
+		dialogDiv.innerHTML = dialogHTML;
+		document.body.appendChild(dialogDiv);
+		
+		$( "#selectorDialog" + thisID ).dialog({width: "325px", resizable: false});
+		
+		var select = document.getElementById("selector" + thisID);
+		
+		var len = options.length;
+		for (var i = 0; i < len; i++) {
+			var option = document.createElement("option");
+			option.text = options[i];
+			select.add(option);
+		}
+		
+		var button;
+		button = document.getElementById("selectorOkay" + thisID);
+		button.addEventListener("click", function() { $( "#selectorDialog" + thisID).dialog('close'); callback(select.options[select.selectedIndex].text); });
+		$( "#selectorOkay" + thisID).button();
+		
+		button = document.getElementById("selectorCancel" + thisID);
+		button.addEventListener("click", function() { $( "#selectorDialog" + thisID).dialog('close'); callback(null); });
+		$( "#selectorCancel" + thisID).button();
+	}
+}
+
+function Alert() {
+	this.open = open;
+	
+	var thisID = Alert.nextDialogID;
+	Alert.nextDialogID++;
+	var callback;
+	
+	var dialogHTML1 =
+		 '<div id="alertInstructDiv' + thisID + '">\
+		 <font size="2">Insert some numbers.</font>\
+		 </div>\
+		 <table>\
+		 <tr>\
+		 <td><button id="alertOKButton' + thisID + '" class="WatsonLibraryFuncButton">Okay</button></td>\
+		 </tr>\
+		 <table>';
+		 
+	var dialogHTML2 =
+		 '<div id="alertInstructDiv' + thisID + '">\
+		 <font size="2">Insert some numbers.</font>\
+		 </div>\
+		 <table>\
+		 <tr>\
+		 <td><button id="alertProceedButton' + thisID + '" class="AlertFuncButton">Proceed</button></td>\
+		 <td><button id="alertCancelButton' + thisID + '" class="AlertFuncButton">Cancel</button></td>\
+		 </tr>\
+		 <table>';
+		 
+	function open(title, instruction, bool, _callback) {
+		callback = _callback;
+		
+		var dialogDiv = document.createElement("div");
+		dialogDiv.id = "alertDialog" + thisID;
+		dialogDiv.setAttribute("title", title);
+		if (bool) {
+			dialogDiv.innerHTML = dialogHTML1;
+		}
+		else {
+			dialogDiv.innerHTML = dialogHTML2;
+		}
+		document.body.appendChild(dialogDiv);
+
+		var instructDiv = document.getElementById("alertInstructDiv" + thisID);
+		instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';
+		
+		if (instruction.length < 50) $( "#alertDialog" + thisID ).dialog({width: "295px", resizable: false});
+		else $( "#alertDialog" + thisID ).dialog({width: "295px", resizable: false});
+		
+		if (bool) {
+			var okButton = document.getElementById("alertOKButton" + thisID);
+			if (instruction.length < 30) okButton.style.marginTop = "30px";
+			else okButton.style.marginTop = "10px";
+			okButton.style.marginLeft = "85px";
+			okButtonEventListener("alertOKButton" + thisID);
+			$( "#alertOKButton" + thisID).button();
+		}
+		else {
+			var proceedButton = document.getElementById("alertProceedButton" + thisID);
+			if (instruction.length < 50) proceedButton.style.marginTop = "30px";
+			else proceedButton.style.marginTop = "10px";
+			
+			proceedButton.style.marginLeft = "25px";
+			proceedButtonEventListener("alertProceedButton" + thisID);
+			$( "#alertProceedButton" + thisID).button();
+			
+			var cancelButton = document.getElementById("alertCancelButton" + thisID);
+			if (instruction.length < 50) cancelButton.style.marginTop = "30px";
+			else cancelButton.style.marginTop = "10px";
+			cancelButtonEventListener("alertCancelButton" + thisID);
+			$( "#alertCancelButton" + thisID).button();
+		}
+	}
+
+	function okButtonEventListener(id) {
+		var button = document.getElementById(id);
+		button.addEventListener("click", function() {
+			$("#alertDialog" + thisID).dialog('close');
+			callback(null);
+		});
+	}
+	
+	function proceedButtonEventListener(id) {
+		var button = document.getElementById(id);
+		button.addEventListener("click", function() {
+			$("#alertDialog" + thisID).dialog('close');
+			callback(true);
+		});
+	}
+	
+	function cancelButtonEventListener(id) {
+		var button = document.getElementById(id);
+		button.addEventListener("click", function() {
+			$("#alertDialog" + thisID).dialog('close');
+			callback(false);
+		});
+	}
+}
+
+NumberPad.nextDialogID = 0;
+StringPad.nextDialogID = 0;
+Selector.nextDialogID = 0;
+Alert.nextDialogID = 0;

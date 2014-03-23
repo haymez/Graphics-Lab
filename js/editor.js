@@ -130,7 +130,8 @@ function toggleEvents() {
 							arr.push(distanceVariables[i]);
 					}
 					arr.push("constant");
-					openSelector("Choice Selection Panel", arr).done(function(evt) {
+					var selector = new Selector();
+					selector.open("Choice Selection Panel", arr, function(evt) {
 						if (evt.indexOf("+") >= 0) {
 							var currRow = rowNum;
 							codeTable.deleteRow(currRow);
@@ -144,8 +145,9 @@ function toggleEvents() {
 							selRow--;
 						}
 						else if (evt.indexOf("constant") >= 0) {
-							openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
-							currentElement.html(evt);
+							var numpad = new NumberPad();
+							numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
+								currentElement.html(evt);
 							});
 						}
 					});
@@ -158,9 +160,11 @@ function toggleEvents() {
 					}
 					arr.push("constant");
 					if (arr.length > 1) {
-						openSelector("Choice Selection Panel", arr).done(function(evt) {
+						var selector = new Selector();
+						selector.open("Choice Selection Panel", arr, function(evt) {
 							if (evt.indexOf("constant") >= 0) {
-								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+								var numpad = new NumberPad();
+								numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
 									currentElement.html(evt);
 								});
 							}
@@ -172,7 +176,8 @@ function toggleEvents() {
 						});
 					}
 					else {
-						openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+						var numpad = new NumberPad();
+						numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
 							currentElement.html(evt);
 						});
 					}
@@ -187,10 +192,12 @@ function toggleEvents() {
 				}
 				arr.push("constant");
 				if (arr.length > 1) {
-					openSelector("Choice Selection Panel", arr).done(function(evt) {
+					var selector = new Selector();
+					selector.open("Choice Selection Panel", arr, function(evt) {
 						if (evt.length > 0) {
 							if (evt.indexOf("constant") >= 0) {
-								openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+								var numpad = new NumberPad();
+								numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
 									currentElement.html(evt);
 									fixPolygons();
 								});
@@ -203,7 +210,8 @@ function toggleEvents() {
 					});
 				}
 				else {
-					openNumPad(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10).done(function(evt) {
+					var numpad = new NumberPad();
+					numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
 						currentElement.html(evt);
 						fixPolygons();
 					});
@@ -225,7 +233,8 @@ function toggleEvents() {
 			}
 			var currentElement = $(this);
 			if (arr.length > 0) {
-				openSelector("test title", arr).done(function(evt) {
+				var selector = new Selector();
+				selector.open("test title", arr, function(evt) {
 					if (evt.length > 0)
 						currentElement.html(evt);
 				});
@@ -245,7 +254,8 @@ function toggleEvents() {
         	}
         	var currentElement = $(this);
         	if (arr.length > 0) {
-				openSelector("test title", arr).done(function(evt) {
+				var selector = new Selector();
+				selector.open("test title", arr, function(evt) {
 					if (evt.length > 0)
 						currentElement.html(evt);
 				});
@@ -260,7 +270,8 @@ function toggleEvents() {
         	var arr = new Array();
         	var currentElement = $(this);
         	arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
-        	openSelector("Choice Selection Panel", arr).done(function(evt) {
+        	var selector = new Selector();
+        	selector.open("Choice Selection Panel", arr, function(evt) {
 				if (evt.length > 0)
 					currentElement.html(evt);
 			});
@@ -271,7 +282,8 @@ function toggleEvents() {
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1 && 
         (!isNaN(Number(cellVal)) || cellVal.indexOf("COUNTER") >= 0)) {
         	var currentElement = $(this);
-        	openNumPad(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10).done(function(evt) {
+        	var numpad = new NumberPad();
+        	numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function(evt) {
 				currentElement.html(evt);
 			});
         }
@@ -303,7 +315,8 @@ function toggleEvents() {
             		arr.push(polygonVariables[i]);
             	}
           		if (arr.length > 0) {
-					openSelector("Choice Selection Panel", arr).done(function(evt) {
+					var selector = new Selector();
+					selector.open("Choice Selection Panel", arr, function(evt) {
 						if (evt.length > 0) {
 							var currRow = rowNum;
 							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
