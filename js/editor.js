@@ -77,8 +77,8 @@ function toggleEvents() {
     $('.innerTable' + figNum).off('mouseout');
     // we must put the cells we highlight red back to their normal state after we mouseout of them
     $('.innerTable' + figNum).on('mouseout', 'td', function(){
-        returnToNormalColor();
         codeTable.style.cursor = 'default';
+        $('td').removeClass("selected");
     });
     
     //Turn click listener off
@@ -415,18 +415,6 @@ function toggleEvents() {
 	});
 }
 
-//Return everything to normal color (black)
-function returnToNormalColor() {
-    for (var i = 0; i < codeTable.rows.length; i++) {
-        var innerTable = codeTable.rows[i].cells[0].children[0];
-        var numCells = innerTable.rows[0].cells.length;
-        for (var j = 0; j < numCells; j++) {
-            innerTable.rows[0].cells[j].style.color = "#000000";
-            innerTable.rows[0].cells[j].style.fontWeight = "normal";
-        }
-    }
-}
-
 // move to a specified row
 function moveToLine(rowNum) {
     var innerTable = codeTable.rows[selRow].cells[0].children[0];
@@ -478,7 +466,6 @@ function addNewRow(line, params) {
     cell.innerHTML = innerTableTemplate;
     var innerTable = codeTable.rows[line].cells[0].children[0];
     addRow(innerTable, params, 1);
-    returnToNormalColor();
     toggleEvents();
     selRow++;
     addNewInsertRow();
@@ -524,8 +511,10 @@ function highlightCell(rowInd, colInd) {
 	// grab the inner table at the specified row
     var innerTable = codeTable.rows[rowInd].cells[0].children[0];
     // color the cell red at specific column
-    innerTable.rows[0].cells[colInd].style.color = "#FF0000";
-    innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
+    //innerTable.rows[0].cells[colInd].style.color = "#FF0000";
+    //innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
+    if(innerTable.rows[0].cells[colInd].className.indexOf("comment") == -1)
+		innerTable.rows[0].cells[colInd].className += " selected";
 }
 
 function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
@@ -550,8 +539,8 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                     else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
                         bracket--;
                     }
-                    innerTable.rows[0].cells[j].style.color = "#FF0000";
-                    innerTable.rows[0].cells[j].style.fontWeight = "bold";
+                    if(innerTable.rows[0].cells[j].className.indexOf("comment") == -1)
+						innerTable.rows[0].cells[j].className += " selected";
                     
                     if (bracket == 0) break;
                 }
@@ -583,9 +572,8 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
                     if (!firstBrack) firstBrack = true;
                     else bracket++;
                 }
-                
-                innerTable.rows[0].cells[j].style.color = "#FF0000";
-                innerTable.rows[0].cells[j].style.fontWeight = "bold";
+                if(innerTable.rows[0].cells[j].className.indexOf("comment") == -1)
+					innerTable.rows[0].cells[j].className += " selected";
                 
                 if (bracket == 0) break;
             }
@@ -604,8 +592,8 @@ function highlightLine(rowInd) {
     // iterate throughout the cells
     for (var i = 0; i < numCells; i++) {
         //Highlight all cells red
-        innerTable.rows[0].cells[i].style.color = '#FF0000';
-        innerTable.rows[0].cells[i].style.fontWeight = "bold";
+        if(innerTable.rows[0].cells[i].className.indexOf("comment") == -1)
+			innerTable.rows[0].cells[i].className += " selected";
     }
 }
 

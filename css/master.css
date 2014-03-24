@@ -1,0 +1,23 @@
+/*Master css file for graphics lab*/
+
+td
+{
+	color:black;
+	font-weight:normal;
+}
+
+.comment
+{
+	color:#007500;
+}
+
+.selected
+{
+	color:#FF0000;
+	font-weight:bold;
+}
+
+.keyword
+{
+	color:#0000FF;
+}

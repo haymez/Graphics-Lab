@@ -30,7 +30,7 @@ function run() {
 		fresh = true;
         clearInterval(delay);
         step = 0;
-        returnToNormalColor()
+        $('td').removeClass("selected");
         selectRow(codeTable.rows.length-1);
         $("#" + runButton.id).html("Run").off("click").click(function() { 
 			run(); 
@@ -60,11 +60,20 @@ function walk() {
         }
     }
     programRunning = true;
+    
+    var innerTable = codeTable.rows[step].cells[0].children[0];
+    if(innerTable.rows[0].cells[1] != undefined) {
+		while(innerTable.rows[0].cells[1].className.indexOf("comment") >= 0) {
+			step++;
+			innerTable = codeTable.rows[step].cells[0].children[0];
+		}
+	}
+    
     //Set some buttons to false while walking or running
     $(".button" + figNum).attr("disabled", true);
     //Turn off toggle events for table cells
     $('.innerTable' + figNum).off('mouseover').off('mouseout').off('click');
-    returnToNormalColor();
+    $('td').removeClass("selected");
     //Don't allow step to go beyond program scope
     if (step == codeTable.rows.length-1) {
         selectRow(step);
@@ -73,7 +82,7 @@ function walk() {
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
-        $("#vvDivHolder").slideUp("medium"); // Teel's code <--
+        $("#vvDivHolder").slideUp("medium");
         programRunning = false;
         fresh = true;
         return;
@@ -117,7 +126,7 @@ function walk() {
     	}
     }
     else {
-    	interpret(rowToString(step));
+		interpret(rowToString(step));
     	step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");

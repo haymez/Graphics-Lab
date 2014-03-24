@@ -21,7 +21,7 @@ function printVars() {
 	var g = "";
 	var total = "";
 	
-	if(rowToString(0).indexOf("//Declared") >= 0) {
+	if(rowToString(0).indexOf("//Variable") >= 0) {
 		//for(var i = 0; i < 3; i++) {
 		while(rowToString(0).indexOf("//Program") == -1) {
 			codeTable.deleteRow(0);
@@ -52,7 +52,20 @@ function printVars() {
 	if(lineVariables.length > 0) addNewRow(0, lineVariables);
 	if(pointVariables.length > 0) addNewRow(0, pointVariables);
 	if(distanceVariables.length > 0) addNewRow(0, distanceVariables);
-	addNewRow(0,["//Declared Variables"]); 
+	addNewRow(0,["//Variable Declarations"]); 
+	
+	//Change font color
+	if(rowToString(0).indexOf("//Variable") >= 0) {
+		var i = 0;
+		while(1) {
+			var innerTable = codeTable.rows[i].cells[0].children[0];
+			for(var j = 1; j < innerTable.rows[0].cells.length; j++)
+				innerTable.rows[0].cells[j].className += " comment";
+				//innerTable.rows[0].cells[j].style.color = '#007500';
+			if(rowToString(i).indexOf("//Program") >= 0) break;
+			i++;
+		}
+	}
 }
 
 //New Distance variable
