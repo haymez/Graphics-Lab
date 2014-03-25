@@ -21,6 +21,12 @@ function printVars() {
 	var g = "";
 	var total = "";
 	
+	var point = pointVariables.slice();
+	var line = lineVariables.slice();
+	var circle = circleVariables.slice();
+	var polygon = polygonVariables.slice();
+	var distance = distanceVariables.slice();
+	
 	if(rowToString(0).indexOf("//Variable") >= 0) {
 		//for(var i = 0; i < 3; i++) {
 		while(rowToString(0).indexOf("//Program") == -1) {
@@ -31,27 +37,27 @@ function printVars() {
 		if (selRow > 0) selRow--;
 	}
 	for(var i = 1; i < distanceVariables.length; i++) {
-		if(distanceVariables[i-1].indexOf(",") == -1) distanceVariables[i-1] += ",&nbsp;";
+		if(distance[i-1].indexOf(",") == -1) distance[i-1] += ",&nbsp;";
 	}
 	for(var i = 1; i < pointVariables.length; i++) {
-		if(pointVariables[i-1].indexOf(",") == -1) pointVariables[i-1] += ",&nbsp;";
+		if(point[i-1].indexOf(",") == -1) point[i-1] += ",&nbsp;";
 	}
 	for(var i = 1; i < lineVariables.length; i++) {
-		if(lineVariables[i-1].indexOf(",") == -1) lineVariables[i-1] += ",&nbsp;";
+		if(line[i-1].indexOf(",") == -1) line[i-1] += ",&nbsp;";
 	}
 	for(var i = 1; i < polygonVariables.length; i++) {
-		if(polygonVariables[i-1].indexOf(",") == -1) polygonVariables[i-1] += ",&nbsp;";
+		if(polygon[i-1].indexOf(",") == -1) polygon[i-1] += ",&nbsp;";
 	}
 	for(var i = 1; i < circleVariables.length; i++) {
-		if(circleVariables[i-1].indexOf(",") == -1) circleVariables[i-1] += ",&nbsp;";
+		if(circle[i-1].indexOf(",") == -1) circle[i-1] += ",&nbsp;";
 	}
 	
 	addNewRow(0, ["//Program Code"]);
-	if(circleVariables.length > 0) addNewRow(0, circleVariables);
-	if(polygonVariables.length > 0) addNewRow(0, polygonVariables);
-	if(lineVariables.length > 0) addNewRow(0, lineVariables);
-	if(pointVariables.length > 0) addNewRow(0, pointVariables);
-	if(distanceVariables.length > 0) addNewRow(0, distanceVariables);
+	if(circleVariables.length > 0) addNewRow(0, circle);
+	if(polygonVariables.length > 0) addNewRow(0, polygon);
+	if(lineVariables.length > 0) addNewRow(0, line);
+	if(pointVariables.length > 0) addNewRow(0, point);
+	if(distanceVariables.length > 0) addNewRow(0, distance);
 	addNewRow(0,["//Variable Declarations"]); 
 	
 	//Change font color

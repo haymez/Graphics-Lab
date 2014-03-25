@@ -67,6 +67,9 @@ function toggleEvents() {
                 	else if (rowString.indexOf("endloop") >= 0)
                 		highlightLoop("endloop", rowNum);
                     highlightLine(rowNum);
+                    
+                    //Highlight every line of polygon
+                    if(rowToString(rowNum).charAt(0) == 'g') while(rowToString(++rowNum).charAt(0) == '(') highlightLine(rowNum);
                 }
                 else
                     highlightCell(rowNum, colNum);
@@ -103,10 +106,15 @@ function toggleEvents() {
         		else if (rowString.indexOf("loop") >= 0) {
         			deleteLoop("loop", rowNum);
         		}
-        		else {
-        			codeTable.deleteRow(rowNum);
-            		if (rowNum < selRow) selRow--;
-        		}
+        		else if (rowString.charAt(0) == 'g') {
+					deletePolygon(rowNum);
+				}
+				else {
+					if (rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) == '(') {
+						codeTable.deleteRow(rowNum);
+						if (rowNum < selRow) selRow--;
+        			}
+				}
 				refreshLineNumbers();
         	}
         	else {
@@ -115,7 +123,7 @@ function toggleEvents() {
         }
         
         //User clicked on variable number. Generate keypad pop up
-		else if (isEditableValue(cellVal, rowNum)) {
+		else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
 			var currentElement = $(this);
         	//updating a distance variable
         	if (isDistanceAssign(rowNum)) {
@@ -227,8 +235,9 @@ function toggleEvents() {
             for (var i = 0; i < rowNum; i++) {
 				if (rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1 && !isDistanceAssign(rowNum)) {
 					var variable = rowToString(i).substring(0, rowToString(i).indexOf("="));
-					if (variable.length > 0)
-						arr.push(variable);
+					if (variable.length > 0 && $.inArray(variable, arr) == -1)
+						if(variable.charAt(0) != 'd')
+							arr.push(variable);
 				}
 			}
 			var currentElement = $(this);
@@ -318,6 +327,8 @@ function toggleEvents() {
 					var selector = new Selector();
 					selector.open("Choice Selection Panel", arr, function(evt) {
 						if (evt.length > 0) {
+							// if old variable was polygon , delete all its lines
+							if(rowToString(rowNum).charAt(0) == 'g') deletePolygon(rowNum + 1);
 							var currRow = rowNum;
 							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
 								codeTable.deleteRow(currRow);
@@ -397,6 +408,7 @@ function toggleEvents() {
 	});
 	$("#" + offsetDiv.id).off("click");
 	$("#" + offsetDiv.id).on("click", function() {
+		toggleEvents();
 		if(selRow != 0) {
 			moveToLine(0);
 			$(this).html(blank);
@@ -762,7 +774,9 @@ function deleteLoop(type, rowNum) {
 	}
 }
 
+//Makes the last row in polygon equal to first row
 function fixPolygons() {
+	console.log("here");
 	var x = 0;
 	var y = 0;
 	for (var i = 0; i < codeTable.rows.length-1; i++) {
@@ -777,6 +791,16 @@ function fixPolygons() {
 			addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
 			selRow--;
 		}
+	}
+}
+
+//deletes all rows of a polygon
+function deletePolygon(rowNum) {	
+	codeTable.deleteRow(rowNum);
+	if (rowNum < selRow) selRow--;
+	while(rowToString(rowNum).charAt(0) == '('){
+		codeTable.deleteRow(rowNum);
+		if (rowNum < selRow) selRow--;
 	}
 }
 

@@ -48,6 +48,7 @@ function run() {
 
 //Allows users to walk through the program code one step at a time
 function walk() {
+	changeBtnState(true);
     paintbrush++;
     var oldPos = -1;
     if (!programRunning) {
@@ -83,6 +84,7 @@ function walk() {
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
         $("#vvDivHolder").slideUp("medium");
+        changeBtnState(false);
         programRunning = false;
         fresh = true;
         return;
@@ -93,8 +95,8 @@ function walk() {
     draw();
     $("#drawCanvas" + figNum).trigger("mousemove");
     
-    //Polygon found
-    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString(step).indexOf("color") == -1) {
+    //Polygon found , checks to make sure not erase() command
+    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString(step).indexOf("color") == -1 && rowToString(step).indexOf("erase") == -1) {
     	var string = rowToString(step).trim();
     	step++;
     	while (!containsCommand(rowToString(step+1))) {
@@ -167,7 +169,7 @@ function getIndent(row) {
 	return string;
 }
 
-//Updates the variables in the variables tracker. Author: Jonathan Teel
+//Updates the variables in the variables tracker.
 function updateVarValueWindow(){
 	
 	var vvDiv = document.getElementById("varValDiv" + figNum);
@@ -230,7 +232,20 @@ function updateVarValueWindow(){
 		$("#vvDivHolder").slideUp("medium");
 }
 
-
+// disable / enable buttons for run walk
+function changeBtnState(state) {
+	document.getElementById("distanceButton" + figNum).disabled = state;
+	document.getElementById("pointButton" + figNum).disabled = state;
+	document.getElementById("lineButton" + figNum).disabled = state;
+	document.getElementById("polygonButton" + figNum).disabled = state;
+	document.getElementById("circleButton" + figNum).disabled = state;
+	document.getElementById("assignButton" + figNum).disabled = state;
+	document.getElementById("drawButton" + figNum).disabled = state;
+	document.getElementById("eraseButton" + figNum).disabled = state;
+	document.getElementById("colorButton" + figNum).disabled = state;
+	document.getElementById("loopButton" + figNum).disabled = state;
+	document.getElementById("editor" + figNum).disabled = state;
+}
 
 
 
