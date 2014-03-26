@@ -95,31 +95,33 @@ function toggleEvents() {
         var rowString = rowToString(rowNum);
         
         //User clicked on line number. Prompt for delete.
-        if (colNum == 0 && rowNum != selRow && cellVal.trim().length > 0) {
-        	if(confirm("Are you sure you want to delete the highlighted\ntext?")) {
-        		if(rowString.indexOf("repeat") >= 0) {
-        			deleteLoop("repeat", rowNum);
-        		}
-        		else if (rowString.indexOf("endloop") >= 0) {
-        			deleteLoop("endloop", rowNum);
-        		}
-        		else if (rowString.indexOf("loop") >= 0) {
-        			deleteLoop("loop", rowNum);
-        		}
-        		else if (rowString.charAt(0) == 'g') {
-					deletePolygon(rowNum);
+        if (colNum == 0 && rowNum != selRow && cellVal.trim().length > 0) {		
+			var alert = new Alert();
+			alert.open("Warning", "Are you sure you want to delete the text?", false, function(evt) {
+				if(evt){
+					if(rowString.indexOf("repeat") >= 0) {
+	        			deleteLoop("repeat", rowNum);
+	        		}
+	        		else if (rowString.indexOf("endloop") >= 0) {
+	        			deleteLoop("endloop", rowNum);
+	        		}
+	        		else if (rowString.indexOf("loop") >= 0) {
+	        			deleteLoop("loop", rowNum);
+	        		}
+	        		else if (rowString.charAt(0) == 'g') {
+						deletePolygon(rowNum);
+					}
+					else {
+						if (!(rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) != '(')) {
+							codeTable.deleteRow(rowNum);
+							if (rowNum < selRow) selRow--;
+	        			}
+					}
+					refreshLineNumbers();
 				}
-				else {
-					if (rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) == '(') {
-						codeTable.deleteRow(rowNum);
-						if (rowNum < selRow) selRow--;
-        			}
-				}
-				refreshLineNumbers();
-        	}
-        	else {
-        		return;
-        	}
+				else
+					return;			
+			});	
         }
         
         //User clicked on variable number. Generate keypad pop up
