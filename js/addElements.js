@@ -8,26 +8,19 @@ var drawDiv = document.createElement('div');
 drawDiv.id = "draw_window" + figNum;
 drawDiv.style.width = "300px";
 drawDiv.style.height = "350px";
-drawDiv.style.cssFloat = "left";
-
-//Center drawing canvas
-var drawOffsetDiv = document.createElement('div');
-drawOffsetDiv.id = "drawOffsetDiv" + figNum;
-drawOffsetDiv.style.width = "160px";
-drawOffsetDiv.style.height = "20px";
-drawOffsetDiv.style.cssFloat = "left";
+drawDiv.style.cssFloat = "right";
 
 //Program window <div>
 var programWindowDiv = document.createElement('div');
 programWindowDiv.id = "program_window" + figNum;
-programWindowDiv.style.width = "600px";
-programWindowDiv.style.height = "200px";
+programWindowDiv.style.width = "325px";
+programWindowDiv.style.height = "300px";
 programWindowDiv.style.cssFloat = "left";
 
 //program Code window
 var programDiv = document.createElement('div');
 programDiv.id = "program_code" + figNum;
-programDiv.style.width = "460px";
+programDiv.style.width = "250px";
 programDiv.style.height = programWindowDiv.style.height;
 programDiv.style.border = "ridge";
 programDiv.style.overflow = "auto";
@@ -71,7 +64,7 @@ dividerDiv.id = "dividerDiv" + figNum;
 dividerDiv.style.height = Number(programWindowDiv.style.height.substring(0, programWindowDiv.style.height.length-2))-4 + "px";
 dividerDiv.style.border = "1px solid #000000";
 dividerDiv.style.position = "absolute";
-dividerDiv.style.left = "85px";
+dividerDiv.style.left = "15px";
 dividerDiv.style.zIndex = "-1";
 
 //<div> for run and walk buttons
@@ -106,17 +99,11 @@ vvDivHolder.style.display = "none";
 vvDivHolder.style.position = "absolute";
 vvDivHolder.style.top = "410px";
 
-//<div> for buttons on right
+//<div> for buttons
 var progButtonDiv = document.createElement('div');
 progButtonDiv.id = "program_buttons" + figNum;
 progButtonDiv.style.cssFloat = "right";
 progButtonDiv.className = "btn-group-vertical";
-
-//<div> for buttons on left
-var varButtonDiv = document.createElement('div');
-varButtonDiv.id = "var_buttons" + figNum;
-varButtonDiv.style.cssFloat = "left";
-varButtonDiv.className = "btn-group-vertical";
 
 //<canvas> element for drawing window
 var canvas = document.createElement('canvas');
@@ -216,15 +203,15 @@ var progLabel = "Program Code";
 //Add everything to Drawing Window <div>
 run_walkDiv.appendChild(runButton);
 run_walkDiv.appendChild(walkButton);
-drawDiv.appendChild(run_walkDiv);
 drawDiv.appendChild(canvas);
+drawDiv.appendChild(run_walkDiv);
 
 //Add everything to the Program Code <div>
-varButtonDiv.appendChild(distanceButton);
-varButtonDiv.appendChild(pointButton);
-varButtonDiv.appendChild(lineButton);
-varButtonDiv.appendChild(polygonButton);
-varButtonDiv.appendChild(circleButton);
+progButtonDiv.appendChild(distanceButton);
+progButtonDiv.appendChild(pointButton);
+progButtonDiv.appendChild(lineButton);
+progButtonDiv.appendChild(polygonButton);
+progButtonDiv.appendChild(circleButton);
 progButtonDiv.appendChild(assignButton);
 progButtonDiv.appendChild(drawButton);
 progButtonDiv.appendChild(eraseButton);
@@ -236,15 +223,13 @@ programCodeDiv.appendChild(codeTable);
 programDiv.appendChild(insertDiv);
 programDiv.appendChild(dividerDiv);
 programDiv.appendChild(programCodeDiv);
-programWindowDiv.appendChild(varButtonDiv);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
 
 var container = document.getElementById("container");
-container.style.width = "650px";
+container.style.width = "635px";
 container.style.height = "450px";
 container.appendChild(programWindowDiv);
-container.appendChild(drawOffsetDiv);
 container.appendChild(drawDiv);
 container.style.position = "relative"; 
 container.appendChild(vvDivHolder);
