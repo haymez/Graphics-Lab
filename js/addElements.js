@@ -3,6 +3,11 @@
  */
 var figNum = 0; //This will be removed eventually when dealing with namespace issues
 
+//Find the container element
+var container = document.getElementById("container");
+container.style.width = "650px";
+container.style.height = "450px";
+
 //Drawing window <div>
 var drawDiv = document.createElement('div');
 drawDiv.id = "draw_window" + figNum;
@@ -92,7 +97,7 @@ varValueTitle.style.top = "15px";
 var varValueDiv = document.createElement('div');
 varValueDiv.id = "varValDiv" + figNum;
 varValueDiv.style.overflow = "auto";
-varValueDiv.style.width = "650px";
+varValueDiv.style.width = container.style.width;
 varValueDiv.style.height = "100px";
 varValueDiv.style.resize = "none";
 varValueDiv.style.border = "1px solid #000";
@@ -103,8 +108,7 @@ vvDivHolder.id ="vvDivHolder" + figNum;
 vvDivHolder.appendChild(varValueTitle);
 vvDivHolder.appendChild(varValueDiv);
 vvDivHolder.style.display = "none";
-vvDivHolder.style.position = "absolute";
-vvDivHolder.style.top = "410px";
+vvDivHolder.style.cssFloat = "left";
 
 //<div> for buttons on right
 var progButtonDiv = document.createElement('div');
@@ -240,14 +244,12 @@ programWindowDiv.appendChild(varButtonDiv);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
 
-var container = document.getElementById("container");
-container.style.width = "650px";
-container.style.height = "450px";
+//Append to container
 container.appendChild(programWindowDiv);
+container.appendChild(vvDivHolder);
 container.appendChild(drawOffsetDiv);
 container.appendChild(drawDiv);
 container.style.position = "relative"; 
-container.appendChild(vvDivHolder);
 
 //Add listeners for walk and run
 $("#" + runButton.id).click(function() { run(); });

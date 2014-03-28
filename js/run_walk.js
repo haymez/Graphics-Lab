@@ -83,7 +83,7 @@ function walk() {
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
-        $("#vvDivHolder").slideUp("medium");
+        $("#" + vvDivHolder.id).slideUp("medium");
         changeBtnState(false);
         programRunning = false;
         fresh = true;
@@ -226,10 +226,10 @@ function updateVarValueWindow(){
 	if(canShow > 0 && !runMode)
 	{
 		vvDiv.innerHTML = html;
-		$("#vvDivHolder").slideDown("medium");
+		$("#" + vvDivHolder.id).slideDown("medium");
 	}
 	else
-		$("#vvDivHolder").slideUp("medium");
+		$("#" + vvDivHolder.id).slideUp("medium");
 }
 
 // disable / enable buttons for run walk
