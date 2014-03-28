@@ -48,6 +48,7 @@ function run() {
 
 //Allows users to walk through the program code one step at a time
 function walk() {
+	if(codeTable.rows[1] == undefined) return;
 	changeBtnState(true);
     paintbrush++;
     var oldPos = -1;

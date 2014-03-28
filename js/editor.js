@@ -450,7 +450,7 @@ function moveToLine(rowNum) {
         selectRow(rowNum);                                              // select newly inserted row
     }
     else {
-    	insertTable.deleteRow(-1);
+    	if(insertTable.rows.length > 0) insertTable.deleteRow(-1);
     	addNewInsertRow();
         codeTable.deleteRow(selRow);                                    // delete the current selected row
         newRow = codeTable.insertRow(rowNum-1);                         // insert a new row at row number specified
@@ -515,9 +515,11 @@ function selectRow(rowNum) {
     }
     
     selRow = rowNum;
-    var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-    if (rowToString(selRow).trim().length == 0)
-		innerTable.rows[0].cells[0].innerHTML = arrow;
+    if(codeTable.rows[rowNum] != undefined) {
+		var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+		if (rowToString(selRow).trim().length == 0)
+			innerTable.rows[0].cells[0].innerHTML = arrow;
+	}
 }
 
 // highlight one cell red at a specific row and column
