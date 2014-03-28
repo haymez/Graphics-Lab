@@ -3,6 +3,11 @@
  */
 var figNum = 0; //This will be removed eventually when dealing with namespace issues
 
+//Find container object and set width and height
+var container = document.getElementById("container");
+container.style.width = "635px";
+container.style.height = "400px";
+
 //Drawing window <div>
 var drawDiv = document.createElement('div');
 drawDiv.id = "draw_window" + figNum;
@@ -79,13 +84,14 @@ var varValueTitle = document.createElement('p');
 varValueTitle.id = "varValOuterP" + figNum;
 varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
 varValueTitle.style.position = "relative";
-varValueTitle.style.top = "15px";
+varValueTitle.style.top = "14px";
 
 //<div> for variable value window
 var varValueDiv = document.createElement('div');
 varValueDiv.id = "varValDiv" + figNum;
 varValueDiv.style.overflow = "auto";
-varValueDiv.style.width = "650px";
+//varValueDiv.style.width = "650px";
+varValueDiv.style.width = container.style.width;
 varValueDiv.style.height = "100px";
 varValueDiv.style.resize = "none";
 varValueDiv.style.border = "1px solid #000";
@@ -96,8 +102,7 @@ vvDivHolder.id ="vvDivHolder" + figNum;
 vvDivHolder.appendChild(varValueTitle);
 vvDivHolder.appendChild(varValueDiv);
 vvDivHolder.style.display = "none";
-vvDivHolder.style.position = "absolute";
-vvDivHolder.style.top = "410px";
+vvDivHolder.style.cssFloat = "left";
 
 //<div> for buttons
 var progButtonDiv = document.createElement('div');
@@ -226,9 +231,7 @@ programDiv.appendChild(programCodeDiv);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
 
-var container = document.getElementById("container");
-container.style.width = "635px";
-container.style.height = "450px";
+//Append to container
 container.appendChild(programWindowDiv);
 container.appendChild(drawDiv);
 container.style.position = "relative"; 

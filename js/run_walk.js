@@ -83,7 +83,7 @@ function walk() {
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
         $(".button" + figNum).attr("disabled", false);
-        $("#vvDivHolder").slideUp("medium");
+        $("#" + vvDivHolder.id).slideUp("medium");
         changeBtnState(false);
         programRunning = false;
         fresh = true;
@@ -155,20 +155,6 @@ function makeLoop(loopStart, i) {
 	this.i = i;
 }
 
-//return string with correct number of indents.
-function getIndent(row) {
-	var loop = 0;
-	for (var i = 0; i < row; i++) {
-		if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
-		if (rowToString(i).indexOf("endloop") >= 0) loop--;
-	}
-	var string = "";
-	for (var i = 0; i < loop; i++) {
-		string += indent;
-	}
-	return string;
-}
-
 //Updates the variables in the variables tracker.
 function updateVarValueWindow(){
 	
@@ -226,10 +212,10 @@ function updateVarValueWindow(){
 	if(canShow > 0 && !runMode)
 	{
 		vvDiv.innerHTML = html;
-		$("#vvDivHolder").slideDown("medium");
+		$("#" + vvDivHolder.id).slideDown("medium");
 	}
 	else
-		$("#vvDivHolder").slideUp("medium");
+		$("#" + vvDivHolder.id).slideUp("medium");
 }
 
 // disable / enable buttons for run walk
