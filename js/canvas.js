@@ -156,7 +156,7 @@ function drawLine() {
 				"(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
 			addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
 			
-			//Turn mouse up listener off
+			//Turn off all .draw listeners
 			$('#' + canvas.id).off('.draw');
 		});
 	});
@@ -194,60 +194,19 @@ function drawCircle() {
 				return;
 			});
 		});
-		
-		$('#' + canvas.id).on('vmouseup', function(evt) {
-			endX = evt.clientX - rect.left;
-			endY = evt.clientY - rect.top;
-			toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
-			
-			addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
-			startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-			addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
-			
-			$('#' + canvas.id).off('.draw');
-		});
 	});
-    
-    /*canvas.addEventListener('click', function(evt) {
-        if (curr < paintbrush) { //Checks to see if another button has been pushed
-            this.removeEventListener('click',arguments.callee,false);
-            return;
-        }
-        click++;
-        if (click == 1) {
-            startX = evt.clientX - rect.left;
-            startY = evt.clientY - rect.top;
-            
-            //visualize what the circle will look like as the user moves the cursor around
-            canvas.addEventListener('mousemove', function(evt) {
-                    if (curr < paintbrush) { //Checks to see if another button has been pushed
-                        this.removeEventListener('mousmove',arguments.callee,false);
-                        return;
-                    }
-                    var ctx = canvas.getContext('2d');
-                    ctx.beginPath();
-                    ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
-                    ctx.strokeStyle = "#FF0000";
-                    ctx.stroke();
-                    if (click > 1)
-                        this.removeEventListener('mousemove',arguments.callee,false);
-            }, false);
-        }
-        else if (click == 2) {
-            endX = evt.clientX - rect.left;
-            endY = evt.clientY - rect.top;
-            toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
-            
-            addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
-                startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-            addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
-        }
-        
-        //remove listener after the circle has been drawn
-        if (click > 1) {
-            this.removeEventListener('click',arguments.callee,false);
-        }
-    }, false);*/
+	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
+		endX = evt.clientX - rect.left;
+		endY = evt.clientY - rect.top;
+		toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
+		
+		addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+		startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
+		addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
+		
+		//Turn off all .draw listeners
+		$('#' + canvas.id).off('.draw');
+	});
 }
 
 //Allows user to draw a polygon on canvas. Saves polygon in toDraw array
