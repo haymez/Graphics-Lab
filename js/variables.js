@@ -53,11 +53,11 @@ function printVars() {
 	}
 	
 	addNewRow(0, ["//Program Code"]);
-	if(circleVariables.length > 0) addNewRow(0, circle);
-	if(polygonVariables.length > 0) addNewRow(0, polygon);
-	if(lineVariables.length > 0) addNewRow(0, line);
-	if(pointVariables.length > 0) addNewRow(0, point);
-	if(distanceVariables.length > 0) addNewRow(0, distance);
+	if(circleVariables.length > 0) addNewRow(0, ["Circle:&nbsp;"].concat(circle));
+	if(polygonVariables.length > 0) addNewRow(0, ["Polygon:&nbsp;"].concat(polygon));
+	if(lineVariables.length > 0) addNewRow(0, ["Line:&nbsp;"].concat(line));
+	if(pointVariables.length > 0) addNewRow(0, ["Point:&nbsp;"].concat(point));
+	if(distanceVariables.length > 0) addNewRow(0, ["Distance:&nbsp;"].concat(distance));
 	addNewRow(0,["//Variable Declarations"]); 
 	
 	//Change font color

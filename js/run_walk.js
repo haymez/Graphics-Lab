@@ -48,6 +48,7 @@ function run() {
 
 //Allows users to walk through the program code one step at a time
 function walk() {
+	if(codeTable.rows[1] == undefined) return;
 	changeBtnState(true);
     paintbrush++;
     var oldPos = -1;
@@ -153,20 +154,6 @@ function containsCommand(input) {
 function makeLoop(loopStart, i) {
 	this.loopStart = loopStart;
 	this.i = i;
-}
-
-//return string with correct number of indents.
-function getIndent(row) {
-	var loop = 0;
-	for (var i = 0; i < row; i++) {
-		if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
-		if (rowToString(i).indexOf("endloop") >= 0) loop--;
-	}
-	var string = "";
-	for (var i = 0; i < loop; i++) {
-		string += indent;
-	}
-	return string;
 }
 
 //Updates the variables in the variables tracker.
