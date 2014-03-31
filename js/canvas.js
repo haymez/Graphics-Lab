@@ -8,7 +8,7 @@
 var toDraw = new Array();
 
 //Event listener for cursor position on canvas
-$('#' + canvas.id).on('mousemove scrollstart', function(evt) {
+$('#' + canvas.id).on('mousemove vmousemove', function(evt) {
     $(this).css('cursor', 'crosshair');
     var cursorPos = getCursorPos(canvas, evt);
     var message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
