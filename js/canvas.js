@@ -8,7 +8,7 @@
 var toDraw = new Array();
 
 //Event listener for cursor position on canvas
-$('#' + canvas.id).on('mousemove vmousemove', function(evt) {
+$('#' + canvas.id).on('vmousemove', function(evt) {
     $(this).css('cursor', 'crosshair');
     var cursorPos = getCursorPos(canvas, evt);
     var message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
@@ -99,7 +99,7 @@ function drawPoint() {
     pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
     printVars();
     $('#' + canvas.id).off('.draw');
-    $('#' + canvas.id).on('click.draw', function(evt) {
+    $('#' + canvas.id).on('vclick.draw', function(evt) {
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
 		toDraw[toDraw.length] = new point(startX, startY);
@@ -124,13 +124,13 @@ function drawLine() {
     lineVariables[lineVariables.length] = 'l' + (lineVariables.length+1);
     printVars();
     $('#' + canvas.id).off('.draw');
-    $('#' + canvas.id).on('mousedown.draw', function(evt) {
+    $('#' + canvas.id).on('vmousedown.draw', function(evt) {
 		
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
 		
 		//visualize what the line will look like as the user moves the cursor around
-		$('#' + canvas.id).on('mousemove.draw', function(evt) {
+		$('#' + canvas.id).on('vmousemove.draw', function(evt) {
 			var ctx = canvas.getContext('2d');
 			draw();
 			ctx.beginPath();
@@ -139,16 +139,15 @@ function drawLine() {
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
 			
-			$('#' + canvas.id).on('mouseout.draw', function() {
+			$('#' + canvas.id).on('vmouseout.draw', function() {
 				$('#' + canvas.id).off('.draw');
 				draw();
 				return;
 			});
 		});
 		
-		$('#' + canvas.id).on('mouseup.draw', function(evt) {
+		$('#' + canvas.id).on('vmouseup.draw', function(evt) {
 			//Turn mouse move listener off
-			$('#' + canvas.id).off('mousemove.draw');
 			endX = evt.clientX - rect.left;
 			endY = evt.clientY - rect.top;
 			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
@@ -175,13 +174,13 @@ function drawCircle() {
 	printVars();
 	
 	$('#' + canvas.id).off('.draw');
-	$('#' + canvas.id).on('mousedown.draw', function(evt) {
+	$('#' + canvas.id).on('vmousedown.draw', function(evt) {
 		
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
 		
 		//visualize what the circle will look like as the user moves the cursor around
-		$('#' + canvas.id).on('mousemove.draw', function(evt) {
+		$('#' + canvas.id).on('vmousemove.draw', function(evt) {
 			draw();
 			var ctx = canvas.getContext('2d');
 			ctx.beginPath();
@@ -189,14 +188,14 @@ function drawCircle() {
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
 			
-			$('#' + canvas.id).on('mouseout.draw', function() {
+			$('#' + canvas.id).on('vmouseout.draw', function() {
 				$('#' + canvas.id).off('.draw');
 				draw();
 				return;
 			});
 		});
 		
-		$('#' + canvas.id).on('mouseup', function(evt) {
+		$('#' + canvas.id).on('vmouseup', function(evt) {
 			endX = evt.clientX - rect.left;
 			endY = evt.clientY - rect.top;
 			toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
@@ -205,7 +204,7 @@ function drawCircle() {
 			startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
 			addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
 			
-			$('#' + canvas.id).off('.click');
+			$('#' + canvas.id).off('.draw');
 		});
 	});
     
