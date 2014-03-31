@@ -94,7 +94,6 @@ function walk() {
     highlightLine(step);
     clear();
     draw();
-    $("#drawCanvas" + figNum).trigger("mousemove");
     
     //Polygon found , checks to make sure not erase() command
     if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString(step).indexOf("color") == -1 && rowToString(step).indexOf("erase") == -1) {
@@ -132,7 +131,7 @@ function walk() {
 		interpret(rowToString(step));
     	step++;
     }
-    $("#drawCanvas" + figNum).trigger("mousemove");
+    draw();
     refreshLineNumbers();
     updateVarValueWindow(); //Teel's code <--
     runMode = false;

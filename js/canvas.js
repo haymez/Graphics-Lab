@@ -6,7 +6,6 @@
 
 //Declare all variables
 var toDraw = new Array();
-var paintbrush = 0; //Keeps track of which function was called last. (prevents multiple shapes from being drawn at once)
 
 //Event listener for cursor position on canvas
 $("#" + canvas.id).mousemove(function(evt) {
@@ -18,12 +17,6 @@ $("#" + canvas.id).mousemove(function(evt) {
     writeMessage(canvas, message);
 });
 
-//Event listener for when cursor leaves drawing window
-canvas.addEventListener('mouseout', function(evt) {
-        clear();
-        draw();
-}, false);
-
 //Clears the canvas of all drawings
 function clear() {
         var ctx = canvas.getContext('2d');
@@ -32,42 +25,43 @@ function clear() {
 
 //Draws all saved objects onto the canvas
 function draw() {
-        for (var i = 0; i < toDraw.length; i++) {
-                if (toDraw[i].type == 'point') {
-                        //This is a point
-                        var ctx = canvas.getContext('2d');
-                        ctx.fillStyle = toDraw[i].color;
-                        ctx.fillRect(toDraw[i].startX-2, toDraw[i].startY-2, 2, 2);
-                }
-                else if (toDraw[i].type == 'line' || toDraw[i].type == 'temp') {
-                        //This is a line
-                        var ctx = canvas.getContext('2d');
-                        ctx.beginPath();
-                        ctx.moveTo(toDraw[i].startX, toDraw[i].startY);
-                        ctx.lineTo(toDraw[i].endX, toDraw[i].endY);
-                        ctx.strokeStyle = toDraw[i].color;
-                        ctx.stroke();
-                }
-                else if (toDraw[i].type == 'circle') {
-                        //This is a circle
-                        var ctx = canvas.getContext('2d');
-                        ctx.beginPath();
-                        ctx.arc(toDraw[i].startX, toDraw[i].startY, toDraw[i].diameter, 0, 2*Math.PI);
-                        ctx.strokeStyle = toDraw[i].color;
-                        ctx.stroke();
-                }
-                else if (toDraw[i].type == 'polygon') {
-                        //This is a polygon
-                        for (var n = 0; n < toDraw[i].angles.length; n++) {
-                                var ctx = canvas.getContext('2d');
-                                ctx.beginPath();
-                                ctx.moveTo(toDraw[i].angles[n].startX, toDraw[i].angles[n].startY);
-                                ctx.lineTo(toDraw[i].angles[n].endX, toDraw[i].angles[n].endY);
-                                ctx.strokeStyle = toDraw[i].color;
-                                ctx.stroke();
-                        }
-                }
-        }
+	clear();
+	for (var i = 0; i < toDraw.length; i++) {
+		if (toDraw[i].type == 'point') {
+			//This is a point
+			var ctx = canvas.getContext('2d');
+			ctx.fillStyle = toDraw[i].color;
+			ctx.fillRect(toDraw[i].startX-2, toDraw[i].startY-2, 2, 2);
+		}
+		else if (toDraw[i].type == 'line' || toDraw[i].type == 'temp') {
+			//This is a line
+			var ctx = canvas.getContext('2d');
+			ctx.beginPath();
+			ctx.moveTo(toDraw[i].startX, toDraw[i].startY);
+			ctx.lineTo(toDraw[i].endX, toDraw[i].endY);
+			ctx.strokeStyle = toDraw[i].color;
+			ctx.stroke();
+		}
+		else if (toDraw[i].type == 'circle') {
+			//This is a circle
+			var ctx = canvas.getContext('2d');
+			ctx.beginPath();
+			ctx.arc(toDraw[i].startX, toDraw[i].startY, toDraw[i].diameter, 0, 2*Math.PI);
+			ctx.strokeStyle = toDraw[i].color;
+			ctx.stroke();
+		}
+		else if (toDraw[i].type == 'polygon') {
+			//This is a polygon
+			for (var n = 0; n < toDraw[i].angles.length; n++) {
+				var ctx = canvas.getContext('2d');
+				ctx.beginPath();
+				ctx.moveTo(toDraw[i].angles[n].startX, toDraw[i].angles[n].startY);
+				ctx.lineTo(toDraw[i].angles[n].endX, toDraw[i].angles[n].endY);
+				ctx.strokeStyle = toDraw[i].color;
+				ctx.stroke();
+			}
+		}
+	}
 }
 
 //Finds distance between two points on canvas
@@ -78,7 +72,6 @@ function findDistance(startX, startY, endX, endY) {
 
 //Writes cursor position on canvas
 function writeMessage(canvas, message) {
-        clear();
         draw();
         var ctx = canvas.getContext('2d');
         ctx.textAlign = 'right';
@@ -98,44 +91,30 @@ function getCursorPos(canvas, evt) {
 
 //Allows user to draw a point on canvas. Saves point in toDraw array
 function drawPoint() {
-    paintbrush++;
-    var curr = paintbrush;
     var click = 0;
     var startX;
     var startY;
     var rect = canvas.getBoundingClientRect();
     pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
     printVars();
-        
-        
-    canvas.addEventListener('click', function(evt) {
-        if (curr < paintbrush) { //Checks to see if another button has been pushed
-                this.removeEventListener('click',arguments.callee,false);
-                return;
-        }
-    click++;
-    if (click == 1) {
-        startX = evt.clientX - rect.left;
-        startY = evt.clientY - rect.top;
-        toDraw[toDraw.length] = new point(startX, startY);
-        
-        addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+    $('#' + canvas.id).off();
+    $('#' + canvas.id).on('click', function(evt) {
+		startX = evt.clientX - rect.left;
+		startY = evt.clientY - rect.top;
+		toDraw[toDraw.length] = new point(startX, startY);
+		draw();
+		
+		addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
             "(", startX,",", 300-startY, ")"]);
-        addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"])
-    }
-    
-    //remove listener after the line has been drawn
-    if (click > 0) {
-            this.removeEventListener('click',arguments.callee,false);
-    }
-    }, false);
+        addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+        
+        //remove listener
+        $('#' + canvas.id).off('click');
+	});
 }
 
 //Allows user to draw a line on canvas. Saves line in toDraw array
 function drawLine() {
-    paintbrush++;
-    var curr = paintbrush;
-    var click = 0;
     var startX;
     var startY;
     var endX;
@@ -143,64 +122,93 @@ function drawLine() {
     var rect = canvas.getBoundingClientRect();
     lineVariables[lineVariables.length] = 'l' + (lineVariables.length+1);
     printVars();
-    
-    canvas.addEventListener('click', function(evt) {
-        if (curr < paintbrush) { //Checks to see if another button has been pushed
-                this.removeEventListener('click',arguments.callee,false);
-                return;
-        }
-        click++;
-        if (click == 1) {
-            startX = evt.clientX - rect.left;
-            startY = evt.clientY - rect.top;
-            
-            //visualize what the line will look like as the user moves the cursor around
-            canvas.addEventListener('mousemove', function(evt) {
-                if (curr < paintbrush) { //Checks to see if another button has been pushed
-                    this.removeEventListener('mousemove',arguments.callee,false);
-                    return;
-                }
-                var ctx = canvas.getContext('2d');
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-                ctx.strokeStyle = "#FF0000";
-                ctx.stroke();
-                if (click > 1)
-                    this.removeEventListener('mousemove',arguments.callee,false);
-            }, false);
-        }
-        else if (click == 2) {
-            endX = evt.clientX - rect.left;
-            endY = evt.clientY - rect.top;
-            toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
-            
-            addNewRow(selRow, [getIndent(selRow) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
-                "(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
-            addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
-        }
-        
-        //remove listener after the line has been drawn
-        if (click > 1) {
-            this.removeEventListener('click',arguments.callee,false);
-        }
-    }, false);
+    $('#' + canvas.id).off();
+    $('#' + canvas.id).on('mousedown', function(evt) {
+		
+		startX = evt.clientX - rect.left;
+		startY = evt.clientY - rect.top;
+		
+		//visualize what the line will look like as the user moves the cursor around
+		$('#' + canvas.id).on('mousemove', function(evt) {
+			var ctx = canvas.getContext('2d');
+			draw();
+			ctx.beginPath();
+			ctx.moveTo(startX, startY);
+			ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
+			ctx.strokeStyle = "#FF0000";
+			ctx.stroke();
+			
+			$('#' + canvas.id).on('mouseout', function() {
+				$('#' + canvas.id).off();
+				draw();
+				return;
+			});
+		});
+		
+		$('#' + canvas.id).on('mouseup', function(evt) {
+			//Turn mouse move listener off
+			$('#' + canvas.id).off('mousemove');
+			endX = evt.clientX - rect.left;
+			endY = evt.clientY - rect.top;
+			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
+			
+			addNewRow(selRow, [getIndent(selRow) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
+				"(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
+			addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
+			
+			//Turn mouse up listener off
+			$('#' + canvas.id).off();
+		});
+	});
 }
 
 //Allows user to draw a circle on canvas. Saves circle in toDraw array
 function drawCircle() {
-    paintbrush++;
-    var curr = paintbrush;
-    var click = 0;
-    var startX;
-    var startY;
-    var endX;
-    var endY;
-    var rect = canvas.getBoundingClientRect();
-    circleVariables[circleVariables.length] = 'c' + (circleVariables.length+1);
-    printVars();
+	var click = 0;
+	var startX;
+	var startY;
+	var endX;
+	var endY;
+	var rect = canvas.getBoundingClientRect();
+	circleVariables[circleVariables.length] = 'c' + (circleVariables.length+1);
+	printVars();
+	
+	$('#' + canvas.id).off();
+	$('#' + canvas.id).on('mousedown', function(evt) {
+		
+		startX = evt.clientX - rect.left;
+		startY = evt.clientY - rect.top;
+		
+		//visualize what the circle will look like as the user moves the cursor around
+		$('#' + canvas.id).on('mousemove', function(evt) {
+			draw();
+			var ctx = canvas.getContext('2d');
+			ctx.beginPath();
+			ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
+			ctx.strokeStyle = "#FF0000";
+			ctx.stroke();
+			
+			$('#' + canvas.id).on('mouseout', function() {
+				$('#' + canvas.id).off();
+				draw();
+				return;
+			});
+		});
+		
+		$('#' + canvas.id).on('mouseup', function(evt) {
+			endX = evt.clientX - rect.left;
+			endY = evt.clientY - rect.top;
+			toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
+			
+			addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+			startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
+			addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
+			
+			$('#' + canvas.id).off();
+		});
+	});
     
-    canvas.addEventListener('click', function(evt) {
+    /*canvas.addEventListener('click', function(evt) {
         if (curr < paintbrush) { //Checks to see if another button has been pushed
             this.removeEventListener('click',arguments.callee,false);
             return;
@@ -239,11 +247,12 @@ function drawCircle() {
         if (click > 1) {
             this.removeEventListener('click',arguments.callee,false);
         }
-    }, false);
+    }, false);*/
 }
 
 //Allows user to draw a polygon on canvas. Saves polygon in toDraw array
 function drawPolygon() {
+	var paintbrush = 0;
     paintbrush++; 
     var curr = paintbrush;
     var click = 0;
