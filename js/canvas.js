@@ -143,7 +143,7 @@ function drawLine() {
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
 			
-			$('#' + canvas.id).on('mouseout.draw', function() {
+			$('#' + canvas.id).on('vmouseout.draw', function() {
 				$('#' + canvas.id).off('.draw');
 				draw();
 				return;
@@ -308,7 +308,7 @@ function drawPolygon() {
 	});
 	
 	//If cursor leaves the canvas, we need to get rid of any preview lines
-	$('#' + canvas.id).on('vmouseout.draw', function(evt) {
+	$('#' + canvas.id).on('mouseout.draw', function(evt) {
 		//Turn off all .draw listeners
 		$('#' + canvas.id).off('.draw');
 		var x = 0;
