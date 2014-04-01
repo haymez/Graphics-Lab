@@ -253,9 +253,18 @@ function drawPolygon() {
 			ctx.beginPath();
 			ctx.moveTo(startX, startY);
 			
-			//Snap into place if preview line is within 8 pixels of starting point
+			//Snap into place if preview line is within 8 pixels of starting point. If mobile, the size increases to 15 pixels
 			if(edgeCount >= 2) {
-				if (findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8) {
+				var distance = findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY);
+				if (distance < 8) {
+					ctx.lineTo(coor[0].startX, coor[0].startY);
+					ctx.strokeStyle = "#FFFF00";
+					for(var i = 0; i < toDraw.length; i++) {
+						if(toDraw[i].type == "temp") toDraw[i].color = "#FFFF00";
+					}
+				}
+				else if($(window).width() < 1224 && distance < 15) {
+					console.log("Increased radius!");
 					ctx.lineTo(coor[0].startX, coor[0].startY);
 					ctx.strokeStyle = "#FFFF00";
 					for(var i = 0; i < toDraw.length; i++) {
@@ -279,7 +288,6 @@ function drawPolygon() {
 	});
 	//Listen for vmouse up which means user has finished drawing an edge
 	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
-		console.log("finger lifted!");
 		//Turn off vmouse move event
 		$('#' + canvas.id).off('vmousemove.draw');
 		endX = evt.clientX - rect.left;
@@ -313,7 +321,6 @@ function drawPolygon() {
 			}
 			addNewRow(selRow, [getIndent(selRow) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
 			draw();
-			console.log("draw!");
 		}
 		else {
 			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
