@@ -33,6 +33,7 @@ $('#' + canvas.id).on('vmouseout', function(evt) {
 		}
 		toDraw = toDraw.slice(0, toDraw.length-x);
 		draw();
+		programWindowDiv.style.border = "ridge";
 	}
 });
 
