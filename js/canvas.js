@@ -113,6 +113,7 @@ function drawPoint() {
 		addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
             "(", startX,",", 300-startY, ")"]);
         addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+        draw();
         
         //remove listener
         $('#' + canvas.id).off('.draw');
@@ -311,6 +312,8 @@ function drawPolygon() {
 					addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
 			}
 			addNewRow(selRow, [getIndent(selRow) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
+			draw();
+			console.log("draw!");
 		}
 		else {
 			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
