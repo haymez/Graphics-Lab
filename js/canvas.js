@@ -263,7 +263,7 @@ function drawPolygon() {
 						if(toDraw[i].type == "temp") toDraw[i].color = "#FFFF00";
 					}
 				}
-				else if($(window).width() < 1224 && distance < 15) {
+				else if($(window).width() < 1224 && distance < 30) {
 					console.log("Increased radius!");
 					ctx.lineTo(coor[0].startX, coor[0].startY);
 					ctx.strokeStyle = "#FFFF00";
