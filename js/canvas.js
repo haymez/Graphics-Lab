@@ -19,9 +19,22 @@ $('#' + canvas.id).on('vmousemove', function(evt) {
     return false;
 });
 
-//Remove coordinate information if mouse leaves canvas
-$('#' + canvas.id).on('mouseout', function(evt) {
-	draw();
+//Remove coordinate information if mouse leaves canvas. Also, delete any shape preview lines.
+$('#' + canvas.id).on('vmouseout', function(evt) {
+	var rect = canvas.getBoundingClientRect();
+	console.log(Number(evt.clientX-rect.left) + ", " + Number(evt.clientY-rect.top));
+	var x = evt.clientX - rect.left;
+	var y = 300 - (evt.clientY - rect.top);
+	if(x>300 || x<0 || y>300 || y<0) {
+		$('#' + canvas.id).off('.draw');
+		var x = 0;
+		for (var i = 0; i < toDraw.length; i++) {
+			if (toDraw[i].type == 'temp')
+				x++;
+		}
+		toDraw = toDraw.slice(0, toDraw.length-x);
+		draw();
+	}
 });
 
 //Writes cursor position on canvas
@@ -143,12 +156,6 @@ function drawLine() {
 			ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
-			
-			$('#' + canvas.id).on('vmouseout.draw', function() {
-				$('#' + canvas.id).off('.draw');
-				draw();
-				return;
-			});
 		});
 		
 		$('#' + canvas.id).on('vmouseup.draw', function(evt) {
@@ -191,11 +198,6 @@ function drawCircle() {
 			ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
-			
-			$('#' + canvas.id).on('vmouseout.draw', function() {
-				$('#' + canvas.id).off('.draw');
-				return;
-			});
 		});
 	});
 	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
@@ -330,20 +332,6 @@ function drawPolygon() {
 			coor[coor.length] = new point(startX, startY, endX, endY);
 		}
 		edgeCount++;
-	});
-	
-	//If cursor leaves the canvas, we need to get rid of any preview lines
-	$('#' + canvas.id).on('vmouseout.draw', function(evt) {
-		console.log(Number(evt.clientX-rect.left) + ", " + Number(evt.clientY-rect.top));
-		//Turn off all .draw listeners
-		$('#' + canvas.id).off('.draw');
-		var x = 0;
-		for (var i = 0; i < toDraw.length; i++) {
-			if (toDraw[i].type == 'temp')
-				x++;
-		}
-		toDraw = toDraw.slice(0, toDraw.length-x);
-		draw();
 	});
 }
 
