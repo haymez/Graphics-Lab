@@ -254,14 +254,25 @@ function drawPolygon() {
 			
 			//Snap into place if preview line is within 8 pixels of starting point
 			if(edgeCount >= 2) {
-				if (findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8)
+				if (findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8) {
 					ctx.lineTo(coor[0].startX, coor[0].startY);
-				else
+					ctx.strokeStyle = "#FFFF00";
+					for(var i = 0; i < toDraw.length; i++) {
+						if(toDraw[i].type == "temp") toDraw[i].color = "#FFFF00";
+					}
+				}
+				else {
 					ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
+					ctx.strokeStyle = "#FF0000";
+					for(var i = 0; i < toDraw.length; i++) {
+						if(toDraw[i].type == "temp") toDraw[i].color = "#FF0000";
+					}
+				}
 			}
-			else
+			else {
 				ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-			ctx.strokeStyle = "#FF0000";
+				ctx.strokeStyle = "#FF0000";
+			}
 			ctx.stroke();
 		});
 	});
