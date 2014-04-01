@@ -6,22 +6,47 @@
 
 //Declare all variables
 var toDraw = new Array();
+var message = "";
 
 //Event listener for cursor position on canvas
 $('#' + canvas.id).on('vmousemove', function(evt) {
     $(this).css('cursor', 'crosshair');
-    var cursorPos = getCursorPos(canvas, evt);
-    var message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
+    var cursorPos = getCursorPos(evt);
+    message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
     if (isNaN(cursorPos.x) || cursorPos.x > 300 || cursorPos.x < 0 || cursorPos.y > 300 || cursorPos.y < 0)
         message = "";
-    writeMessage(canvas, message);
+    writeMessage(message);
     return false;
 });
 
+//Remove coordinate information if mouse leaves canvas
+$('#' + canvas.id).on('vmouseout', function(evt) {
+	draw();
+});
+
+//Writes cursor position on canvas
+function writeMessage(message) {
+	draw();
+	var ctx = canvas.getContext('2d');
+	ctx.textAlign = 'right';
+	ctx.font = '10pt Calibri';
+	ctx.fillStyle = 'black';
+	ctx.fillText(message, 298, 10);
+}
+
+//Returns the cursor position on canvas
+function getCursorPos(evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: 300 - (evt.clientY - rect.top)
+    };
+}
+
 //Clears the canvas of all drawings
 function clear() {
-        var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	var ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 //Draws all saved objects onto the canvas
@@ -71,25 +96,6 @@ function findDistance(startX, startY, endX, endY) {
         return distance;
 }
 
-//Writes cursor position on canvas
-function writeMessage(canvas, message) {
-	draw();
-	var ctx = canvas.getContext('2d');
-	ctx.textAlign = 'right';
-	ctx.font = '8pt Calibri';
-	ctx.fillStyle = 'black';
-	ctx.fillText(message, 298, 10);
-}
-
-//Returns the cursor position on canvas
-function getCursorPos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: evt.clientX - rect.left,
-        y: 300 - (evt.clientY - rect.top)
-    };
-}
-
 //Allows user to draw a point on canvas. Saves point in toDraw array
 function drawPoint() {
     var click = 0;
@@ -99,11 +105,10 @@ function drawPoint() {
     pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
     printVars();
     $('#' + canvas.id).off('.draw');
-    $('#' + canvas.id).on('vclick.draw', function(evt) {
+    $('#' + canvas.id).on('vmouseup.draw', function(evt) {
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
 		toDraw[toDraw.length] = new point(startX, startY);
-		draw();
 		
 		addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
             "(", startX,",", 300-startY, ")"]);
@@ -132,7 +137,6 @@ function drawLine() {
 		//visualize what the line will look like as the user moves the cursor around
 		$('#' + canvas.id).on('vmousemove.draw', function(evt) {
 			var ctx = canvas.getContext('2d');
-			draw();
 			ctx.beginPath();
 			ctx.moveTo(startX, startY);
 			ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
@@ -181,7 +185,6 @@ function drawCircle() {
 		
 		//visualize what the circle will look like as the user moves the cursor around
 		$('#' + canvas.id).on('vmousemove.draw', function(evt) {
-			draw();
 			var ctx = canvas.getContext('2d');
 			ctx.beginPath();
 			ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
@@ -190,7 +193,6 @@ function drawCircle() {
 			
 			$('#' + canvas.id).on('vmouseout.draw', function() {
 				$('#' + canvas.id).off('.draw');
-				draw();
 				return;
 			});
 		});
@@ -214,7 +216,7 @@ function drawPolygon() {
 	var paintbrush = 0;
     paintbrush++; 
     var curr = paintbrush;
-    var click = 0;
+    var edgeCount = 0; //Keep track of which edge we're working on.
     var startX;
     var startY;
     var endX;
@@ -232,90 +234,96 @@ function drawPolygon() {
         this.endY = endY;
     }
     
-    canvas.addEventListener('click', function(evt) { //Listens for click on canvas
-        if (curr < paintbrush) { //Checks to see if another button has been pushed
-            this.removeEventListener('click',arguments.callee,false);
-            return;
-        }
-        click++;
-        if (click % 2 == 1) {
-            if (click > 1) {
-                startX = endX;
-                startY = endY;
-            }
-            else {
-                startX = evt.clientX - rect.left;
-                startY = evt.clientY - rect.top;
-            }
-            
-            //visualize what the line will look like as the user moves the cursor around
-            canvas.addEventListener('mousemove', function(evt) {
-                if (curr < paintbrush) { //Checks to see if another button has been pushed
-                    this.removeEventListener('mousemove',arguments.callee,false);
-                    
-                    var x = 0;
-                    for (var i = 0; i < toDraw.length; i++) {
-                        if (toDraw[i].type == 'temp')
-                            x++;
-                    }
-                    toDraw = toDraw.slice(0, toDraw.length-x);
-                    
-                    return;
-                }
-                var ctx = canvas.getContext('2d');
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                //Snap into place if preview line is within 8 pixels of starting point
-                if (click > 2) {
-                    if (findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8)
-                        ctx.lineTo(coor[0].startX, coor[0].startY);
-                    else
-                        ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-                }
-                else
-                    ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
-                ctx.strokeStyle = "#FF0000";
-                ctx.stroke();
-                if (click % 2 == 0) //if click is finishing a preview line then we need to remove the listener
-                    this.removeEventListener('mousemove',arguments.callee,false);
-            }, false);
-        }
-        else {
-            endX = evt.clientX - rect.left;
-            endY = evt.clientY - rect.top;
-            if (click > 2) {
-                if (findDistance(endX, endY, coor[0].startX, coor[0].startY) < 8) {
-                    this.removeEventListener('click',arguments.callee,false);
-                    toDraw[toDraw.length] = new line(startX, startY, coor[0].startX, coor[0].startY, "temp"); //Set this line to temporary because it's merely a preview
-                    coor[coor.length] = new point(startX, startY, coor[0].startX, coor[0].startY);
-                    
-                    //Erase all line elements in toDraw that were used for polygon. Save polygon.
-                    toDraw = toDraw.slice(0, toDraw.length-coor.length);
-                    toDraw[toDraw.length] = new polygon(coor);
-                    
-                    addNewRow(selRow, [getIndent(selRow) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
-                        "(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
-                    for(var i = 1; i < coor.length; i++) {
-                        if (i == coor.length-1) {
-                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
-                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
-                        }
-                        else
-                            addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
-                    }
-                    addNewRow(selRow, [getIndent(selRow) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
-                }
-                else {
-                    toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp"); //Set this line to temporary because it's merely a preview
-                    coor[coor.length] = new point(startX, startY, endX, endY);
-                    canvas.click();
-                }
-            }
-            else {
-                toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp"); //Set this line to temporary because it's merely a preview
-                coor[coor.length] = new point(startX, startY, endX, endY);
-                canvas.click();
-            }
-        }
-    }, false);
+    //Turn off all .draw listeners
+	$('#' + canvas.id).off('.draw');
+    $('#' + canvas.id).on('vmousedown.draw', function(evt) {
+		if(edgeCount == 0) {
+			startX = evt.clientX - rect.left;
+			startY = evt.clientY - rect.top;
+		}
+		else {
+			startX = endX;
+			startY = endY;
+		}
+		
+		//visualize what the line will look like as the user moves the cursor around
+		$('#' + canvas.id).on('vmousemove.draw', function(evt) {
+			var ctx = canvas.getContext('2d');
+			ctx.beginPath();
+			ctx.moveTo(startX, startY);
+			
+			//Snap into place if preview line is within 8 pixels of starting point
+			if(edgeCount >= 2) {
+				if (findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8)
+					ctx.lineTo(coor[0].startX, coor[0].startY);
+				else
+					ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
+			}
+			else
+				ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
+			ctx.strokeStyle = "#FF0000";
+			ctx.stroke();
+		});
+	});
+	//Listen for vmouse up which means user has finished drawing an edge
+	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
+		//Turn off vmouse move event
+		$('#' + canvas.id).off('vmousemove.draw');
+		endX = evt.clientX - rect.left;
+		endY = evt.clientY - rect.top;
+		//This is our first edge
+		if(edgeCount == 0) {
+			//Set this line to temporary because it's merely a preview
+			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
+			coor[coor.length] = new point(startX, startY, endX, endY);
+		}
+		else if(edgeCount >= 2 && findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8) {
+			//Turn off all listeners
+			$('#' + canvas.id).off('.draw');
+			
+			toDraw[toDraw.length] = new line(startX, startY, coor[0].startX, coor[0].startY, "temp");
+			coor[coor.length] = new point(startX, startY, coor[0].startX, coor[0].startY);
+			
+			//Erase all line elements in toDraw that were used for polygon. Save polygon.
+			toDraw = toDraw.slice(0, toDraw.length-coor.length);
+			toDraw[toDraw.length] = new polygon(coor);
+
+			addNewRow(selRow, [getIndent(selRow) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
+				"(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
+			for(var i = 1; i < coor.length; i++) {
+				if (i == coor.length-1) {
+					addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+					addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+				}
+				else
+					addNewRow(selRow, [getIndent(selRow) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+			}
+			addNewRow(selRow, [getIndent(selRow) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
+		}
+		else {
+			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
+			coor[coor.length] = new point(startX, startY, endX, endY);
+		}
+		edgeCount++;
+	});
+	
+	//If cursor leaves the canvas, we need to get rid of any preview lines
+	$('#' + canvas.id).on('vmouseout.draw', function(evt) {
+		//Turn off all .draw listeners
+		$('#' + canvas.id).off('.draw');
+		var x = 0;
+		for (var i = 0; i < toDraw.length; i++) {
+			if (toDraw[i].type == 'temp')
+				x++;
+		}
+		toDraw = toDraw.slice(0, toDraw.length-x);
+		draw();
+	});
 }
+
+
+
+
+
+
+

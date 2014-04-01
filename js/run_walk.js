@@ -13,7 +13,6 @@ var loopArray = new Array();
 //Allows users to run the program slowly
 function run() {
 	runMode = true;
-    paintbrush++;
     walk();
     var delay = setInterval(function() {
         if (!programRunning) {
@@ -50,7 +49,6 @@ function run() {
 function walk() {
 	if(codeTable.rows[1] == undefined) return;
 	changeBtnState(true);
-    paintbrush++;
     var oldPos = -1;
     if (!programRunning) {
         //check if selected row is before end of code
