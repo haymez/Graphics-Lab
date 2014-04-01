@@ -278,6 +278,7 @@ function drawPolygon() {
 	});
 	//Listen for vmouse up which means user has finished drawing an edge
 	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
+		console.log("finger lifted!");
 		//Turn off vmouse move event
 		$('#' + canvas.id).off('vmousemove.draw');
 		endX = evt.clientX - rect.left;
