@@ -85,9 +85,9 @@ function toggleEvents() {
     });
     
     //Turn click listener off
-    $(".innerTable" + figNum).off("click");
+    $(".innerTable" + figNum).off("vclick");
     //Turn click listener back on
-    $(".innerTable" + figNum).on("click", "td", function() {
+    $(".innerTable" + figNum).on("vclick", "td", function() {
         var cellVal = $(this).text();
         var colNum = $(this).index();
         var rowNum = ($(this).parent().parent().parent().parent().parent().index());
@@ -386,8 +386,8 @@ function toggleEvents() {
 	$(".insert").on("mouseout", function() {
 		$(this).html(blank);
 	});
-	$(".insert").off("click");
-	$(".insert").on("click", function() {
+	$(".insert").off("vclick");
+	$(".insert").on("vclick", function() {
 		var insertRow = $(this).parent().index();
 		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
 		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
@@ -408,8 +408,8 @@ function toggleEvents() {
 	$("#" + offsetDiv.id).on("mouseout", function() {
 		$(this).html(blank);
 	});
-	$("#" + offsetDiv.id).off("click");
-	$("#" + offsetDiv.id).on("click", function() {
+	$("#" + offsetDiv.id).off("vclick");
+	$("#" + offsetDiv.id).on("vclick", function() {
 		toggleEvents();
 		if(selRow != 0) {
 			moveToLine(0);
