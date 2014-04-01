@@ -224,6 +224,7 @@ function drawPolygon() {
     var endY;
     var coor = new Array();
     var rect = canvas.getBoundingClientRect();
+    var finished = false;
     polygonVariables[polygonVariables.length] = 'g' + (polygonVariables.length+1);
     printVars();
     
@@ -257,6 +258,7 @@ function drawPolygon() {
 			if(edgeCount >= 2) {
 				var distance = findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY);
 				if (distance < 8) {
+					finished = true;
 					ctx.lineTo(coor[0].startX, coor[0].startY);
 					ctx.strokeStyle = "#FFFF00";
 					for(var i = 0; i < toDraw.length; i++) {
@@ -264,6 +266,7 @@ function drawPolygon() {
 					}
 				}
 				else if($(window).width() < 1224 && distance < 30) {
+					finished = true;
 					console.log("Increased radius!");
 					ctx.lineTo(coor[0].startX, coor[0].startY);
 					ctx.strokeStyle = "#FFFF00";
@@ -272,6 +275,7 @@ function drawPolygon() {
 					}
 				}
 				else {
+					finished = false;
 					ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
 					ctx.strokeStyle = "#FF0000";
 					for(var i = 0; i < toDraw.length; i++) {
@@ -298,7 +302,7 @@ function drawPolygon() {
 			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
 			coor[coor.length] = new point(startX, startY, endX, endY);
 		}
-		else if(edgeCount >= 2 && findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY) < 8) {
+		else if(edgeCount >= 2 && finished) {
 			//Turn off all listeners
 			$('#' + canvas.id).off('.draw');
 			
