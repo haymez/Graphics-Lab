@@ -143,7 +143,7 @@ function drawLine() {
 			ctx.strokeStyle = "#FF0000";
 			ctx.stroke();
 			
-			$('#' + canvas.id).on('vmouseout.draw', function() {
+			$('#' + canvas.id).on('mouseout.draw', function() {
 				$('#' + canvas.id).off('.draw');
 				draw();
 				return;
