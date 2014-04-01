@@ -56,3 +56,8 @@
     cursor: pointer;
     border:none;
 }
+
+.WatsonSelector .ui-selecting { background: #33BBCC; }
+.WatsonSelector .ui-selected { background: #3399CC; color: white; }
+.WatsonSelector { list-style-type: none; margin: 0; padding: 0; width: 100%; cursor: pointer; }
+.WatsonSelector li { margin: 3px; padding: 0.0em; font-size: 1em; height: 18px; }
