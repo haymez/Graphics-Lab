@@ -20,7 +20,7 @@ $('#' + canvas.id).on('vmousemove', function(evt) {
 });
 
 //Remove coordinate information if mouse leaves canvas
-$('#' + canvas.id).on('vmouseout', function(evt) {
+$('#' + canvas.id).on('mouseout', function(evt) {
 	draw();
 });
 
