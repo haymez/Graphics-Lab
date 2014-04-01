@@ -22,7 +22,6 @@ $('#' + canvas.id).on('vmousemove', function(evt) {
 //Remove coordinate information if mouse leaves canvas. Also, delete any shape preview lines.
 $('#' + canvas.id).on('vmouseout', function(evt) {
 	var rect = canvas.getBoundingClientRect();
-	console.log(Number(evt.clientX-rect.left) + ", " + Number(evt.clientY-rect.top));
 	var x = evt.clientX - rect.left;
 	var y = 300 - (evt.clientY - rect.top);
 	if(x>300 || x<0 || y>300 || y<0) {
