@@ -333,7 +333,7 @@ function drawPolygon() {
 	});
 	
 	//If cursor leaves the canvas, we need to get rid of any preview lines
-	$('#' + canvas.id).on('mouseout.draw', function(evt) {
+	$('#' + canvas.id).on('vmouseout.draw', function(evt) {
 		console.log(evt.changedTouches);
 		//Turn off all .draw listeners
 		$('#' + canvas.id).off('.draw');
