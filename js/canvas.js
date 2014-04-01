@@ -254,7 +254,7 @@ function drawPolygon() {
 			ctx.beginPath();
 			ctx.moveTo(startX, startY);
 			
-			//Snap into place if preview line is within 8 pixels of starting point. If mobile, the size increases to 15 pixels
+			//Snap into place if preview line is within 8 pixels of starting point. If mobile, the size increases to 30 pixels
 			if(edgeCount >= 2) {
 				var distance = findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY);
 				if (distance < 8) {
@@ -267,7 +267,6 @@ function drawPolygon() {
 				}
 				else if($(window).width() < 1224 && distance < 30) {
 					finished = true;
-					console.log("Increased radius!");
 					ctx.lineTo(coor[0].startX, coor[0].startY);
 					ctx.strokeStyle = "#FFFF00";
 					for(var i = 0; i < toDraw.length; i++) {
@@ -335,6 +334,7 @@ function drawPolygon() {
 	
 	//If cursor leaves the canvas, we need to get rid of any preview lines
 	$('#' + canvas.id).on('mouseout.draw', function(evt) {
+		console.log(evt.changedTouches);
 		//Turn off all .draw listeners
 		$('#' + canvas.id).off('.draw');
 		var x = 0;

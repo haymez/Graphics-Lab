@@ -244,7 +244,6 @@ $("#" + walkButton.id).click(function() { walk(); });
 
 $(document).ready(function() {
 	toggleEvents();
-	console.log($(window).width());
 })
 
 
