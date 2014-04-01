@@ -33,7 +33,6 @@ $('#' + canvas.id).on('vmouseout', function(evt) {
 		}
 		toDraw = toDraw.slice(0, toDraw.length-x);
 		draw();
-		programWindowDiv.style.border = "ridge";
 	}
 });
 
@@ -121,12 +120,14 @@ function drawPoint() {
     $('#' + canvas.id).on('vmouseup.draw', function(evt) {
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
-		toDraw[toDraw.length] = new point(startX, startY);
-		
-		addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
-            "(", startX,",", 300-startY, ")"]);
-        addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
-        draw();
+		if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
+			toDraw[toDraw.length] = new point(startX, startY);
+			
+			addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+				"(", startX,",", 300-startY, ")"]);
+			addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+			draw();
+		}
         
         //remove listener
         $('#' + canvas.id).off('.draw');
@@ -162,12 +163,14 @@ function drawLine() {
 			//Turn mouse move listener off
 			endX = evt.clientX - rect.left;
 			endY = evt.clientY - rect.top;
-			toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
 			
-			addNewRow(selRow, [getIndent(selRow) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
-				"(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
-			addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
-			
+			if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
+				toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
+				
+				addNewRow(selRow, [getIndent(selRow) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
+					"(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
+				addNewRow(selRow, [getIndent(selRow) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
+			}
 			//Turn off all .draw listeners
 			$('#' + canvas.id).off('.draw');
 		});
@@ -203,12 +206,14 @@ function drawCircle() {
 	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
 		endX = evt.clientX - rect.left;
 		endY = evt.clientY - rect.top;
-		toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
 		
-		addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
-		startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-		addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
-		
+		if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
+			toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
+			
+			addNewRow(selRow, [getIndent(selRow) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+			startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
+			addNewRow(selRow, [getIndent(selRow) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
+		}
 		//Turn off all .draw listeners
 		$('#' + canvas.id).off('.draw');
 	});
