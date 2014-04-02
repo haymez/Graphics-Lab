@@ -76,7 +76,6 @@ function printVars() {
 
 //New Distance variable
 function newDistance() {
-	paintbrush++;
 	distanceVariables[distanceVariables.length] = 'd' + (distanceVariables.length+1);
 	printVars();
 }
