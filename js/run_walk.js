@@ -155,9 +155,9 @@ function makeLoop(loopStart, i) {
 
 //Updates the variables in the variables tracker.
 function updateVarValueWindow(){
-	
+	var cSpace = "&nbsp&nbsp&nbsp&nbsp&nbsp";
 	var vvDiv = document.getElementById("varValDiv" + figNum);
-	var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level&#09</td><td>variable\t</td><td>type	</td><td>value</td></tr>';
+	var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level'+cSpace+'</td><td>variable'+cSpace+'</td><td>type'+cSpace+'</td><td>value'+cSpace+'</td></tr>';
 	var i, canShow = 0;
 	
 	for(i = 0; i < d.length; i++)

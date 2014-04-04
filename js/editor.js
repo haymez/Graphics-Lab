@@ -499,6 +499,7 @@ function addRow(table, values, startInd) {
 
 //adds a row to the insert area
 function addNewInsertRow() {
+	if(insertTable.rows.length > codeTable.rows.length) return;
 	var row = insertTable.insertRow(-1);
 	var cell = row.insertCell(0);
 	cell.className = "insert";
@@ -780,7 +781,6 @@ function deleteLoop(type, rowNum) {
 
 //Makes the last row in polygon equal to first row
 function fixPolygons() {
-	console.log("here");
 	var x = 0;
 	var y = 0;
 	for (var i = 0; i < codeTable.rows.length-1; i++) {
