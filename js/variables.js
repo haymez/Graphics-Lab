@@ -12,6 +12,7 @@ var circleVariables = new Array();
 var polygonVariables = new Array();
 var distanceVariables = new Array();
 
+
 //Print all declared variables into the variables window
 function printVars() {
 	var d = "";
@@ -20,58 +21,66 @@ function printVars() {
 	var c = "";
 	var g = "";
 	var total = "";
+	var lineNum = 0;
+	var oldLine = getSelectedRowIndex();
 	
-	var point = pointVariables.slice();
-	var line = lineVariables.slice();
-	var circle = circleVariables.slice();
-	var polygon = polygonVariables.slice();
-	var distance = distanceVariables.slice();
+	var point = new Array();
+	var line = new Array();
+	var circle = new Array();
+	var polygon = new Array();
+	var distance = new Array();
 	
 	if(rowToString(0).indexOf("//Variable") >= 0) {
-		//for(var i = 0; i < 3; i++) {
 		while(rowToString(0).indexOf("//Program") == -1) {
-			codeTable.deleteRow(0);
-			if (selRow > 0) selRow--;
+			deleteRow(0);
 		}
-		codeTable.deleteRow(0);
-		if (selRow > 0) selRow--;
+		deleteRow(0);
 	}
-	for(var i = 1; i < distanceVariables.length; i++) {
-		if(distance[i-1].indexOf(",") == -1) distance[i-1] += ",&nbsp;";
+	for(var i = 0; i < distanceVariables.length; i++) {
+		if(i != 0) distance[distance.length] = {text:",&nbsp;d" + Number(i+1), type:["comment"]};
+		else distance[distance.length] = {text:"d" + Number(i+1), type:["comment"]};
 	}
-	for(var i = 1; i < pointVariables.length; i++) {
-		if(point[i-1].indexOf(",") == -1) point[i-1] += ",&nbsp;";
+	for(var i = 0; i < pointVariables.length; i++) {
+		if(i != 0) point[point.length] = {text:",&nbsp;p" + Number(i+1), type:["comment"]};
+		else point[point.length] = {text:"p" + Number(i+1), type:["comment"]};
 	}
-	for(var i = 1; i < lineVariables.length; i++) {
-		if(line[i-1].indexOf(",") == -1) line[i-1] += ",&nbsp;";
+	for(var i = 0; i < lineVariables.length; i++) {
+		if(i != 0) line[line.length] = {text:",&nbsp;l" + Number(i+1), type:["comment"]};
+		else line[line.length] = {text:"l" + Number(i+1), type:["comment"]};
 	}
-	for(var i = 1; i < polygonVariables.length; i++) {
-		if(polygon[i-1].indexOf(",") == -1) polygon[i-1] += ",&nbsp;";
+	for(var i = 0; i < polygonVariables.length; i++) {
+		if(i != 0) polygon[polygon.length] = {text:",&nbsp;p" + Number(i+1), type:["comment"]};
+		else polygon[polygon.length] = {text:"p" + Number(i+1), type:["comment"]};
 	}
-	for(var i = 1; i < circleVariables.length; i++) {
-		if(circle[i-1].indexOf(",") == -1) circle[i-1] += ",&nbsp;";
+	for(var i = 0; i < circleVariables.length; i++) {
+		if(i != 0) circle[circle.length] = {text:",&nbsp;c" + Number(i+1), type:["comment"]};
+		else circle[circle.length] = {text:"c" + Number(i+1), type:["comment"]};
 	}
 	
-	addNewRow(0, ["//Program Code"]);
-	if(circleVariables.length > 0) addNewRow(0, ["Circle:&nbsp;"].concat(circle));
-	if(polygonVariables.length > 0) addNewRow(0, ["Polygon:&nbsp;"].concat(polygon));
-	if(lineVariables.length > 0) addNewRow(0, ["Line:&nbsp;"].concat(line));
-	if(pointVariables.length > 0) addNewRow(0, ["Point:&nbsp;"].concat(point));
-	if(distanceVariables.length > 0) addNewRow(0, ["Distance:&nbsp;"].concat(distance));
-	addNewRow(0,["//Variable Declarations"]); 
-	
-	//Change font color
-	if(rowToString(0).indexOf("//Variable") >= 0) {
-		var i = 0;
-		while(1) {
-			var innerTable = codeTable.rows[i].cells[0].children[0];
-			for(var j = 1; j < innerTable.rows[0].cells.length; j++)
-				innerTable.rows[0].cells[j].className += " comment";
-				//innerTable.rows[0].cells[j].style.color = '#007500';
-			if(rowToString(i).indexOf("//Program") >= 0) break;
-			i++;
-		}
+	selectRowByIndex(0);
+	addRow(getSelectedRowIndex(), [{text:"//Variable Declarations", type:["comment"]}]); 
+	lineNum++;
+	if(circleVariables.length > 0) {
+		addRow(getSelectedRowIndex(), [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
+		lineNum++;
 	}
+	if(polygonVariables.length > 0) {
+		addRow(getSelectedRowIndex(), [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
+		lineNum++;
+	}
+	if(lineVariables.length > 0) {
+		addRow(getSelectedRowIndex(), [{text:"//Line&nbsp;", type:"comment"}].concat(line));
+		lineNum++;
+	}
+	if(pointVariables.length > 0) {
+		addRow(getSelectedRowIndex(), [{text:"//Point&nbsp;", type:"comment"}].concat(point));
+		lineNum++;
+	}
+	if(distanceVariables.length > 0) {
+		addRow(getSelectedRowIndex(), [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
+		lineNum++;
+	}
+	addRow(lineNum, [{text:"//Program Code", type:["comment"]}]);
 }
 
 //New Distance variable

@@ -123,9 +123,9 @@ function drawPoint() {
 		if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
 			toDraw[toDraw.length] = new point(startX, startY);
 			
-			addNewRow(selRow, [getIndent(selRow) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+			addNewRow(getSelectedRowIndex(), [pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
 				"(", startX,",", 300-startY, ")"]);
-			addNewRow(selRow, [getIndent(selRow) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+			addNewRow(getSelectedRowIndex(), ["draw", "(", pointVariables[pointVariables.length-1], ")"]);
 			draw();
 		}
         

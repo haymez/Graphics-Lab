@@ -1,0 +1,82 @@
+*{
+	//border: 1px red dashed;
+}
+
+/*syntax highlighting stuff*/
+.code{
+	color: #000000;
+}
+
+.keyword{
+	color: #0000FF;
+}
+
+.literal{
+	color: #A52A2A;
+}
+
+.comment{
+	color: #007500;
+}
+
+.noHighlighting{
+	color: #000000;
+}
+
+.selected{
+	color: #FF0000;
+	font-weight: bold;
+}
+
+/*general table stuff*/
+.textArea{
+	height: 100%;
+	min-height: 200px;
+	max-height: 300px;
+	border-style: ridge;
+	width:98%;
+	margin:auto auto;
+	font-family:monospace;
+	overflow: auto;
+}
+
+table {
+	border: none;
+	border-collapse:collapse;
+	padding: 0px;
+	margin: 0px;
+}
+td {
+	border:none;
+	border-collapse:collapse;
+	padding: 0px;
+	margin: 0px;
+	white-space: nowrap;
+}
+
+/*insert bar stuff*/
+.insertDiv {
+   width: 18px;
+   /*height: 400px;*/
+   float: left;
+   border-right: 1px solid black;
+}
+
+.offsetDiv {
+   width: 14px;
+   height: 11px;
+}
+
+.insertTable {
+   font-size: 14px;
+   float: left;
+   border-color: black;
+}
+
+.divider {
+   /*height: 400px;*/
+   border: 1px solid grey;
+   /*position: absolute;*/
+   float: left;
+   /*left: 480px;*/
+}

@@ -1,834 +1,567 @@
 /*
- * This code is for the Watson Graphics Lab editor.
- */
+	Andrew Duryea
+	March 22, 2014
+	editor.js
 
-//The current selected row
-var selRow = 0; 
-
-//Blank template for unselected row
-var blank = "&nbsp;&nbsp;&nbsp;&nbsp;";
-
-//arrow template for selected row
-var arrow = "&#8594;";
-
-//Indentation used for inside brackets
-var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-
-//Template used for a newly added row in the codeTable
-var innerTableTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'></td></tr></table>";
-
-//Template used for a newly selected row
-var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr><td class='codeTd'>&nbsp;&nbsp;</td></tr></table>";
-
-//Make a blank row where the program starts
-var row = codeTable.insertRow(0);
-// make a new cell here
-var cell = row.insertCell(0);
-var innerTable;
-//Set the cell with arrow template
-cell.innerHTML = innerTableArrowTemplate;
-selRow = 0;
-selectRow(selRow);
-
-
-//We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
-function toggleEvents() {
-	refreshLineNumbers();
-    //Turn off mouseover event
-    $('.innerTable' + figNum).off('mouseover');
-    //Turn mouseover event back on
-    $('.innerTable' + figNum).on('mouseover', 'td', function() {
-        // grab the hovered cell's value
-        cellVal = $(this).text();
-        // grab the hovered cell's index
-        colNum = ($(this).index());
-        // grab the row number from codeTable (this is a silly way of doing it, but it works)
-        var rowNum = ($(this).parent().parent().parent().parent().parent().index());
-        var rowString = rowToString(rowNum);
-        
-        // we pass rowNum and colNum to tell the function where start highlighting
-        if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 && 
-            cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 && 
-            cellVal.indexOf('endloop') == -1) {
-            //set cursor to pointer when hovering over clickable items
-            $(this).css('cursor', 'pointer');
-            if (cellVal.indexOf('(') >= 0 && rowString.indexOf("draw") == -1 && rowString.indexOf("erase") == -1 && 
-                rowString.indexOf("color") == -1)
-                highlightParenthesis('(', ')', rowNum, colNum);
-            else if (cellVal.indexOf(')') >= 0 && rowString.indexOf("draw") == -1 && rowString.indexOf("erase") == -1 && 
-                rowString.indexOf("color") == -1)
-                highlightParenthesisBackwards('(', ')', rowNum, colNum);
-            else if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-                if (colNum == 0) {
-                	if(rowString.indexOf("repeat") >= 0)
-                		highlightLoop("repeat", rowNum);
-                	else if (rowString.indexOf("loop") >= 0 && rowString.indexOf("endloop") == -1)
-                		highlightLoop("loop", rowNum);
-                	else if (rowString.indexOf("endloop") >= 0)
-                		highlightLoop("endloop", rowNum);
-                    highlightLine(rowNum);
-                    
-                    //Highlight every line of polygon
-                    if(rowToString(rowNum).charAt(0) == 'g') while(rowToString(++rowNum).charAt(0) == '(') highlightLine(rowNum);
-                }
-                else
-                    highlightCell(rowNum, colNum);
-            }
-        }
-    });
-    
-    $('.innerTable' + figNum).off('mouseout');
-    // we must put the cells we highlight red back to their normal state after we mouseout of them
-    $('.innerTable' + figNum).on('mouseout', 'td', function(){
-        codeTable.style.cursor = 'default';
-        $('td').removeClass("selected");
-    });
-    
-    //Turn click listener off
-    $(".innerTable" + figNum).off("vclick");
-    //Turn click listener back on
-    $(".innerTable" + figNum).on("vclick", "td", function() {
-        var cellVal = $(this).text();
-        var colNum = $(this).index();
-        var rowNum = ($(this).parent().parent().parent().parent().parent().index());
-        var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-        var rowString = rowToString(rowNum);
-        
-        //User clicked on line number. Prompt for delete.
-        if (colNum == 0 && rowNum != selRow && cellVal.trim().length > 0) {		
-			var alert = new Alert();
-			alert.open("Warning", "Are you sure you want to delete the text?", false, function(evt) {
-				if(evt){
-					if(rowString.indexOf("repeat") >= 0) {
-	        			deleteLoop("repeat", rowNum);
-	        		}
-	        		else if (rowString.indexOf("endloop") >= 0) {
-	        			deleteLoop("endloop", rowNum);
-	        		}
-	        		else if (rowString.indexOf("loop") >= 0) {
-	        			deleteLoop("loop", rowNum);
-	        		}
-	        		else if (rowString.charAt(0) == 'g') {
-						deletePolygon(rowNum);
-					}
-					else {
-						if (!(rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) != '(')) {
-							codeTable.deleteRow(rowNum);
-							if (rowNum < selRow) selRow--;
-	        			}
-					}
-					refreshLineNumbers();
-				}
-				else
-					return;			
-			});	
-        }
-        
-        //User clicked on variable number. Generate keypad pop up
-		else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
-			var currentElement = $(this);
-        	//updating a distance variable
-        	if (isDistanceAssign(rowNum)) {
-        		var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=") - 1);
-        		//find if another instance of this distance variable has occurred already
-    			if(beenAssigned(distanceVar, rowNum)) {
-					var arr = new Array();
-					arr.push(distanceVar + " + distanceValue");
-					arr.push(distanceVar + " - distanceValue");
-					for (var i = 0; i < distanceVariables.length; i++) {
-						if (beenAssigned(distanceVariables[i], rowNum))
-							arr.push(distanceVariables[i]);
-					}
-					arr.push("constant");
-					var selector = new Selector();
-					selector.open("Choice Selection Panel", arr, function(evt) {
-						if (evt.indexOf("+") >= 0) {
-							var currRow = rowNum;
-							codeTable.deleteRow(currRow);
-							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
-							selRow--;
-						}
-						else if (evt.indexOf("-") >= 0) {
-							var currRow = rowNum;
-							codeTable.deleteRow(currRow);
-							addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;-&nbsp;", "X"]);
-							selRow--;
-						}
-						else if (evt.indexOf("constant") >= 0) {
-							var numpad = new NumberPad();
-							numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
-								currentElement.html(evt);
-							});
-						}
-					});
-        		}
-        		else {
-					var arr = new Array();
-					for (var i = 0; i < distanceVariables.length; i++) {
-						if (beenAssigned(distanceVariables[i], rowNum))
-							arr.push(distanceVariables[i]);
-					}
-					arr.push("constant");
-					if (arr.length > 1) {
-						var selector = new Selector();
-						selector.open("Choice Selection Panel", arr, function(evt) {
-							if (evt.indexOf("constant") >= 0) {
-								var numpad = new NumberPad();
-								numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
-									currentElement.html(evt);
-								});
-							}
-							else {
-								if (evt.length > 0) {
-									currentElement.html(evt);
-								}
-							}
-						});
-					}
-					else {
-						var numpad = new NumberPad();
-						numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
-							currentElement.html(evt);
-						});
-					}
-				}
-        		
-        	}
-        	else {
-				var arr = new Array();
-				for (var i = 0; i < distanceVariables.length; i++) {
-					if (beenAssigned(distanceVariables[i], rowNum))
-						arr.push(distanceVariables[i]);
-				}
-				arr.push("constant");
-				if (arr.length > 1) {
-					var selector = new Selector();
-					selector.open("Choice Selection Panel", arr, function(evt) {
-						if (evt.length > 0) {
-							if (evt.indexOf("constant") >= 0) {
-								var numpad = new NumberPad();
-								numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
-									currentElement.html(evt);
-									fixPolygons();
-								});
-							}
-							else {
-								currentElement.html(evt);
-								fixPolygons();
-							}
-						}
-					});
-				}
-				else {
-					var numpad = new NumberPad();
-					numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function(evt) {
-						currentElement.html(evt);
-						fixPolygons();
-					});
-				}
-			}
-        }
-        
-        //User clicked on something within draw(). Generate list of drawable items
-        else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 && 
-        cellVal.indexOf(")") == -1) {
-			var arr = new Array();
-            //finds all drawable shapes above the current row
-            for (var i = 0; i < rowNum; i++) {
-				if (rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1 && !isDistanceAssign(rowNum)) {
-					var variable = rowToString(i).substring(0, rowToString(i).indexOf("="));
-					if (variable.length > 0 && $.inArray(variable, arr) == -1)
-						if(variable.charAt(0) != 'd')
-							arr.push(variable);
-				}
-			}
-			var currentElement = $(this);
-			if (arr.length > 0) {
-				var selector = new Selector();
-				selector.open("test title", arr, function(evt) {
-					if (evt.length > 0)
-						currentElement.html(evt);
-				});
-			}
-			else
-				alert("No drawable objects..");
-        }
-        
-        //User clicked on an an item within erase(). Generate list of erasable items
-        else if (rowToString(rowNum).indexOf("erase") >= 0 && cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-			var arr = new Array();
-        	for (var i = 0; i < rowNum; i++) {
-				var rowString = rowToString(i);
-        		if (rowString.indexOf("draw") >= 0 && rowString.indexOf("OBJECT") == -1) {
-					arr.push(rowString.substring(rowString.indexOf("(") + 1, rowString.indexOf(")")));
-        		}
-        	}
-        	var currentElement = $(this);
-        	if (arr.length > 0) {
-				var selector = new Selector();
-				selector.open("test title", arr, function(evt) {
-					if (evt.length > 0)
-						currentElement.html(evt);
-				});
-			}
-			else
-				alert("No erasable objects...");
-        }
-        
-        //User clicked on an item within color(). Generate list of supported colors.
-        else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1 && cellVal.indexOf("(") == -1 && 
-        cellVal.indexOf(")") == -1) {
-        	var arr = new Array();
-        	var currentElement = $(this);
-        	arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
-        	var selector = new Selector();
-        	selector.open("Choice Selection Panel", arr, function(evt) {
-				if (evt.length > 0)
-					currentElement.html(evt);
-			});
-        }
-        
-        //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
-        //Make sure user isn't clicking 'repeat' or 'times'
-        else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1 && 
-        (!isNaN(Number(cellVal)) || cellVal.indexOf("COUNTER") >= 0)) {
-        	var currentElement = $(this);
-        	var numpad = new NumberPad();
-        	numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function(evt) {
-				currentElement.html(evt);
-			});
-        }
-        
-        //User clicked on item 'EXPRESSION'. Generate appropriate alert message
-        else if (cellVal.indexOf("EXPRESSION") >= 0) {
-            alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" + 
-                "Right Hand Side expression");
-        }
-        
-        //User clicked a variable on the left side of an assignment operator
-        else if (colNum < innerTable.rows[0].cells.length-1) {
-            if (innerTable.rows[0].cells[colNum+1].textContent.indexOf("=") >= 0) {
-				var currentElement = $(this);
-            	var arr = new Array();
-            	for (var i = 0; i < distanceVariables.length; i++) {
-            		arr.push(distanceVariables[i]);
-            	}
-            	for (var i = 0; i < pointVariables.length; i++) {
-            		arr.push(pointVariables[i]);
-            	}
-            	for (var i = 0; i < lineVariables.length; i++) {
-            		arr.push(lineVariables[i]);
-            	}
-            	for (var i = 0; i < circleVariables.length; i++) {
-            		arr.push(circleVariables[i]);
-            	}
-            	for (var i = 0; i < polygonVariables.length; i++) {
-            		arr.push(polygonVariables[i]);
-            	}
-          		if (arr.length > 0) {
-					var selector = new Selector();
-					selector.open("Choice Selection Panel", arr, function(evt) {
-						if (evt.length > 0) {
-							// if old variable was polygon , delete all its lines
-							if(rowToString(rowNum).charAt(0) == 'g') deletePolygon(rowNum + 1);
-							var currRow = rowNum;
-							if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
-								codeTable.deleteRow(currRow);
-								insertTable.deleteRow(-1);
-								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "distanceValue"]);
-								selRow--;
-							}
-							else if (evt.indexOf("p") >= 0) {
-								codeTable.deleteRow(currRow);
-								insertTable.deleteRow(-1);
-								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ")"]);
-								selRow--;
-							}
-							else if (evt.indexOf("l") >= 0) {
-								codeTable.deleteRow(currRow);
-								insertTable.deleteRow(-1);
-								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ",", "(", "X", ",", "Y", ")", ")"]);
-								selRow--;
-							}
-							else if (evt.indexOf("g") >= 0) {
-								codeTable.deleteRow(currRow);
-								insertTable.deleteRow(-1);
-								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X",  ",", "Y", ")", ","]);
-								selRow--;
-								addNewRow(currRow+1, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
-								addNewRow(currRow+2, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
-								addNewRow(currRow+3, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ","]);
-								addNewRow(currRow+4, [getIndent(rowNum) + indent + "(", "X", ",",  "Y", ")", ")"]);
-							}
-							else if (evt.indexOf("c") >= 0) {
-								codeTable.deleteRow(currRow);
-								insertTable.deleteRow(-1);
-								addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
-								selRow--;
-							}
-						}
-					});
-				}
-            }
-		}
-    });
-
-	$(".insert").off("mouseover");
-	$(".insert").on("mouseover", function() {
-		var insertRow = $(this).parent().index();
-		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
-		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop" && insertRow+1 != selRow && insertRow+1 != selRow+1) {
-			$(this).css('cursor', 'pointer');
-			$(this).html(">");
-		}
-	});
-	$(".insert").off("mouseout");
-	$(".insert").on("mouseout", function() {
-		$(this).html(blank);
-	});
-	$(".insert").off("vclick");
-	$(".insert").on("vclick", function() {
-		var insertRow = $(this).parent().index();
-		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && 
-		insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
-			if (insertRow+1 != selRow) {
-				moveToLine(insertRow+1);
-				$(this).html(blank);
-			}
-		}
-	});
-	$("#" + offsetDiv.id).off("mouseover");
-	$("#" + offsetDiv.id).on("mouseover", function() {
-		if (selRow >0) {
-			$(this).css('cursor', 'pointer');
-			$(this).html(">");
-		}
-	});
-	$("#" + offsetDiv.id).off("mouseout");
-	$("#" + offsetDiv.id).on("mouseout", function() {
-		$(this).html(blank);
-	});
-	$("#" + offsetDiv.id).off("vclick");
-	$("#" + offsetDiv.id).on("vclick", function() {
-		toggleEvents();
-		if(selRow != 0) {
-			moveToLine(0);
-			$(this).html(blank);
-		}
-	});
+	This javascript consists of an implementation of the Editor API.
 	
-	//Remove bar when scrolling right in editor
-	$("#" + programDiv.id).off("scroll");
-	$("#" + programDiv.id).on("scroll", function() {
-		if ($(this).scrollLeft() > 0) {
-			$("#" + dividerDiv.id).hide(250);
-		}
-		else {
-			$("#" + dividerDiv.id).show(250);
-		}
-	});
-}
+	The editor handles the following:
+		Syntax Highlighting
+			Highlighting code based on CSS classes defined in editor.css
+		Click Events
+			Clicking on a cell in the editor
+		Mouse Hover Events
+			Entering/leaving a cell in the editor
+		Insertion Bar
+			For setting the insertion point in the code
+		Line Numbers
+			Numbering each line in the editor
+		Adding Lines
+			Adding new lines to the editor
+		Deleting Lines
+			Deleting old lines from the editor
+		
+	March 28, 2014 - Should now conform to the pre-alpha API v2
+	April 3, 2014 - Now conforms to the pre-alpha API v3, and first stable release
+*/
 
-// move to a specified row
-function moveToLine(rowNum) {
-    var innerTable = codeTable.rows[selRow].cells[0].children[0];
-    var newRow;
-    var cell;
-    
-    if (rowNum < selRow) {
-        if (selRow != codeTable.rows.length-1) {
-            codeTable.deleteRow(selRow);                                // delete the current selected row
-            insertTable.deleteRow(-1);
-        }
-        else {
-            innerTable.rows[0].cells[0].innerHTML = blank;
-        }
-        newRow = codeTable.insertRow(rowNum);                           // insert a new row at row number specified
-        addNewInsertRow();
-        cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
-        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with arrow
-        selectRow(rowNum);                                              // select newly inserted row
-    }
-    else {
-    	if(insertTable.rows.length > 0) insertTable.deleteRow(-1);
-    	addNewInsertRow();
-        codeTable.deleteRow(selRow);                                    // delete the current selected row
-        newRow = codeTable.insertRow(rowNum-1);                         // insert a new row at row number specified
-        cell = newRow.insertCell(0);                                    // insert a new cell in new row just created
-        cell.innerHTML = innerTableArrowTemplate;                       // insert the innerTable template with array
-        selectRow(rowNum-1);                                            // select newly inserted row
-    }
-    refreshLineNumbers();
-}
+/* Constructor - constructs the editor
+	@param {number} divID - the ID of the div to place the editor in
+	@param {boolean} lineNumBool - if true use line numbers, if false do not
+	@param {boolean} syntaxHighlightingBool - if true use syntax highlighting, if false do not
+	@param {number} lineNumStart - what number line numbers should start at
+	@param {number} cellWidth - the width of the first cell? if < 0 fit to text
+	@param {number} insertBetweenRowsBool - if true a line can be inserted/deleted anywhere, if false lines can only be inserted/deleted from the end of the editor
+*/
+function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWidth, insertBetweenRowsBool){
 
-//refreshes line numbers
-function refreshLineNumbers() {
-	var innerTable;
-	for (var i = 0; i < codeTable.rows.length-1; i++) {
-		innerTable = codeTable.rows[i].cells[0].children[0];
-		if (!isNaN(innerTable.rows[0].cells[0].textContent) || innerTable.rows[0].cells[0].textContent.length == 0) {
-			if (i < 9) innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-			else innerTable.rows[0].cells[0].innerHTML = (i+1) + "&nbsp;&nbsp;&nbsp;";
-		}
-	}
-}
-
-//Adds new row on line <line> and creates cells bases on <params> array
-function addNewRow(line, params) {
-    var row = codeTable.insertRow(line);
-    var cell = row.insertCell(0);
-    cell.innerHTML = innerTableTemplate;
-    var innerTable = codeTable.rows[line].cells[0].children[0];
-    addRow(innerTable, params, 1);
-    toggleEvents();
-    selRow++;
-    addNewInsertRow();
-}
-
-// addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
-function addRow(table, values, startInd) {
-    var cell;
-    // for all cells in the table
-    for (var i = 0; i < values.length; i++) {
-        // insert a cell at startInd
-        cell = table.rows[0].insertCell(startInd++);
-        // make the innerHTML of the cell cells[i]
-        cell.innerHTML = values[i];
-    }
-}
-
-//adds a row to the insert area
-function addNewInsertRow() {
-	if(insertTable.rows.length > codeTable.rows.length) return;
-	var row = insertTable.insertRow(-1);
-	var cell = row.insertCell(0);
-	cell.className = "insert";
-	cell.innerHTML = blank;
-	if (insertTable.rows.length == 1) {
-		for (var i = 0; i < 3; i++) addNewInsertRow();
-	}
-}
-
-// selectRow() selects a row with the specified rowNum
-function selectRow(rowNum) {
-    if (selRow != -1) {
-        var innerTable = codeTable.rows[selRow].cells[0].children[0];
-    }
-    
-    selRow = rowNum;
-    if(codeTable.rows[rowNum] != undefined) {
-		var innerTable = codeTable.rows[rowNum].cells[0].children[0];
-		if (rowToString(selRow).trim().length == 0)
-			innerTable.rows[0].cells[0].innerHTML = arrow;
-	}
-}
-
-// highlight one cell red at a specific row and column
-function highlightCell(rowInd, colInd) {
-	// grab the inner table at the specified row
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-    // color the cell red at specific column
-    //innerTable.rows[0].cells[colInd].style.color = "#FF0000";
-    //innerTable.rows[0].cells[colInd].style.fontWeight = "bold";
-    if(innerTable.rows[0].cells[colInd].className.indexOf("comment") == -1)
-		innerTable.rows[0].cells[colInd].className += " selected";
-}
-
-function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
-        var bracket = 1;
-        var numCells;
-        var firstBrack = false;
-        var firstLoop = true;
-        var innerTable;
-        
-        while (bracket != 0) {
-            for (var i = 0; i < codeTable.rows.length; i++) {
-                if (firstLoop == true) i = rowInd;
-                innerTable = codeTable.rows[i].cells[0].children[0];
-                numCells = innerTable.rows[0].cells.length
-                for (var j = 0; j < numCells; j++) {
-                    if (firstLoop == true) { j = colInd; firstLoop = false; }
-                    
-                    if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
-                        if (!firstBrack) firstBrack = true;
-                        else bracket++;
-                    }
-                    else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
-                        bracket--;
-                    }
-                    if(innerTable.rows[0].cells[j].className.indexOf("comment") == -1)
-						innerTable.rows[0].cells[j].className += " selected";
-                    
-                    if (bracket == 0) break;
-                }
-                
-                if (bracket == 0) break;
-            }
-    }
-}
-
-function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd) {
-    var bracket = 1;
-    var numCells;
-    var firstBrack = false;
-    var firstLoop = true;
-    var innerTable;
-    
-    while (bracket != 0) {
-        for (var i = codeTable.rows.length - 1; i >= 0; i--) {
-            if (firstLoop == true) i = rowInd;
-            innerTable = codeTable.rows[i].cells[0].children[0];
-            numCells = innerTable.rows[0].cells.length
-            for (var j = numCells - 1; j >= 0; j--) {
-                if (firstLoop == true) { j = colInd; firstLoop = false; }
-                
-                if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
-                    bracket--;
-                }
-                else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
-                    if (!firstBrack) firstBrack = true;
-                    else bracket++;
-                }
-                if(innerTable.rows[0].cells[j].className.indexOf("comment") == -1)
-					innerTable.rows[0].cells[j].className += " selected";
-                
-                if (bracket == 0) break;
-            }
-            
-            if (bracket == 0) break;
-        }
-    }
-}
-
-// highlightLine() simply highlights the row with the row index passed to it
-function highlightLine(rowInd) {
-    // grab the inner table at this index
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-    // grab the number of cells for this row
-    var numCells = innerTable.rows[0].cells.length;
-    // iterate throughout the cells
-    for (var i = 0; i < numCells; i++) {
-        //Highlight all cells red
-        if(innerTable.rows[0].cells[i].className.indexOf("comment") == -1)
-			innerTable.rows[0].cells[i].className += " selected";
-    }
-}
-
-//Returns string representation of the row at specified row index
-function rowToString(rowInd) {
-    var string = "";
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-    for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-        string += innerTable.rows[0].cells[i].textContent;
-    }
-    return string.trim();
-}
-
-//Allows user to assign values to a declared variable
-function assign() {
-    addNewRow(selRow, [getIndent(selRow) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
-}
-
-//Allows user to choose a shape to draw
-function drawShape() {
-    addNewRow(selRow, [getIndent(selRow) + "draw", "(", "OBJECT", ")"]);
-}
-
-//Erases a shape
-function erase() {
-    addNewRow(selRow, [getIndent(selRow) + "erase", "(", "OBJECT", ")"]);
-}
-
-//Allow users to change the color of shapes
-function changeColor() {
-    addNewRow(selRow, [getIndent(selRow) + "color", "(", "COLOR_NAME", ")"]);
-}
-
-//Creates a loop in program window
-function loop() {
-	var thisIndent = getIndent(selRow);
-    addNewRow(selRow, [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
-    addNewRow(selRow, [thisIndent + "loop"]);
-    addNewRow(selRow, [thisIndent + "endloop"]);
-}
-
-//editor text parsing functions
-
-//This function detects if this line is a distance assignment
-function isDistanceAssign(row) {
-	var string = rowToString(row);
-	if (string.indexOf("d") < string.indexOf("=") && string.indexOf("d") >= 0 && string.indexOf("+") == -1 && 
-	string.indexOf("-") == -1)
-		return true;
-	else
-		return false;
-}
-
-//This function checks to see if the specified variable has been assigned above the specified row
-function beenAssigned(variable, row) {
-	for (var i = 0; i < row; i++) {
-		var string = rowToString(i);
-		if(string.indexOf(variable) < string.indexOf("=") && string.indexOf(variable) >= 0)
-			return true;
-	}
-	return false;
-}
-
-//This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
-function isEditableValue(cellVal, row) {
-	var rowString = rowToString(row);
-	if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) && colNum > 0 || (cellVal.indexOf('distanceValue') >= 0 && 
-	cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("X") >= 0 || cellVal.indexOf("RADIUS") >= 0))
-		return true;
-	else
-		return false;
-}
-
-function highlightLoop(type, rowNum) {
-	var rowString = rowToString(rowNum);
-	//highlight all lines until correct 'endloop'
-	if (type.indexOf("repeat") >= 0 || type.indexOf("loop") >= 0 && type.indexOf("endloop") == -1) {
-		if (type.indexOf("loop") >= 0 && type.indexOf("endloop") == -1) highlightLine(rowNum - 1);
-		var loop = 1;
-		var endloop = 0;
-		for (var i = rowNum+1; i < codeTable.rows.length - 1; i++) {
-			rowString = rowToString(i);
-			if (loop == endloop) break;
-			if (rowString.indexOf("repeat") >= 0) {
-				loop++;
-				highlightLine(i);
-			}
-			else if (rowString.indexOf("endloop") >= 0) {
-				endloop++;
-				highlightLine(i);
-			}
-			else
-				highlightLine(i);
-		}
-	}
-	else {
-		var loop = 0;
-		var endloop = 1;
-		for (var i = rowNum-1; i >= 0; i--) {
-			rowString = rowToString(i);
-			if (loop == endloop) break;
-			if (rowString.indexOf("endloop") >= 0) {
-				endloop++;
-				highlightLine(i);
-			}
-			else if (rowString.indexOf("repeat") >= 0) {
-				loop++;
-				highlightLine(i);
-			}
-			else
-				highlightLine(i);
-		}
+	/*GLOBAL VARIABLES********************************************************/
+	
+	var editorDiv = document.getElementById(divID);			//the div marked by the divID
+	var clickHandler;		//the click handler
+	var mouseEnterHandler;		//the mouse enter handler
+	var codeTable;			//the table containing the code
+	var insertTable;		//the table containing the insert bar
+	
+	var insertBarCursorIndex = -1;
+	
+	/*copied from the JavaScript lab's original editor.js*/
+	var selRow = 0;											// the current selected row
+	var blank = "&nbsp;&nbsp;&nbsp;";			// blank template for unselected row
+	var arrow = "&nbsp;&#8594;&nbsp;";			// arrow template for selected row
+	var indent = "&nbsp;&nbsp;&nbsp;"						// indention used for inside brackets
+	var programStart = 0;									// the line the main program starts
+	var firstMove = false;									// keeps track if the user has added something to the main program
+	var innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
+								<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
+								<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
+							</tr></table>";	// template used for a newly added row in the codeTable
+	var innerTableArrowTemplate = "<table class='innerTable" + divID + "'><tr>\
+										<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
+										<td class='cell" + divID + " code lineNum'>" + arrow + "</td>\
+									</tr></table>"; // template used for a newly selected row
+	var rowType = [];
+	var curLine;
+	var nextLine;
+	var terminate = false;
+	var promptFlag = false;
+	var insideFunction = false;
+	var highlightStart;
+	var dummyRows = [];
+	var lineNums = [];
+	var charCountStart = [];
+	var charCountEnd = [];
+	var codeStrLen;
+	var rowNum = -1;
+	var showLineCountFlag = false;
+	/*end copy*/
+	
+	editorDiv.innerHTML = '<div class="textArea"><div class="insertDiv"><div class="offsetDiv"></div><table id="insertTable' + divID + '"></table></div><table id="figEditor' + divID + '" class="codeTable"></table></div>';
+	codeTable = document.getElementById('figEditor' + divID);
+	insertTable = document.getElementById('insertTable' + divID);
+	
+	init();
+	
+	/* init - .... it initializes some important stuff .. o_0
+	*/
+	function init() {
+		var row;
+		var cell;
+		var innerTable;
+		
+		// make a blank row where the program starts (this could have been in the for loops above)
+		row = codeTable.insertRow(0);	// make a new row
+		cell = row.insertCell(0);		// make a new cell here
+		cell.className = 'cell' + divID;	//a general class for cells in this editor, used for adding/removing click events
+		cell.innerHTML = innerTableArrowTemplate;	// set the cell with arrow template
+		programStart = 0;				// increase the program start to 2
+		selRow = 0;						// selected row is line 2
+		refreshLineCount();				// refresh the line count along the left margin
+		
+		//add a row to the insert bar
+        var row = insertTable.insertRow(selRow);
+        var cell = row.insertCell(0);
+        cell.className = 'cell' + divID + ' insert insert' + divID;
+        cell.innerHTML = blank;
 	}
 	
-}
+	/*PUBLIC FUNCTIONS********************************************************/
 
-//delete loop
-function deleteLoop(type, rowNum) {
-	if (type.indexOf("endloop") >= 0) {
-		var endloop = 1;
-		var deleteNum = 1;
-		var startDel = rowNum;
+	this.rowToArray = rowToArray;
+	this.getRowCount = getRowCount;
+	this.addRow = addRow;
+	this.deleteRow = deleteRow;
+	this.selectRowByIndex = selectRowByIndex;
+	this.selectAndHighlightRowByIndex = selectAndHighlightRowByIndex;
+	this.moveInsertionBarCursor = moveInsertionBarCursor;
+	this.getSelectedRowIndex = getSelectedRowIndex;
+	this.setCellClickListener = setCellClickListener;
+	this.setInsertBarMouseEnterListener = setInsertBarMouseEnterListener;
+	
+	this.selectRowByStartEnd = selectRowByStartEnd;	//DEPRECATED
+	this.getEditor = getEditor;			//DEPRECATED
+	this.rowToString = rowToString;		//DEPRECATED
 
-		while (endloop > 0) {
-			var rowString = rowToString(startDel-1);
-			if (rowString.indexOf("endloop") >= 0) endloop++;
-			else if (rowString.indexOf("repeat") >= 0) endloop--;
-			codeTable.deleteRow(startDel);
-			startDel--;
-			deleteNum++;
+	/* rowToArray - returns an array with each entry representing a cell in the row
+		@param {number} index - the index of the row to process
+		@returns {array} an array of strings of the cells of the row
+	*/
+	function rowToArray(index){
+		//console.log(codeTable.rows[index].cells[0].children[0].rows[0].cells[2].innerHTML);
+		var cells = codeTable.rows[index].cells[0].children[0].rows[0].cells;
+		var ret = []; //the return array
+		
+		//i starts at 2 so it doesn't get the line number
+		for(var i = 2; i < cells.length; i++)
+		{
+			ret.push(cells[i].innerHTML);
 		}
-		if (selRow < rowNum && selRow > ((codeTable.rows.length-1)-deleteNum)) {
-			selRow = startDel;
-			moveToLine(selRow+1);
-		}
-		else if (selRow > rowNum) {
-			codeTable.deleteRow(startDel);
-			selRow -= deleteNum;
-		}
-		else
-			codeTable.deleteRow(startDel);
+		
+		//console.log(ret);
+		return ret;
 	}
-	else if(type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
-		var repeat = 1;
-		var deleteNum = 1;
-		var startDel = rowNum;
-		if (type.indexOf("loop") >= 0) startDel--;
-		while (repeat > 0) {
-			var rowString = rowToString(startDel+1);
-			if (rowString.indexOf("repeat") >= 0) repeat++;
-			else if (rowString.indexOf("endloop") >= 0) repeat--;
-			codeTable.deleteRow(startDel);
-			deleteNum++;
-		}
-		if (selRow > startDel && selRow < startDel+deleteNum) {
-			selRow = startDel;
-			moveToLine(selRow+1);
-		}
-		else if (selRow > startDel) {
-			codeTable.deleteRow(startDel);
-			selRow -= deleteNum;
-		}
-		else {
-			codeTable.deleteRow(startDel);
-		}
+	
+	/* getRowCount() - returns the number of rows in the editor
+		@returns {numer} the number of rows in the editor
+	*/
+	function getRowCount(){
+		return codeTable.rows.length;
 	}
-}
-
-//Makes the last row in polygon equal to first row
-function fixPolygons() {
-	var x = 0;
-	var y = 0;
-	for (var i = 0; i < codeTable.rows.length-1; i++) {
-		var rowString = rowToString(i);
-		if (rowString.indexOf("g") < rowString.indexOf("=") && rowString.indexOf("g") >= 0) {
-			x = rowString.substring(rowString.indexOf("(") + 2, rowString.indexOf(","));
-			y = rowString.substring(rowString.indexOf(",") + 1, rowString.indexOf(")"));
+	
+	/* addRow - adds a row with classes to the editor
+		@param {number} index - the index of the row to insert at
+		@param {object} values - an array of objects with two things: the text of the cell and the class for syntax highlighting
+			every cell automatically receives the "code" class
+	*/
+	function addRow(index, values){	
+		var row = codeTable.insertRow(index);			// get the selected row from the main codeTable
+		var cell = row.insertCell(0);					// make a new cell here
+		cell.innerHTML = innerTableTemplate;			// put our inner table template in the new cell
+		var innerTable = codeTable.rows[selRow].cells[0].children[0];	// grab the inner table over we just created
+		
+		var startIndex = 2;		//start at 2 to avoid the line numbers
+		
+		for (var i = 0; i < values.length; i++) {			// for all cells in the table
+			cell = innerTable.rows[0].insertCell(startIndex++);	// insert a cell at startInd
+			cell.innerHTML = values[i].text;					// make the innerHTML of the cell cells[i]
+			
+			//every cell needs the "code" class
+			cell.className += 'cell' + divID + ' code';
+			
+			//if no Highlighting, add class to override others
+			if(!syntaxHighlightingBool){
+				cell.className += " noHighlighting";
+			}
+	
+			//if the class is not equal to "code", add whatever it is
+			if(values[i].type != "code" && typeof values[i].type != "undefined")
+				cell.className += " " + values[i].type;
 		}
-		else if (rowString.indexOf("))") >= 0 && rowString.indexOf("((") == -1) {
-			codeTable.deleteRow(i);
-			insertTable.deleteRow(-1);
-			addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
+		
+		//add a row to the insert bar
+        var row = insertTable.insertRow(selRow);
+        var cell = row.insertCell(0);
+        cell.className = 'cell' + divID + ' insert insert' + divID;
+        cell.innerHTML = blank;
+		
+		//console.log(codeTable.getAttribute('id'));
+		
+		//we just inserted a new line, so the next selected line should be empty
+		selRow++;
+		
+		refreshLineCount(); // refresh the line count along the left margin
+	}
+	
+	/* deleteRow - deletes the row at the specified index
+		@param {number} index - the index of the row to delete
+	*/
+	function deleteRow(index){
+		//you can't delete the selected row
+		if(index == selRow){
+			return;
+		}
+		
+		codeTable.deleteRow(index);
+		
+		//if the selected row is after the deleted row, decrement selRow
+		if(selRow > index){
 			selRow--;
 		}
+		
+		refreshLineCount(); // refresh the line count along the left margin
+	}
+	
+	/* selectRowByIndex - selects a row based upon the index provided
+		@param {number} index - the row to select
+	*/
+	function selectRowByIndex(index){
+		//if insertBetweedRowsBool is false, prevent the selected row from being anywhere other than the last row
+		if(!insertBetweenRowsBool && index < getRowCount()){
+			return;
+		}
+		
+		//if insert bar cursor is not on this line, then you can't select that line, so don't insert
+		if(insertBarCursorIndex != index){
+			return;
+		}
+		
+		//if the selected row is above the row we want to select, then the index is off by 1
+		if(selRow < index){
+			index--;
+		}
+			
+		//if you are already on the last line, then don't do anything
+		if(index + 1 >= codeTable.rows.length){
+			return;
+		}
+		
+		innerTable = codeTable.rows[selRow].cells[0].children[0];
+		innerTable.rows[0].cells[1].innerHTML = blank;
+		
+		//if this is a blank line, remove the row before moving the cursor
+		if(innerTable.rows[0].cells.length <= 2){
+			codeTable.deleteRow(selRow);
+			insertTable.deleteRow(index);
+		}
+		
+		selRow = index;
+		addRow(index + 1, []);
+		innerTable = codeTable.rows[selRow].cells[0].children[0];
+		innerTable.rows[0].cells[1].innerHTML = arrow;
+	}
+	
+	/* selectAndHighlightRowByIndex - selects and highlights a row based upon the index provided
+		@param {number} index - the row to select
+	*/
+	function selectAndHighlightRowByIndex(index){
+		innerTable = codeTable.rows[selRow].cells[0].children[0];
+		innerTable.rows[0].cells[1].innerHTML = blank;
+		
+		//remove the 'selected' class the hard way
+		for(var i = 0; i < innerTable.rows[0].cells.length; i++){
+			innerTable.rows[0].cells[i].className = innerTable.rows[0].cells[i].className.replace("selected running", "");
+		}
+		
+		selRow = index;
+		innerTable = codeTable.rows[selRow].cells[0].children[0];
+		innerTable.rows[0].cells[1].innerHTML = arrow;
+		
+		//add the 'selected' and 'running' classes the hard way
+		// the 'running' class means that onHover will not remove the selected highlighting
+		for(var i = 0; i < innerTable.rows[0].cells.length; i++){
+			innerTable.rows[0].cells[i].className += " selected running";
+		}
+	}
+	
+	/* moveInsertionBarCursor - moves the cursor in the insertion bar, which is removed in the mouse leave event below
+		@param {numeric} index - the index of the row to move the cursor to
+	*/
+	function moveInsertionBarCursor(index){
+		//console.log("\t" + codeTable.getAttribute('id') + " " + insertTable.getAttribute('id') + " " + insertTable.rows[index].cells[0].className + " " + syntaxHighlightingBool);
+		
+		insertTable.rows[index].cells[0].style.cursor = 'pointer';
+		insertTable.rows[index].cells[0].innerHTML = ">";
+		insertBarCursorIndex = index;
+		console.log(index);
+	}
+	
+	/* getSelectedRowIndex - returns the currently selected row's index
+		@returns {numeric} the index of the current row
+	*/
+	function getSelectedRowIndex(){
+		return selRow;
+	}
+	
+	/* setCellClickListener - sets the callback function for clicks, WARNING: this function turns off the click handlers for "td" elements
+		@param {function} clickFunc - the click callback function, should take a DOM object as an argument
+	*/
+	function setCellClickListener(clickFunc){
+		//turn off the click handler as it is now, should only remove the current clickHandler
+		$('div').off('click', '.cell' + divID, clickHandler);
+		
+		clickHandler = clickFunc;
+		
+		//set the new click handler
+		$('div').on('click', '.cell' + divID, clickHandler);
+	}
+	
+	/* setInsertBarMouseEnterListener - sets the callback function for mouse enter, WARNING: this function turns off the mouse enter handlers for "td" elements
+		@param {function} mouseEnterFunc - the mouse enter callback function, should take a DOM object as an argument
+	*/
+	function setInsertBarMouseEnterListener(mouseEnterFunc){
+		//turn off the mouse enter handler as it is now, should only remove the current mouseEnterHandler
+		//console.log('.insert' + divID + " " + codeTable.getAttribute('id') + " " + insertTable.getAttribute('id') + " " + syntaxHighlightingBool);
+		$('div').off('mouseenter', '.insert' + divID, mouseEnterHandler);
+		
+		mouseEnterHandler = mouseEnterFunc;
+		
+		//set the new mouse enter handler
+		$('div').on('mouseenter', '.insert' + divID, mouseEnterHandler);
+	}
+	
+	
+	/* getEditor - DEPRECATED - returns the DOM object representing the editor
+		@return {object} the editor's DOM object
+	*/
+	function getEditor(){
+		return editorDiv;
+	}
+	
+	/* rowToString - DEPRECATED - returns a string representing the row
+		@param {number} index - the index of the row to process
+		@returns {string} the string representation of the row
+	*/
+	function rowToString(index){
+		//console.log(codeTable.rows[index].cells[0].children[0].rows[0].cells[2].innerHTML);
+		var cells = codeTable.rows[index].cells[0].children[0].rows[0].cells;
+		var ret = ""; //the return string
+		for(var i = 2; i < cells.length; i++)
+		{
+			ret += cells[i].innerHTML;
+		}
+		
+		//console.log(ret);
+		return ret;
+	}
+	
+	/* selectRowByStartEnd - DEPRECATED and NOT IMPLEMENTED - selects a row based upon the start and end character indexes
+		@param {number} start - the start character index
+		@param {number} end - the end character index
+	*/
+	function selectRowByStartEnd(start, end){
+	}
+	
+	/*PRIVATE FUNCTIONS*******************************************************/
+	
+	/* refreshLineCount - refreshes the line count in the first cell of every inner table
+	*/
+	function refreshLineCount() {
+		var innerTable;
+		if (lineNumBool) {
+			var numStart = lineNumStart;
+			for (var i = 0; i < codeTable.rows.length; i++) {
+				innerTable = codeTable.rows[i].cells[0].children[0];
+				if (i <= 8) innerTable.rows[0].cells[0].innerHTML = (numStart++) + "&nbsp;";
+				else innerTable.rows[0].cells[0].textContent = (numStart++);
+			}
+		}/*
+		else {
+			for (var i = 0; i < codeTable.rows.length; i++) {
+				innerTable = codeTable.rows[i].cells[0].children[0];
+				innerTable.rows[0].cells[0].innerHTML = "";
+			}
+		}*/
+	}
+	
+	/* mouseleave - a jQuery event handler for mouse leave on insert elements, ie cells in the insert bar
+	*/
+	$('div').on('mouseleave', '.insert' + divID, function(event){
+		if($(this).css('cursor') == 'pointer'){
+			$(this).css('cursor', 'default');
+			$(this).html(blank);
+			insertBarCursorIndex = -1;
+		}
+	});
+	
+	/* mouseenter - a jQuery event handler for mouse enter, calls onHover with false
+	*/
+	$('div').on('mouseenter', '.code', {addClass: true}, onHover);
+	
+	/* mouseleave - a jQuery event handler for mouse leave, calls onHover with false
+	*/
+	$('div').on('mouseleave', '.code', {addClass: false}, onHover);
+	
+	/* onHover - this function handles highlighting cells when they are moused over, and
+			removing that highlight when the mouse leaves the cell
+		@param {object} event - information about the event that occurred
+		@returns {boolean} returns false to prevent event from propagating
+	*/
+	function onHover(event){
+		//the element that triggered the event, used for convenience
+		var thisElement = $(this);
+		
+		//the 'running' class overiders normal syntax highlighting
+		if(thisElement.hasClass('running')){
+			return;
+		}
+		
+		//the list of elements to affect
+		var elements = thisElement;
+		
+		//comments and row numbers highlight the whole line
+		if(thisElement.hasClass('comment') || thisElement.hasClass('lineNum'))
+			elements = thisElement.parent().find('.code');//.removeClass('selected');
+		
+		//begin curly brace and scope stuff, the same concepts as parenthesis, but with more DOM traversing!
+		//this is the cell on the next row that should contain a {
+		var targetCell = thisElement.parent().parent().parent().parent().parent().next().children().first().children().first().children().first().children().first().children().last();
+		
+		if(targetCell.length > 0 && thisElement.index() == 2 && targetCell.hasClass('openBrack'))
+		{
+			thisElement = targetCell;
+			elements = thisElement;
+		}
+		
+		//check the last character of the html to account for indentation
+		if(thisElement.hasClass('openBrack'))
+		{
+			//console.log('here');
+			//add all the code elements from this row and the previous row
+			elements = thisElement.parent().parent().parent().parent().parent().find('.code');
+			elements = elements.add(thisElement.parent().parent().parent().parent().parent().prev().find('.code'));
+		
+			//go up the DOM tree 5 times to get the row, then next() to get the next row
+			var nextRow = thisElement.parent().parent().parent().parent().parent().next();
+			//then look at the next row, go down 5 times and get the html
+			targetCell = nextRow.children().first().children().first().children().first().children().first().children().last();
+			
+			//the count of unclosed scopes so far
+			var count = 1;
+			
+			while(count > 0 && nextRow.length > 0)
+			{
+				//if we find another left brace, then we have another unclosed scope
+				if(targetCell.hasClass('openBrack'))
+					count++;
+				//if we find a right brace, then we can close a scope
+				else if(targetCell.hasClass('closeBrack'))
+					count--;
+			
+				//add all of this row's code elements to the elements list
+				elements = elements.add(nextRow.find('.code'));
+				
+				//get the next row
+				nextRow = nextRow.next();
+				//get the html
+				targetCell = nextRow.children().first().children().first().children().first().children().first().children().last();
+			}
+		}
+		else if(thisElement.hasClass('closeBrack'))
+		{
+			//add all the code elements from this row
+			elements = thisElement.parent().parent().parent().parent().parent().find('.code');
+		
+			//go up the DOM tree 5 times to get the row, then prev() to get the prev row
+			var prevRow = thisElement.parent().parent().parent().parent().parent().prev();
+			//then look at the prev row, go down 5 times and get the html
+			var targetCell = prevRow.children().first().children().first().children().first().children().first().children().last();
+			
+			//the count of unclosed scopes so far
+			var count = 1;
+			
+			while(count > 0 && prevRow.length > 0)
+			{
+				//if we find another right brace, then we have another unclosed scope
+				if(targetCell.hasClass('closeBrack'))
+					count++;
+				//if we find a left brace, then we can close a scope
+				else if(targetCell.hasClass('openBrack'))
+					count--;
+			
+				//add all of this row's code elements to the elements list
+				elements = elements.add(prevRow.find('.code'));
+				
+				//get the prev row
+				prevRow = prevRow.prev();
+				//get the html
+				targetCell = prevRow.children().first().children().first().children().first().children().first().children().last();
+			}
+			
+			elements = elements.add(prevRow.find('.code'));
+		}
+		//end curly brace and scope stuff
+		
+		//do parenthesis stuff
+		//if the next element is an open paren, highlight all of that too
+		// ex highlighting a function call will highlight all of the arguments too
+		if(thisElement.next().html() == '(')
+		{
+			thisElement = thisElement.next();
+			elements = thisElement;
+		}
+		
+		if(thisElement.hasClass('openParen'))
+		{
+			//since this is a left paren, search to the right using next()
+			
+			//since this is a left paren, add in the previous element
+			elements = elements.add(thisElement.prev());
+			
+			//the next element to process
+			var next;
+			next = thisElement.next();
+				
+			var count = 1; //a count of unclosed scopes
+			while(count > 0 && next.length > 0)
+			{
+				//if we find another left paren, then we have another unclosed scope
+				if(next.hasClass('openParen'))
+					count++;
+				//if we find a right paren, then we can close a scope
+				else if(next.hasClass('closeParen'))
+					count--;
+				
+				//add next to the list of elements so far
+				elements = elements.add(next);
+				//move next forward
+				next = next.next();
+			}
+		}
+		else if(thisElement.hasClass('closeParen'))
+		{
+			//since this is a right paren, search to the left using prev()
+			
+			//the next element to process
+			var prev;
+			prev = thisElement.prev();
+				
+			var count = 1; //a count of unclosed scopes
+			while(count > 0 && prev.length > 0)
+			{
+				//if we find another right paren, then we have another unclosed scope
+				if(prev.hasClass('closeParen'))
+					count++;
+				//if we find a left paren, then we can close a scope
+				else if(prev.hasClass('openParen'))
+					count--;
+				
+				//add prev to the list of elements so far
+				elements = elements.add(prev);
+				//move prev forward
+				prev = prev.prev();
+			}
+			
+			//since we're iterating backwards, this will be the element directly before the left paren
+			elements = elements.add(prev);
+		}
+		//end parenthesis stuff
+		
+		//actually add or remove classes
+		if(event.data.addClass)
+			elements.addClass('selected');
+		else
+			elements.removeClass('selected');
+
+		return false;
 	}
 }
-
-//deletes all rows of a polygon
-function deletePolygon(rowNum) {	
-	codeTable.deleteRow(rowNum);
-	if (rowNum < selRow) selRow--;
-	while(rowToString(rowNum).charAt(0) == '('){
-		codeTable.deleteRow(rowNum);
-		if (rowNum < selRow) selRow--;
-	}
-}
-
-//return string with correct number of indents.
-function getIndent(row) {
-	var loop = 0;
-	for (var i = 0; i < row; i++) {
-		if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
-		if (rowToString(i).indexOf("endloop") >= 0) loop--;
-	}
-	var string = "";
-	for (var i = 0; i < loop; i++) {
-		string += indent;
-	}
-	return string;
-}
-
-
-
-
-
-
-
-
-
-
-

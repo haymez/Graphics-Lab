@@ -3,74 +3,41 @@
  */
 var figNum = 0; //This will be removed eventually when dealing with namespace issues
 
-//Find container object and set width and height
+//Find the container element
 var container = document.getElementById("container");
-container.style.width = "635px";
-container.style.height = "400px";
+container.style.width = "650px";
+container.style.height = "450px";
 
 //Drawing window <div>
 var drawDiv = document.createElement('div');
 drawDiv.id = "draw_window" + figNum;
 drawDiv.style.width = "300px";
 drawDiv.style.height = "350px";
-drawDiv.style.cssFloat = "right";
+drawDiv.style.cssFloat = "left";
+
+//Center drawing canvas
+var drawOffsetDiv = document.createElement('div');
+drawOffsetDiv.id = "drawOffsetDiv" + figNum;
+drawOffsetDiv.style.width = "160px";
+drawOffsetDiv.style.height = "20px";
+drawOffsetDiv.style.cssFloat = "left";
 
 //Program window <div>
 var programWindowDiv = document.createElement('div');
 programWindowDiv.id = "program_window" + figNum;
-programWindowDiv.style.width = "325px";
-programWindowDiv.style.height = "300px";
+programWindowDiv.style.width = "600px";
+programWindowDiv.style.height = "200px";
 programWindowDiv.style.cssFloat = "left";
 
 //program Code window
 var programDiv = document.createElement('div');
 programDiv.id = "program_code" + figNum;
-programDiv.style.width = "250px";
+programDiv.style.width = "460px";
 programDiv.style.height = programWindowDiv.style.height;
-programDiv.style.border = "ridge";
-programDiv.style.overflow = "auto";
+//programDiv.style.border = "1px solid";
+//programDiv.style.overflow = "auto";
 programDiv.style.cssFloat = "left";
 
-//Div for program code table
-var programCodeDiv = document.createElement('div');
-programCodeDiv.id = "programCodeDiv" + figNum;
-programCodeDiv.style.width = "220px";
-programCodeDiv.style.position = "relative";
-programCodeDiv.style.left = "15px";
-
-//Table for Program Code
-var codeTable = document.createElement('table');
-codeTable.id = 'editor' + figNum;
-codeTable.className = "codeTable";
-codeTable.style.fontSize = "14px";
-codeTable.style.position = "absolute";
-
-//div for insert table
-var insertDiv = document.createElement('div');
-insertDiv.id = "insertDiv" + figNum;
-insertDiv.style.width = "18px";
-insertDiv.style.cssFloat = "left";
-
-//div to offset insert table
-var offsetDiv = document.createElement('div');
-offsetDiv.id = "offset_div" + figNum;
-offsetDiv.style.width = "14px";
-offsetDiv.style.height = "9px";
-
-//insertion selection table
-var insertTable = document.createElement('table');
-insertTable.id = "insertTable" + figNum;
-insertTable.style.fontSize = "14px";
-insertTable.style.cssFloat = "left";
-
-//Insertion bar divider div
-var dividerDiv = document.createElement('div');
-dividerDiv.id = "dividerDiv" + figNum;
-dividerDiv.style.height = Number(programWindowDiv.style.height.substring(0, programWindowDiv.style.height.length-2))-4 + "px";
-dividerDiv.style.border = "1px solid #000000";
-dividerDiv.style.position = "absolute";
-dividerDiv.style.left = "15px";
-dividerDiv.style.zIndex = "-1";
 
 //<div> for run and walk buttons
 var run_walkDiv = document.createElement('div');
@@ -84,13 +51,12 @@ var varValueTitle = document.createElement('p');
 varValueTitle.id = "varValOuterP" + figNum;
 varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
 varValueTitle.style.position = "relative";
-varValueTitle.style.top = "14px";
+varValueTitle.style.top = "15px";
 
 //<div> for variable value window
 var varValueDiv = document.createElement('div');
 varValueDiv.id = "varValDiv" + figNum;
 varValueDiv.style.overflow = "auto";
-//varValueDiv.style.width = "650px";
 varValueDiv.style.width = container.style.width;
 varValueDiv.style.height = "100px";
 varValueDiv.style.resize = "none";
@@ -103,12 +69,20 @@ vvDivHolder.appendChild(varValueTitle);
 vvDivHolder.appendChild(varValueDiv);
 vvDivHolder.style.display = "none";
 vvDivHolder.style.cssFloat = "left";
+//vvDivHolder.style.position = "absolute";
+//vvDivHolder.style.top = "410px";
 
-//<div> for buttons
+//<div> for buttons on right
 var progButtonDiv = document.createElement('div');
 progButtonDiv.id = "program_buttons" + figNum;
 progButtonDiv.style.cssFloat = "right";
 progButtonDiv.className = "btn-group-vertical";
+
+//<div> for buttons on left
+var varButtonDiv = document.createElement('div');
+varButtonDiv.id = "var_buttons" + figNum;
+varButtonDiv.style.cssFloat = "left";
+varButtonDiv.className = "btn-group-vertical";
 
 //<canvas> element for drawing window
 var canvas = document.createElement('canvas');
@@ -208,34 +182,30 @@ var progLabel = "Program Code";
 //Add everything to Drawing Window <div>
 run_walkDiv.appendChild(runButton);
 run_walkDiv.appendChild(walkButton);
-drawDiv.appendChild(canvas);
 drawDiv.appendChild(run_walkDiv);
+drawDiv.appendChild(canvas);
 
 //Add everything to the Program Code <div>
-progButtonDiv.appendChild(distanceButton);
-progButtonDiv.appendChild(pointButton);
-progButtonDiv.appendChild(lineButton);
-progButtonDiv.appendChild(polygonButton);
-progButtonDiv.appendChild(circleButton);
+varButtonDiv.appendChild(distanceButton);
+varButtonDiv.appendChild(pointButton);
+varButtonDiv.appendChild(lineButton);
+varButtonDiv.appendChild(polygonButton);
+varButtonDiv.appendChild(circleButton);
 progButtonDiv.appendChild(assignButton);
 progButtonDiv.appendChild(drawButton);
 progButtonDiv.appendChild(eraseButton);
 progButtonDiv.appendChild(colorButton);
 progButtonDiv.appendChild(loopButton);
-insertDiv.appendChild(offsetDiv);
-insertDiv.appendChild(insertTable);
-programCodeDiv.appendChild(codeTable);
-programDiv.appendChild(insertDiv);
-programDiv.appendChild(dividerDiv);
-programDiv.appendChild(programCodeDiv);
+programWindowDiv.appendChild(varButtonDiv);
 programWindowDiv.appendChild(progButtonDiv);
 programWindowDiv.appendChild(programDiv);
 
 //Append to container
 container.appendChild(programWindowDiv);
+container.appendChild(vvDivHolder);
+container.appendChild(drawOffsetDiv);
 container.appendChild(drawDiv);
 container.style.position = "relative"; 
-container.appendChild(vvDivHolder);
 
 //Add listeners for walk and run
 $("#" + runButton.id).click(function() { run(); });
@@ -243,7 +213,9 @@ $("#" + walkButton.id).click(function() { walk(); });
 
 
 $(document).ready(function() {
-	toggleEvents();
+	//Initialize editor
+	Editor(programDiv.id, true, true, 1, -1, true);
+
 })
 
 
