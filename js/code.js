@@ -2,6 +2,8 @@
  * This code is for the Watson Graphics Lab editor.
  */
 
+var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
 
 //We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
 function toggleEvents() {
@@ -421,30 +423,30 @@ function rowToString(rowInd) {
 
 //Allows user to assign values to a declared variable
 function assign() {
-    addNewRow(selRow, [getIndent(selRow) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
+    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
 }
 
 //Allows user to choose a shape to draw
 function drawShape() {
-    addNewRow(selRow, [getIndent(selRow) + "draw", "(", "OBJECT", ")"]);
+    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", "OBJECT", ")"]);
 }
 
 //Erases a shape
 function erase() {
-    addNewRow(selRow, [getIndent(selRow) + "erase", "(", "OBJECT", ")"]);
+    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "erase", "(", "OBJECT", ")"]);
 }
 
 //Allow users to change the color of shapes
 function changeColor() {
-    addNewRow(selRow, [getIndent(selRow) + "color", "(", "COLOR_NAME", ")"]);
+    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "color", "(", "COLOR_NAME", ")"]);
 }
 
 //Creates a loop in program window
 function loop() {
-	var thisIndent = getIndent(selRow);
-    addNewRow(selRow, [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
-    addNewRow(selRow, [thisIndent + "loop"]);
-    addNewRow(selRow, [thisIndent + "endloop"]);
+	var thisIndent = getIndent(getSelectedRowIndex());
+    addNewRow(getSelectedRowIndex(), [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
+    addNewRow(getSelectedRowIndex(), [thisIndent + "loop"]);
+    addNewRow(getSelectedRowIndex(), [thisIndent + "endloop"]);
 }
 
 /* ************Code parsing functions************ */
@@ -551,29 +553,29 @@ function fixPolygons() {
 	}
 }
 
-//~ //deletes all rows of a polygon
-//~ function deletePolygon(rowNum) {	
-	//~ codeTable.deleteRow(rowNum);
-	//~ if (rowNum < selRow) selRow--;
-	//~ while(rowToString(rowNum).charAt(0) == '('){
-		//~ codeTable.deleteRow(rowNum);
-		//~ if (rowNum < selRow) selRow--;
-	//~ }
-//~ }
+//deletes all rows of a polygon
+function deletePolygon(rowNum) {	
+	codeTable.deleteRow(rowNum);
+	if (rowNum < selRow) selRow--;
+	while(rowToString(rowNum).charAt(0) == '('){
+		codeTable.deleteRow(rowNum);
+		if (rowNum < selRow) selRow--;
+	}
+}
 
-//~ //return string with correct number of indents.
-//~ function getIndent(row) {
-	//~ var loop = 0;
-	//~ for (var i = 0; i < row; i++) {
-		//~ if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
-		//~ if (rowToString(i).indexOf("endloop") >= 0) loop--;
-	//~ }
-	//~ var string = "";
-	//~ for (var i = 0; i < loop; i++) {
-		//~ string += indent;
-	//~ }
-	//~ return string;
-//~ }
+//return string with correct number of indents.
+function getIndent(row) {
+	var loop = 0;
+	for (var i = 0; i < row; i++) {
+		if (rowToString(i).indexOf("loop") >= 0 && rowToString(i).indexOf("endloop") == -1) loop++;
+		if (rowToString(i).indexOf("endloop") >= 0) loop--;
+	}
+	var string = "";
+	for (var i = 0; i < loop; i++) {
+		string += indent;
+	}
+	return string;
+}
 
 
 

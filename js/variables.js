@@ -15,6 +15,15 @@ var distanceVariables = new Array();
 
 //Print all declared variables into the variables window
 function printVars() {
+	
+	
+	/**************************************************/
+	return; //DELETE THIS AFTER SPEAKING WITH ANDREW
+	/**************************************************/
+	
+	
+	
+	
 	var d = "";
 	var p = "";
 	var l = "";
@@ -57,30 +66,30 @@ function printVars() {
 		else circle[circle.length] = {text:"c" + Number(i+1), type:["comment"]};
 	}
 	
-	selectRowByIndex(0);
-	addRow(getSelectedRowIndex(), [{text:"//Variable Declarations", type:["comment"]}]); 
+	//moveInsertionBarCursor(0);
+	addRow(-1, [{text:"//Variable Declarations", type:["comment"]}]); 
 	lineNum++;
 	if(circleVariables.length > 0) {
-		addRow(getSelectedRowIndex(), [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
+		addRow(-1, [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
 		lineNum++;
 	}
 	if(polygonVariables.length > 0) {
-		addRow(getSelectedRowIndex(), [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
+		addRow(-1, [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
 		lineNum++;
 	}
 	if(lineVariables.length > 0) {
-		addRow(getSelectedRowIndex(), [{text:"//Line&nbsp;", type:"comment"}].concat(line));
+		addRow(-1, [{text:"//Line&nbsp;", type:"comment"}].concat(line));
 		lineNum++;
 	}
 	if(pointVariables.length > 0) {
-		addRow(getSelectedRowIndex(), [{text:"//Point&nbsp;", type:"comment"}].concat(point));
+		addRow(-1, [{text:"//Point&nbsp;", type:"comment"}].concat(point));
 		lineNum++;
 	}
 	if(distanceVariables.length > 0) {
-		addRow(getSelectedRowIndex(), [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
+		addRow(-1, [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
 		lineNum++;
 	}
-	addRow(lineNum, [{text:"//Program Code", type:["comment"]}]);
+	addRow(-1, [{text:"//Program Code", type:["comment"]}]);
 }
 
 //New Distance variable
