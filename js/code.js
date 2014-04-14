@@ -1,13 +1,13 @@
 /*
  * This code is for the Watson Graphics Lab editor.
+ * Author: James Miltenberger, Jonathan Teel
+ * Co-Authors: Bidur Shrestha
  */
 
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-
 //We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
-function toggleEvents() {
-	refreshLineNumbers();
+function clickFunc(evt) {
     //Turn off mouseover event
     $('.innerTable' + figNum).off('mouseover');
     //Turn mouseover event back on
@@ -91,7 +91,6 @@ function toggleEvents() {
 							if (rowNum < selRow) selRow--;
 	        			}
 					}
-					refreshLineNumbers();
 				}
 				else
 					return;			
@@ -406,16 +405,34 @@ function toggleEvents() {
 function addNewRow(index, arr) {
 	var objects = new Array();
 	for(var i = 0; i < arr.length; i++) {
-		objects[objects.length] = {text:arr[i]}
+		var text = arr[i];
+		objects[objects.length] = {text:arr[i], type:[]};
+		if(isNaN(text)) {
+			if(isKeyWord(text)) objects[objects.length-1].type.push("keyword");
+			if(text.indexOf("(") >= 0) objects[objects.length-1].type.push("openParen");
+			if(text.indexOf(")") >= 0) objects[objects.length-1].type.push("closeParen");
+		}
 	}
-	addRow(index, objects);
+	editor.addRow(index, objects);
+}
+
+//Finds if text is a keyword in the watson graphics language
+function isKeyWord(text) {
+	if(text.indexOf("draw") >= 0) return true;
+	if(text.indexOf("erase") >= 0) return true;
+	if(text.indexOf("color") >= 0) return true;
+	if(text.indexOf("repeat") >= 0) return true;
+	if(text.indexOf("times") >= 0) return true;
+	if(text.indexOf("loop") >= 0) return true;
+	if(text.indexOf("endloop") >= 0) return true;
+	return false;
 }
 
 //Returns string representation of the row at specified row index
 function rowToString(rowInd) {
     var string = "";
-    var arr = rowToArr(rowInd);
-    for (var i = 1; i < arr.length; i++) {
+    var arr = editor.rowToArray(rowInd);
+    for (var i = 0; i < arr.length; i++) {
         string += arr[i];
     }
     return string.trim();
@@ -423,30 +440,30 @@ function rowToString(rowInd) {
 
 //Allows user to assign values to a declared variable
 function assign() {
-    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
+    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "VARIABLE", "&nbsp;=&nbsp;", "EXPRESSION"]);
 }
 
 //Allows user to choose a shape to draw
 function drawShape() {
-    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", "OBJECT", ")"]);
+    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", "OBJECT", ")"]);
 }
 
 //Erases a shape
 function erase() {
-    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "erase", "(", "OBJECT", ")"]);
+    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "erase", "(", "OBJECT", ")"]);
 }
 
 //Allow users to change the color of shapes
 function changeColor() {
-    addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "color", "(", "COLOR_NAME", ")"]);
+    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "color", "(", "COLOR_NAME", ")"]);
 }
 
 //Creates a loop in program window
 function loop() {
-	var thisIndent = getIndent(getSelectedRowIndex());
-    addNewRow(getSelectedRowIndex(), [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
-    addNewRow(getSelectedRowIndex(), [thisIndent + "loop"]);
-    addNewRow(getSelectedRowIndex(), [thisIndent + "endloop"]);
+	var thisIndent = getIndent(editor.getSelectedRowIndex());
+	addNewRow(editor.getSelectedRowIndex(), [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
+	addNewRow(editor.getSelectedRowIndex(), [thisIndent + "loop"]);
+	addNewRow(editor.getSelectedRowIndex(), [thisIndent + "endloop"]);
 }
 
 /* ************Code parsing functions************ */

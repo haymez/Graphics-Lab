@@ -123,9 +123,9 @@ function drawPoint() {
 		if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
 			toDraw[toDraw.length] = new point(startX, startY);
 			
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
 				"(", startX,",", 300-startY, ")"]);
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
 			draw();
 		}
         
@@ -167,9 +167,9 @@ function drawLine() {
 			if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
 				toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
 				
-				addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
+				addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
 					"(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
-				addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
+				addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
 			}
 			//Turn off all .draw listeners
 			$('#' + canvas.id).off('.draw');
@@ -210,9 +210,9 @@ function drawCircle() {
 		if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
 			toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
 			
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
 			startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
 		}
 		//Turn off all .draw listeners
 		$('#' + canvas.id).off('.draw');
@@ -319,17 +319,17 @@ function drawPolygon() {
 			toDraw = toDraw.slice(0, toDraw.length-coor.length);
 			toDraw[toDraw.length] = new polygon(coor);
 
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
 				"(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
 			for(var i = 1; i < coor.length; i++) {
 				if (i == coor.length-1) {
-					addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
-					addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+					addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+					addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
 				}
 				else
-					addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+					addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
 			}
-			addNewRow(getSelectedRowIndex(), [getIndent(getSelectedRowIndex()) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
+			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
 			draw();
 		}
 		else {

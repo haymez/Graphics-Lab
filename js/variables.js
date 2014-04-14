@@ -15,23 +15,12 @@ var distanceVariables = new Array();
 
 //Print all declared variables into the variables window
 function printVars() {
-	
-	
-	/**************************************************/
-	return; //DELETE THIS AFTER SPEAKING WITH ANDREW
-	/**************************************************/
-	
-	
-	
-	
 	var d = "";
 	var p = "";
 	var l = "";
 	var c = "";
 	var g = "";
 	var total = "";
-	var lineNum = 0;
-	var oldLine = getSelectedRowIndex();
 	
 	var point = new Array();
 	var line = new Array();
@@ -41,9 +30,9 @@ function printVars() {
 	
 	if(rowToString(0).indexOf("//Variable") >= 0) {
 		while(rowToString(0).indexOf("//Program") == -1) {
-			deleteRow(0);
+			editor.deleteRow(0);
 		}
-		deleteRow(0);
+		editor.deleteRow(0);
 	}
 	for(var i = 0; i < distanceVariables.length; i++) {
 		if(i != 0) distance[distance.length] = {text:",&nbsp;d" + Number(i+1), type:["comment"]};
@@ -66,30 +55,23 @@ function printVars() {
 		else circle[circle.length] = {text:"c" + Number(i+1), type:["comment"]};
 	}
 	
-	//moveInsertionBarCursor(0);
-	addRow(-1, [{text:"//Variable Declarations", type:["comment"]}]); 
-	lineNum++;
-	if(circleVariables.length > 0) {
-		addRow(-1, [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
-		lineNum++;
-	}
-	if(polygonVariables.length > 0) {
-		addRow(-1, [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
-		lineNum++;
-	}
-	if(lineVariables.length > 0) {
-		addRow(-1, [{text:"//Line&nbsp;", type:"comment"}].concat(line));
-		lineNum++;
+	editor.addRow(0, [{text:"//Program Code", type:["comment"]}]);
+	if(distanceVariables.length > 0) {
+		editor.addRow(0, [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
 	}
 	if(pointVariables.length > 0) {
-		addRow(-1, [{text:"//Point&nbsp;", type:"comment"}].concat(point));
-		lineNum++;
+		editor.addRow(0, [{text:"//Point&nbsp;", type:"comment"}].concat(point));
 	}
-	if(distanceVariables.length > 0) {
-		addRow(-1, [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
-		lineNum++;
+	if(lineVariables.length > 0) {
+		editor.addRow(0, [{text:"//Line&nbsp;", type:"comment"}].concat(line));
 	}
-	addRow(-1, [{text:"//Program Code", type:["comment"]}]);
+	if(polygonVariables.length > 0) {
+		editor.addRow(0, [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
+	}
+	if(circleVariables.length > 0) {
+		editor.addRow(0, [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
+	}
+	editor.addRow(0, [{text:"//Variable Declarations", type:["comment"]}]); 
 }
 
 //New Distance variable

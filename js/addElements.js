@@ -2,6 +2,7 @@
  * Adds elements such as buttons, canvas', and divs
  */
 var figNum = 0; //This will be removed eventually when dealing with namespace issues
+var editor; //var for editor
 
 //Find the container element
 var container = document.getElementById("container");
@@ -214,9 +215,9 @@ $("#" + walkButton.id).click(function() { walk(); });
 
 $(document).ready(function() {
 	//Initialize editor
-	Editor(programDiv.id, true, true, 1, -1, true);
-
-})
+	editor = new Editor(programDiv.id, true, true, 1, -1, true);
+	editor.setCellClickListener(clickFunc);
+});
 
 
 
