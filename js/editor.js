@@ -52,7 +52,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	var indent = "&nbsp;&nbsp;&nbsp;"						// indention used for inside brackets
 	var programStart = 0;									// the line the main program starts
 	var firstMove = false;									// keeps track if the user has added something to the main program
-	var innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
+	var innerTableTemplate = "<table class='innerTable innerTable" + divID + "'><tr>\
 								<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
 								<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
 							</tr></table>";	// template used for a newly added row in the codeTable
@@ -157,7 +157,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		var row = codeTable.insertRow(index);			// get the selected row from the main codeTable
 		var cell = row.insertCell(0);					// make a new cell here
 		cell.innerHTML = innerTableTemplate;			// put our inner table template in the new cell
-		var innerTable = codeTable.rows[selRow].cells[0].children[0];	// grab the inner table over we just created
+		var innerTable = codeTable.rows[index].cells[0].children[0];	// grab the inner table over we just created
 		
 		var startIndex = 2;		//start at 2 to avoid the line numbers
 		
