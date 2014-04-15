@@ -35,41 +35,41 @@ function printVars() {
 		editor.deleteRow(0);
 	}
 	for(var i = 0; i < distanceVariables.length; i++) {
-		if(i != 0) distance[distance.length] = {text:",&nbsp;d" + Number(i+1), type:["comment"]};
-		else distance[distance.length] = {text:"d" + Number(i+1), type:["comment"]};
+		if(i != 0) distance[distance.length] = {text:",&nbsp;d" + Number(i+1), type:[]};
+		else distance[distance.length] = {text:"d" + Number(i+1), type:[]};
 	}
 	for(var i = 0; i < pointVariables.length; i++) {
-		if(i != 0) point[point.length] = {text:",&nbsp;p" + Number(i+1), type:["comment"]};
-		else point[point.length] = {text:"p" + Number(i+1), type:["comment"]};
+		if(i != 0) point[point.length] = {text:",&nbsp;p" + Number(i+1), type:[]};
+		else point[point.length] = {text:"p" + Number(i+1), type:[]};
 	}
 	for(var i = 0; i < lineVariables.length; i++) {
-		if(i != 0) line[line.length] = {text:",&nbsp;l" + Number(i+1), type:["comment"]};
-		else line[line.length] = {text:"l" + Number(i+1), type:["comment"]};
+		if(i != 0) line[line.length] = {text:",&nbsp;l" + Number(i+1), type:[]};
+		else line[line.length] = {text:"l" + Number(i+1), type:[]};
 	}
 	for(var i = 0; i < polygonVariables.length; i++) {
-		if(i != 0) polygon[polygon.length] = {text:",&nbsp;p" + Number(i+1), type:["comment"]};
-		else polygon[polygon.length] = {text:"p" + Number(i+1), type:["comment"]};
+		if(i != 0) polygon[polygon.length] = {text:",&nbsp;p" + Number(i+1), type:[]};
+		else polygon[polygon.length] = {text:"p" + Number(i+1), type:[]};
 	}
 	for(var i = 0; i < circleVariables.length; i++) {
-		if(i != 0) circle[circle.length] = {text:",&nbsp;c" + Number(i+1), type:["comment"]};
-		else circle[circle.length] = {text:"c" + Number(i+1), type:["comment"]};
+		if(i != 0) circle[circle.length] = {text:",&nbsp;c" + Number(i+1), type:[]};
+		else circle[circle.length] = {text:"c" + Number(i+1), type:[]};
 	}
 	
 	editor.addRow(0, [{text:"//Program Code", type:["comment"]}]);
 	if(distanceVariables.length > 0) {
-		editor.addRow(0, [{text:"//Distance&nbsp;", type:["comment"]}].concat(distance));
+		editor.addRow(0, [{text:"Distance&nbsp;", type:["literal"]}].concat(distance));
 	}
 	if(pointVariables.length > 0) {
-		editor.addRow(0, [{text:"//Point&nbsp;", type:"comment"}].concat(point));
+		editor.addRow(0, [{text:"Point&nbsp;", type:"literal"}].concat(point));
 	}
 	if(lineVariables.length > 0) {
-		editor.addRow(0, [{text:"//Line&nbsp;", type:"comment"}].concat(line));
+		editor.addRow(0, [{text:"Line&nbsp;", type:"literal"}].concat(line));
 	}
 	if(polygonVariables.length > 0) {
-		editor.addRow(0, [{text:"//Polygon&nbsp;", type:"comment"}].concat(polygon));
+		editor.addRow(0, [{text:"Polygon&nbsp;", type:"literal"}].concat(polygon));
 	}
 	if(circleVariables.length > 0) {
-		editor.addRow(0, [{text:"//Circle&nbsp;", type:"comment"}].concat(circle));
+		editor.addRow(0, [{text:"Circle&nbsp;", type:"literal"}].concat(circle));
 	}
 	editor.addRow(0, [{text:"//Variable Declarations", type:["comment"]}]); 
 }

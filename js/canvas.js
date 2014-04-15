@@ -110,27 +110,27 @@ function findDistance(startX, startY, endX, endY) {
 
 //Allows user to draw a point on canvas. Saves point in toDraw array
 function drawPoint() {
-    var click = 0;
-    var startX;
-    var startY;
-    var rect = canvas.getBoundingClientRect();
-    pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
-    printVars();
-    $('#' + canvas.id).off('.draw');
-    $('#' + canvas.id).on('vmouseup.draw', function(evt) {
+	var click = 0;
+	var startX;
+	var startY;
+	var rect = canvas.getBoundingClientRect();
+	pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
+	printVars();
+	$('#' + canvas.id).off('.draw');
+	$('#' + canvas.id).on('vmouseup.draw', function(evt) {
 		startX = evt.clientX - rect.left;
 		startY = evt.clientY - rect.top;
 		if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
 			toDraw[toDraw.length] = new point(startX, startY);
-			
+
 			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
-				"(", startX,",", 300-startY, ")"]);
+			"(", startX,",", 300-startY, ")"]);
 			addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
 			draw();
 		}
-        
-        //remove listener
-        $('#' + canvas.id).off('.draw');
+
+		//remove listener
+		$('#' + canvas.id).off('.draw');
 	});
 }
 

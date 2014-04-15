@@ -52,7 +52,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	var indent = "&nbsp;&nbsp;&nbsp;"						// indention used for inside brackets
 	var programStart = 0;									// the line the main program starts
 	var firstMove = false;									// keeps track if the user has added something to the main program
-	var innerTableTemplate = "<table class='innerTable innerTable" + divID + "'><tr>\
+	var innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
 								<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
 								<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
 							</tr></table>";	// template used for a newly added row in the codeTable
@@ -76,7 +76,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	var showLineCountFlag = false;
 	/*end copy*/
 	
-	editorDiv.innerHTML = '<div class="textArea"><div class="insertDiv"><div class="offsetDiv"></div><table id="insertTable' + divID + '"></table></div><table id="figEditor' + divID + '" class="codeTable"></table></div>';
+	editorDiv.innerHTML = '<div class="textArea"><div class="insertDiv"><div class="offsetDiv"></div><table id="insertTable' + divID + '"></table></div><div class="codeContainer"><table id="figEditor' + divID + '" class="codeTable"></table></div></div>';
 	codeTable = document.getElementById('figEditor' + divID);
 	insertTable = document.getElementById('insertTable' + divID);
 	
@@ -134,7 +134,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		//i starts at 2 so it doesn't get the line number
 		for(var i = 2; i < cells.length; i++)
 		{
-			ret.push(cells[i].innerHTML);
+			ret.push(cells[i].textContent);
 		}
 		
 		//console.log(ret);
@@ -202,6 +202,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		}
 		
 		codeTable.deleteRow(index);
+		insertTable.deleteRow(index);
 		
 		//if the selected row is after the deleted row, decrement selRow
 		if(selRow > index){
@@ -214,14 +215,14 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	/* selectRowByIndex - selects a row based upon the index provided
 		@param {number} index - the row to select
 	*/
-	function selectRowByIndex(index){
+	function selectRowByIndex(index, performInsertionCheck){
 		//if insertBetweedRowsBool is false, prevent the selected row from being anywhere other than the last row
 		if(!insertBetweenRowsBool && index < getRowCount()){
 			return;
 		}
 		
 		//if insert bar cursor is not on this line, then you can't select that line, so don't insert
-		if(insertBarCursorIndex != index){
+		if(performInsertionCheck && insertBarCursorIndex != index){
 			return;
 		}
 		
@@ -254,12 +255,14 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		@param {number} index - the row to select
 	*/
 	function selectAndHighlightRowByIndex(index){
-		innerTable = codeTable.rows[selRow].cells[0].children[0];
-		innerTable.rows[0].cells[1].innerHTML = blank;
-		
-		//remove the 'selected' class the hard way
-		for(var i = 0; i < innerTable.rows[0].cells.length; i++){
-			innerTable.rows[0].cells[i].className = innerTable.rows[0].cells[i].className.replace("selected running", "");
+		if(codeTable.rows[selRow].cells.length <= 0){
+			innerTable = codeTable.rows[selRow].cells[0].children[0];
+			innerTable.rows[0].cells[1].innerHTML = blank;
+			
+			//remove the 'selected' class the hard way
+			for(var i = 0; i < innerTable.rows[0].cells.length; i++){
+				innerTable.rows[0].cells[i].className = innerTable.rows[0].cells[i].className.replace("selected running", "");
+			}
 		}
 		
 		selRow = index;
@@ -282,7 +285,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		insertTable.rows[index].cells[0].style.cursor = 'pointer';
 		insertTable.rows[index].cells[0].innerHTML = ">";
 		insertBarCursorIndex = index;
-		console.log(index);
+		//console.log(index);
 	}
 	
 	/* getSelectedRowIndex - returns the currently selected row's index

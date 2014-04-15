@@ -217,6 +217,7 @@ $(document).ready(function() {
 	//Initialize editor
 	editor = new Editor(programDiv.id, true, true, 1, -1, true);
 	editor.setCellClickListener(clickFunc);
+	editor.setInsertBarMouseEnterListener(insertClickFunc);
 });
 
 
