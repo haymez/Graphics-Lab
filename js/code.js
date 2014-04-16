@@ -38,7 +38,7 @@ function clickFunc(cell) {
     }
 
     //User clicked on line number. Prompt for delete.
-    if (colNum == 0 && rowNum != editor.getSelectedRowByIndex() && cellVal.trim().length > 0) {
+    if (colNum == 0 && rowNum != editor.getSelectedRowIndex() && cellVal.trim().length > 0) {
         var alert = new Alert();
         alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
             if (evt) {
@@ -230,8 +230,8 @@ function clickFunc(cell) {
     }
 
     //User clicked a variable on the left side of an assignment operator
-    else if (colNum < innerTable.rows[0].cells.length - 1) {
-        if (innerTable.rows[0].cells[colNum + 1].textContent.indexOf("=") >= 0) {
+    else if (colNum < editor.rowToArray(rowNum).length - 1) {
+        if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
             var currentElement = $(this);
             var arr = new Array();
             for (var i = 0; i < distanceVariables.length; i++) {
@@ -257,92 +257,42 @@ function clickFunc(cell) {
                         if (rowToString(rowNum).charAt(0) == 'g') deletePolygon(rowNum + 1);
                         var currRow = rowNum;
                         if (evt.indexOf("d") >= 0 && evt.indexOf("+") == -1 && evt.indexOf("-") == -1) {
-                            codeTable.deleteRow(currRow);
-                            insertTable.deleteRow(-1);
+                            editor.deleteRow(currRow);
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "distanceValue"]);
-                            selRow--;
                         } else if (evt.indexOf("p") >= 0) {
-                            codeTable.deleteRow(currRow);
-                            insertTable.deleteRow(-1);
+                            editor.deleteRow(currRow);
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ")"]);
-                            selRow--;
                         } else if (evt.indexOf("l") >= 0) {
-                            codeTable.deleteRow(currRow);
-                            insertTable.deleteRow(-1);
+                            editor.deleteRow(currRow);
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ",", "(", "X", ",", "Y", ")", ")"]);
-                            selRow--;
                         } else if (evt.indexOf("g") >= 0) {
-                            codeTable.deleteRow(currRow);
-                            insertTable.deleteRow(-1);
+                            editor.deleteRow(currRow);
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ","]);
-                            selRow--;
                             addNewRow(currRow + 1, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
                             addNewRow(currRow + 2, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
                             addNewRow(currRow + 3, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
                             addNewRow(currRow + 4, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ")"]);
                         } else if (evt.indexOf("c") >= 0) {
-                            codeTable.deleteRow(currRow);
-                            insertTable.deleteRow(-1);
+                            editor.deleteRow(currRow);
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
-                            selRow--;
                         }
                     }
                 });
             }
         }
     }
-
-    $(".insert").off("mouseover");
-    $(".insert").on("mouseover", function () {
-        var insertRow = $(this).parent().index();
-        if ((insertRow < codeTable.rows.length - 2 || selRow != codeTable.rows.length - 1) &&
-            insertRow + 1 < codeTable.rows.length && rowToString(insertRow + 1) != "loop" && insertRow + 1 != selRow && insertRow + 1 != selRow + 1) {
-            $(this).css('cursor', 'pointer');
-            $(this).html(">");
-        }
-    });
 }
 
 //
 function insertClickFunc(cell) {
-    console.log("insert area!");
-        var insertRow = $(this).parent().index();
-        if ((insertRow < codeTable.rows.length - 2 || selRow != codeTable.rows.length - 1) &&
-            insertRow + 1 < codeTable.rows.length && rowToString(insertRow + 1) != "loop") {
-            if (insertRow + 1 != selRow) {
-                moveToLine(insertRow + 1);
-                $(this).html(blank);
-            }
-        }
-    $("#" + offsetDiv.id).off("mouseover");
-    $("#" + offsetDiv.id).on("mouseover", function () {
-        if (selRow > 0) {
-            $(this).css('cursor', 'pointer');
-            $(this).html(">");
-        }
-    });
-    $("#" + offsetDiv.id).off("mouseout");
-    $("#" + offsetDiv.id).on("mouseout", function () {
-        $(this).html(blank);
-    });
-    $("#" + offsetDiv.id).off("vclick");
-    $("#" + offsetDiv.id).on("vclick", function () {
-        toggleEvents();
-        if (selRow != 0) {
-            moveToLine(0);
-            $(this).html(blank);
-        }
-    });
-
-    //Remove bar when scrolling right in editor
-    $("#" + programDiv.id).off("scroll");
-    $("#" + programDiv.id).on("scroll", function () {
-        if ($(this).scrollLeft() > 0) {
-            $("#" + dividerDiv.id).hide(250);
-        } else {
-            $("#" + dividerDiv.id).show(250);
-        }
-    });
+    
+    //~ var insertRow = $(this).parent().index();
+    //~ if ((insertRow < editor.getRowCount() - 2 || editor.getSelectedRowIndex() != editor.getRowCount() - 1) &&
+        //~ insertRow + 1 < editor.getRowCount() && rowToString(insertRow + 1) != "loop") {
+        //~ if (insertRow + 1 != editor.getSelectedRowIndex()) {
+            //~ editor.selectRowByIndex(insertRow + 1);
+        //~ }
+    //~ }
 }
 
 function addNewRow(index, arr) {
