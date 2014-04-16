@@ -85,11 +85,11 @@ function AddElements(figNum) {
     varButtonDiv.className = "btn-group-vertical";
 
     //<canvas> element for drawing window
-    var canvas = document.createElement('canvas');
-    canvas.id = "drawCanvas" + figNum;
-    canvas.width = "300";
-    canvas.height = "300";
-    canvas.style.border = "1px solid";
+    this.canvas = document.createElement('canvas');
+    this.canvas.id = "drawthis.canvas" + figNum;
+    this.canvas.width = "300";
+    this.canvas.height = "300";
+    this.canvas.style.border = "1px solid";
 
     //All <button> elements
     var runButton = document.createElement('button');
@@ -183,7 +183,7 @@ function AddElements(figNum) {
     run_walkDiv.appendChild(runButton);
     run_walkDiv.appendChild(walkButton);
     drawDiv.appendChild(run_walkDiv);
-    drawDiv.appendChild(canvas);
+    drawDiv.appendChild(this.canvas);
 
     //Add everything to the Program Code <div>
     varButtonDiv.appendChild(distanceButton);

@@ -11,7 +11,7 @@ function Canvas() {
     var message = "";
 
     //Event listener for cursor position on canvas
-    $('#' + canvas.id).on('vmousemove', function(evt) {
+    $('#' + addElements.canvas.id).on('vmousemove', function(evt) {
         $(this).css('cursor', 'crosshair');
         var cursorPos = getCursorPos(evt);
         message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
