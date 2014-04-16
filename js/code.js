@@ -59,10 +59,10 @@ function clickFunc(cell) {
                     }
                 } else
                     return;
-            });
+            }, container);
         } else {
             var insertRow = $(this).parent().index();
-            editor.selectRowByIndex(insertRow);
+            editor.selectRowByIndex(insertRow, true);
         }
     }
 
@@ -96,9 +96,9 @@ function clickFunc(cell) {
                         var numpad = new NumberPad();
                         numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                             if(evt != null & evt.length > 0) currentElement.html(evt);
-                        });
+                        }, container);
                     }
-                });
+                }, container);
             } else {
                 var arr = new Array();
                 for (var i = 0; i < distanceVariables.length; i++) {
@@ -113,18 +113,18 @@ function clickFunc(cell) {
                             var numpad = new NumberPad();
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                                 if(evt != null & evt.length > 0) currentElement.html(evt);
-                            });
+                            }, container);
                         } else {
                             if (evt.length > 0) {
                                 if(evt != null & evt.length > 0) currentElement.html(evt);
                             }
                         }
-                    });
+                    }, container);
                 } else {
                     var numpad = new NumberPad();
                     numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                         if(evt != null & evt.length > 0) currentElement.html(evt);
-                    });
+                    }, container);
                 }
             }
 
@@ -144,20 +144,19 @@ function clickFunc(cell) {
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                                 if(evt != null & evt.length > 0) currentElement.html(evt);
                                 fixPolygons();
-                            });
+                            }, container);
                         } else {
                             if(evt != null & evt.length > 0) currentElement.html(evt);
                             fixPolygons();
                         }
                     }
-                });
+                }, container);
             } else {
                 var numpad = new NumberPad();
-                console.log("here");
                 numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                     if(evt != null & evt.length > 0) currentElement.html(evt);
                     fixPolygons();
-                });
+                }, container);
             }
         }
     }
@@ -181,7 +180,7 @@ function clickFunc(cell) {
             selector.open("test title", arr, function (evt) {
                 if (evt.length > 0)
                     if(evt != null & evt.length > 0) currentElement.html(evt);
-            });
+            }, container);
         } else
             alert("No drawable objects..");
     }
@@ -201,7 +200,7 @@ function clickFunc(cell) {
             selector.open("test title", arr, function (evt) {
                 if (evt.length > 0)
                     if(evt != null & evt.length > 0) currentElement.html(evt);
-            });
+            }, container);
         } else
             alert("No erasable objects...");
     }
@@ -216,7 +215,7 @@ function clickFunc(cell) {
         selector.open("Choice Selection Panel", arr, function (evt) {
             if (evt.length > 0)
                 if(evt != null & evt.length > 0) currentElement.html(evt);
-        });
+        }, container);
     }
 
     //User clicked on the loop counter. (It could already be assigned in which case it wouldn't be labeled "COUNTER")
@@ -227,19 +226,18 @@ function clickFunc(cell) {
         var numpad = new NumberPad();
         numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function (evt) {
             if(evt != null & evt.length > 0) currentElement.html(evt);
-        });
+        }, container);
     }
 
     //User clicked on item 'EXPRESSION'. Generate appropriate alert message
     else if (cellVal.indexOf("EXPRESSION") >= 0) {
         var alert = new Alert();
         alert.open("Error", "When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" +
-            "Right Hand Side expression", true, function(){});
+            "Right Hand Side expression", true, function(){}, container);
     }
 
     //User clicked a variable on the left side of an assignment operator
     else if (colNum < editor.rowToArray(rowNum).length-1 || cellVal.indexOf("VARIABLE") >= 0) {
-        console.log("variable clicked");
         if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
             var currentElement = $(this);
             var arr = new Array();
@@ -286,7 +284,7 @@ function clickFunc(cell) {
                             addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
                         }
                     }
-                });
+                }, container);
             }
         }
     }
@@ -295,12 +293,10 @@ function clickFunc(cell) {
 //
 function insertClickFunc(cell) {
     cell.stopImmediatePropagation(); //Prevent multiple events being thrown from the same event
-    var insertRow = $(this).parent().index();
-    if ((insertRow < editor.getRowCount() - 2 || editor.getSelectedRowIndex() != editor.getRowCount() - 1) &&
-        insertRow + 1 < editor.getRowCount() && rowToString(insertRow + 1) != "loop") {
-            if (insertRow + 1 != editor.getSelectedRowIndex()) {
-                editor.moveInsertionBarCursor(insertRow);
-        }
+    var insertRow = $(this).parent().index()+1;
+    
+    if((insertRow < editor.getSelectedRowIndex() || insertRow > editor.getSelectedRowIndex()+1) && rowToString(insertRow-1).indexOf("repeat") == -1) {
+        editor.moveInsertionBarCursor(insertRow-1);
     }
 }
 

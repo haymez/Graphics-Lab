@@ -56,12 +56,9 @@ function walk() {
     var oldPos = -1;
     if (!programRunning) {
         //check if selected row is before end of code
-        console.log("You have: " + editor.getRowCount() + " lines of code");
-        if (editor.getSelectedRowIndex() < editor.getRowCount() - 1)
-            editor.deleteRow(editor.getSelectedRowIndex());
-        else {
-            editor.selectRowByIndex(0);
-            editor.deleteRow(editor.getSelectedRowIndex());
+        if (editor.getSelectedRowIndex() < editor.getRowCount() - 1) {
+            console.log("here");
+            editor.selectRowByIndex(editor.getRowCount()-1);
         }
     }
     programRunning = true;
@@ -69,10 +66,7 @@ function walk() {
     //Make sure to skip code that isn't supposed to get parsed
     if (editor.getRowCount() > 1 && step == 0) {
         if (rowToString(step).indexOf("//") >= 0) {
-            do {
-                console.log("skip!!");
-                step++;
-            } while (rowToString(step-1).indexOf("//Program") == -1)
+            do { step++; } while (rowToString(step-1).indexOf("//Program") == -1)
         }
     }
 
@@ -80,9 +74,11 @@ function walk() {
     $(".button" + figNum).attr("disabled", true);
     
     //Don't allow step to go beyond program scope
-    if (step == editor.getRowCount()) {
+    if (step == editor.getRowCount()-1) {
         console.log("end!");
-        editor.selectRowByIndex(editor.getRowCount());
+        editor.setSelectedRow(editor.getRowCount()-1);
+        $('td').removeClass("running selected");
+        
         step = 0;
         $("#" + runButton.id).html("Run").off("click").click(function () {
             run();
