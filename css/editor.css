@@ -42,6 +42,11 @@
 	overflow: auto;
 }
 
+.codeTable{
+	overflow: auto;
+	display: inline;
+}
+
 table {
 	border: none;
 	border-collapse:collapse;
@@ -58,8 +63,7 @@ td {
 }
 
 .codeContainer{
-	position: relative;
-	display:inline;
+	overflow: auto;
 }
 
 /*insert bar stuff*/
@@ -69,7 +73,7 @@ td {
 	float: left;
 	position: relative;
 	border-right: 1px solid black;
-	display:inline;
+	display: inline-block;
 }
 
 .offsetDiv {
@@ -78,6 +82,7 @@ td {
 }
 
 .insertTable {
+	width: 14px;
 	font-size: 14px;
 	float: left;
 	border-color: black;

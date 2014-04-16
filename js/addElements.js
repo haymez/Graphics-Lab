@@ -2,7 +2,7 @@
  * Adds elements such as buttons, canvas', and divs
  */
 var figNum = 0; //This will be removed eventually when dealing with namespace issues
-var editor; //var for editor
+var editor; //Global variable for editor
 
 //Find the container element
 var container = document.getElementById("container");
@@ -214,10 +214,12 @@ $("#" + walkButton.id).click(function() { walk(); });
 
 
 $(document).ready(function() {
-	//Initialize editor
-	editor = new Editor(programDiv.id, true, true, 1, -1, true);
-	editor.setCellClickListener(clickFunc);
-	editor.setInsertBarMouseEnterListener(insertClickFunc);
+	editor = new Editor(programDiv.id, true, true, 1, -1, true); //Initialize editor
+	editor.setCellClickListener(clickFunc); //Set click listener for editor
+	//~ editor.setCellClickListener(function(evt) {
+        //~ console.log("hey");
+        //~ });
+	editor.setInsertBarMouseEnterListener(insertClickFunc); //Listener for insertion area
 });
 
 

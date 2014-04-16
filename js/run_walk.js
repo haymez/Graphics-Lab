@@ -28,7 +28,6 @@ function run() {
         fresh = true;
         clearInterval(delay);
         step = 0;
-        $('td').removeClass("selected");
         editor.selectRowByIndex(editor.getRowCount() - 1);
         $("#" + runButton.id).html("Run").off("click").click(function () {
             run();

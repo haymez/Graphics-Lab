@@ -5,7 +5,7 @@
  */
 var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-//We must refresh the events upon each change within the tables... toggleEvents() is called each time something is altered
+//Listen for click events on the table
 function clickFunc(cell) {
     console.log(cell);
     var cellVal = cell.target.textContent; //Grab the hovered cell's value
