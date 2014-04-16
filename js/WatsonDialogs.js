@@ -14,6 +14,7 @@
  *
  * Consists of the decimal and hex number pad.
  ***********************************************/
+ 
 function NumberPad() {
 	this.open = open;						// declare the one public function: open()
 	
@@ -25,6 +26,8 @@ function NumberPad() {
 	var maxValue;							// the maximum value associated with this dialog
 	var decimalAllowed;						// boolean value
 	var base;								// 10 or 16
+	
+	var handled = false;
 	
 	// dialogHTML holds the HTML that populates the dialog's div
 	var dialogHTML =
@@ -44,10 +47,10 @@ function NumberPad() {
 	 *
 	 *	Opens the decimal pad or the hex pad depending on the value of the base
 	 */
-	function open(_minValue, _maxValue, title, instruction, _decimalAllowed, _base, _callbackFunc) {
+	function open(_minValue, _maxValue, title, instruction, _decimalAllowed, _base, _callbackFunc, div) {
 		base = _base;
-		if (base == 10) openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, _callbackFunc);	// open decimal pad
-		else if (base == 16) openHexpad(_minValue, _maxValue, title, instruction, _callbackFunc);				// open hex pad
+		if (base == 10) openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, _callbackFunc, div);	// open decimal pad
+		else if (base == 16) openHexpad(_minValue, _maxValue, title, instruction, _callbackFunc, div);				// open hex pad
 		else alert("Unsupported base.");																		// otherwise, not supported
 	}
 	
@@ -56,7 +59,7 @@ function NumberPad() {
 	*
 	*	Opens the decimal pad
 	*/
-	function openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, callbackFunc) {
+	function openNumpad(_minValue, _maxValue, title, instruction, _decimalAllowed, callbackFunc, div) {
 		minValue = _minValue;
 		maxValue = _maxValue;
 		if (minValue !== null && maxValue !== null) {							// If both values are not null, check to make sure min isn't greater than max
@@ -88,9 +91,10 @@ function NumberPad() {
 		if (instruction == null) instructDiv.innerHTML = "";								// if instruction is null, give it the empty string
 		else instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';			// otherwise, assign it the instruction given by parameter		
 		
-		var numpadTable = document.getElementById("numpadTable" + thisID);					// get the table that holds the dialog's keys
+		var centerAt = (div ? div : window);
+		$( "#numpadDialog" + thisID ).dialog({ width: "295px", modal: true, resizable: false, position: { my: "center", at: "center", of: centerAt } });			// open the dialog
 		
-		$( "#numpadDialog" + thisID ).dialog({width: "295px", modal: true, resizable: false, position: "center"});			// open the dialog
+		var numpadTable = document.getElementById("numpadTable" + thisID);					// get the table that holds the dialog's keys
 		
 		/* Number Key Population */
 		
@@ -142,7 +146,7 @@ function NumberPad() {
 	*	This function opens the hex pad. Shocking, right?
 	*	It works very similarly to the decimal pad.
 	*/
-	function openHexpad(_minValue, _maxValue, title, instruction, callbackFunc) {
+	function openHexpad(_minValue, _maxValue, title, instruction, callbackFunc, div) {
 		minValue = _minValue;
 		maxValue = _maxValue;
 		if (minValue !== null && maxValue !== null) {							// if both values aren't null, check to make sure min value is less than max value
@@ -151,12 +155,7 @@ function NumberPad() {
 				return;
 			}
 		}
-		/*
-		if (boundsCheck(0) == false) {											// make sure 0 is within bounds; otherwise, it wouldn't make sense
-			alert("Error: Zero must be included within these bounds.");
-			return;
-		}
-		*/
+
 		callback = callbackFunc;
 		
 		var dialogDiv = document.createElement("div");							// dynamically create div for the dialog window
@@ -174,7 +173,8 @@ function NumberPad() {
 		
 		var hexpadTable = document.getElementById("numpadTable" + thisID);			// the buttons are in a table
 		
-		$( "#numpadDialog" + thisID ).dialog({width: "295px", modal: true, resizable: false, position: "center"});	// open the dialog
+		var centerAt = (div ? div : window);
+		$( "#numpadDialog" + thisID ).dialog({width: "295px", modal: true, resizable: false, position: { my: "center", at: "center", of: centerAt } });	// open the dialog
 		
 		var row;
 		var iters = [ 3, 3, 3, 3, 3, 2 ];	// this array tells the for loop how many iterations to loop through
@@ -223,10 +223,27 @@ function NumberPad() {
 	*/
 	function addNumpadButtonEventListener(buttonID, value) {
 		var button = document.getElementById(buttonID);
-		button.addEventListener("click", function() {
+		
+		// make it so that mobile users have a "selected" state for the button (highlighted blue)
+		$("#" + buttonID).on("touchstart", function(event) {	// on touch start
+			$("#" + buttonID).focus();							// make it highlighted
+			event.preventDefault();								// prevent any default actions
+		});
+		
+		// make it so that mobile users don't have a selected button after that click a button
+		$("#" + buttonID).on("touchend", function(event) {
+			numberKeyClick(value);			// register number click
+			handled = true;					// the touchend will fire faster than 'click' so we must set handled to true so that click won't be called
+			$( "#" + buttonID).blur();		// make it so that the button doesn't stay focused
+			event.preventDefault();			// prevent any default actions
+		});
+		
+		$("#" + buttonID).on("click", function(event) {
+			if (handled == true) { handled = false; event.preventDefault(); return; }	// if it has already been handled, return
 			numberKeyClick(value);			// call function that will populate input box with number pressed
 			$( "#" + buttonID).blur();		// unfocus the button pressed
 		});
+		
 	}
 	
 	/*
@@ -271,9 +288,24 @@ function NumberPad() {
 	*/
 	function addHexpadButtonEventListener(buttonID, value) {
 		var button = document.getElementById(buttonID);
-		button.addEventListener("click", function() {
+		
+		// make it so that mobile users see a focused button when they touch a button
+		$("#" + buttonID).on("touchstart", function(event) {
+			$("#" + buttonID).focus();	// focus it (make it highlighted blue)
+			event.preventDefault();
+		});
+		
+		// make it so that mobile users don't have a focused button after a touch
+		$("#" + buttonID).on("touchend", function(event) {
+			hexKeyClick(value);			// register click
+			handled = true;				// touch end fires faster that click, so we set handled to true
+			$( "#" + buttonID).blur();	// un-focus the button
+			event.preventDefault();
+		});
+		
+		$("#" + buttonID).on("click", function(event) {
+			if (handled == true) { handled = false; event.preventDefault(); return; }	// if its handled already, return
 			hexKeyClick(value);				// call the function that adds the number to the input box
-			
 			$( "#" + buttonID).blur();		// blur the button
 		});
 	}
@@ -300,14 +332,33 @@ function NumberPad() {
 	*/
 	function addEnterButtonEventListener(buttonID) {
 		var button = document.getElementById(buttonID);
-		button.addEventListener("click", function() {
-			var input = document.getElementById("numpadInput" + thisID);
-			if (input.value == "") callback(null);
-			else callback(input.value);								// call the callback function (specified by the user in the open() function call) with the input box value
-			$( "#numpadDialog" + thisID).dialog('close');		// close the dialog
-			window.onkeypress = null;
-			window.onkeydown = null;
+		
+		$("#" + buttonID).on("touchstart", function(event) {
+			$("#" + buttonID).focus();
+			event.preventDefault();
 		});
+		
+		$("#" + buttonID).on("touchend", function(event) {
+			enterFunc();
+			handled = true;
+			$( "#" + buttonID).blur();
+			event.preventDefault();
+		});
+		
+		$("#" + buttonID).on("click", function(event) {
+			if (handled == true) { handled = false; event.preventDefault(); return; }
+			enterFunc();				// call the function that adds the number to the input box
+			$( "#" + buttonID).blur();		// blur the button
+		});
+	}
+	
+	function enterFunc() {
+		var input = document.getElementById("numpadInput" + thisID);
+		if (input.value == "") callback(null);
+		else callback(input.value);								// call the callback function (specified by the user in the open() function call) with the input box value
+		$( "#numpadDialog" + thisID).dialog('close');		// close the dialog
+		window.onkeypress = null;
+		window.onkeydown = null;
 	}
 	
 	/*
@@ -318,13 +369,27 @@ function NumberPad() {
 	*/
 	function addClearButtonEventListener(buttonID) {
 		var button = document.getElementById(buttonID);
-		button.addEventListener("click", function() {
+		
+		$("#" + buttonID).on("touchstart", function(event) {
+			$("#" + buttonID).focus();
+			event.preventDefault();
+		});
+		
+		$("#" + buttonID).on("touchend", function(event) {
 			var input = document.getElementById("numpadInput" + thisID);
-			input.value = "";				// simply set the input box value to '0'
-			
-			document.getElementById("numpadNumButtonEnter" + thisID).disabled = true;
-			
+			input.value = "";				// simply set the input box value to '0'			
 			$( "#" + buttonID).blur();
+			
+			handled = true;
+			$( "#" + buttonID).blur();
+			event.preventDefault();
+		});
+		
+		$("#" + buttonID).on("click", function(event) {
+			if (handled == true) { handled = false; event.preventDefault(); return; }
+			var input = document.getElementById("numpadInput" + thisID);
+			input.value = "";				// simply set the input box value to '0'			
+			$( "#" + buttonID).blur();		// blur the button
 		});
 	}
 	
@@ -336,12 +401,36 @@ function NumberPad() {
 	*/
 	function addCancelButtonEventListener(buttonID) {
 		var button = document.getElementById(buttonID);
-		button.addEventListener("click", function() {
-			$( "#numpadDialog" + thisID).dialog('close');	// close the dialog
-			callback(null);									// call the callback function (specified by the user in the open() function call) with null
-			window.onkeypress = null;
-			window.onkeydown = null;
+		
+		$("#" + buttonID).on("touchstart", function(event) {
+			$("#" + buttonID).focus();
+			event.preventDefault();
 		});
+		
+		$("#" + buttonID).on("touchend", function(event) {
+			clearFunc();
+			
+			handled = true;
+			$( "#" + buttonID).blur();
+			event.preventDefault();
+		});
+		
+		$("#" + buttonID).on("click", function(event) {
+			if (handled == true) { handled = false; event.preventDefault(); return; }
+			clearFunc();		
+			$( "#" + buttonID).blur();		// blur the button
+		});
+		
+		button.addEventListener("click", function() {
+			
+		});
+	}
+	
+	function clearFunc() {
+		$( "#numpadDialog" + thisID).dialog('close');	// close the dialog
+		callback(null);									// call the callback function (specified by the user in the open() function call) with null
+		window.onkeypress = null;
+		window.onkeydown = null;
 	}
 	
 	/*
@@ -473,7 +562,7 @@ function StringPad() {
 	 *
 	 * This function sets up this string pad and opens it for the user to see.
 	 */
-	function open(title, instruction, _callback) {
+	function open(title, instruction, _callback, div) {
 		var dialogDiv = document.createElement("div");	// dynamically create a div for the dialog
 		dialogDiv.id = "stringPadDialog" + thisID;		// give it a unique ID
 		dialogDiv.setAttribute("title", title);			// give it the associated title
@@ -485,8 +574,9 @@ function StringPad() {
 		if (instruction == null) instructDiv.innerHTML = "";						// if the instruction is null, get rid of any text
 		else instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';	// if the instruction isn't null, populate it
 	
-		$( "#stringPadDialog" + thisID ).dialog({width: "400px", modal: true, resizable: false, position: "center"});	// open the dialog
-		
+		var centerAt = (div ? div : window);
+		$( "#stringPadDialog" + thisID ).dialog({width: "400px", modal: true, resizable: false, position: { my: "center", at: "center", of: centerAt } });	// open the dialog
+
 		var input = document.getElementById("stringInput" + thisID);
 		var button;
 		
@@ -576,7 +666,7 @@ function Selector() {
 	 *
 	 *	Opens the selector
 	 */
-	function open(title, options, _callback) {
+	function open(title, options, _callback, div) {
 		var dialogDiv = document.createElement("div");	// dynamically create div for the dialog
 		dialogDiv.id = "selectorDialog" + thisID;		// give the div a unique id
 		dialogDiv.setAttribute("title", title);			// set the title accordingly
@@ -584,7 +674,8 @@ function Selector() {
 		document.body.appendChild(dialogDiv);			// append the div to the body
 		callback = _callback;
 		
-		$( "#selectorDialog" + thisID ).dialog({width: "325px", modal: true, resizable: false, position: "center"});	// opens the dialog
+		var centerAt = (div ? div : window);
+		$( "#selectorDialog" + thisID ).dialog({width: "325px", modal: true, resizable: false, position: { my: "center", at: "center", of: centerAt } });	// opens the dialog
 		
 		var select = document.getElementById("selector" + thisID);
 		
@@ -676,7 +767,7 @@ function Alert() {
 	 *
 	 * Opens the alert dialog
 	 */
-	function open(title, instruction, bool, _callback) {
+	function open(title, instruction, bool, _callback, div) {
 		callback = _callback;								// store the call back function
 		
 		var dialogDiv = document.createElement("div");		// dynamically create dialog div
@@ -693,7 +784,8 @@ function Alert() {
 		var instructDiv = document.getElementById("alertInstructDiv" + thisID);
 		instructDiv.innerHTML = '<font size="2">' + instruction + '</font>';		// set the instruction div to the message
 		
-		$( "#alertDialog" + thisID ).dialog({width: "295px", modal: true, resizable: false, position: "center"}); // open the alert dialog
+		var centerAt = (div ? div : window);
+		$( "#alertDialog" + thisID ).dialog({width: "295px", modal: true, resizable: false, position: { my: "center", at: "center", of: centerAt } }); // open the alert dialog
 		
 		if (bool) {
 			var okButton = document.getElementById("alertOKButton" + thisID);

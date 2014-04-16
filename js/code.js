@@ -7,12 +7,13 @@ var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 //Listen for click events on the table
 function clickFunc(cell) {
-    console.log(cell);
-    var cellVal = cell.target.textContent; //Grab the hovered cell's value
-    var colNum = cell.currentTarget.cellIndex; //Grab the hovered cell's index
-    var rowNum = Number(cell.currentTarget.parentElement.textContent.replace(/\s/g, "").substring(0,1))-1; //Get the row number
+    cell.stopImmediatePropagation(); //Stop multiple cascading events from being called from the same event.
+    
+    var cellVal = $(this).text(); //Grab the hovered cell's value
+    var colNum = $(this).index(); //Grab the hovered cell's index
+    var rowNum = $(this).parent().parent().parent().parent().parent().index(); //Get the row number
     var rowString = rowToString(rowNum);
-
+    
     // we pass rowNum and colNum to tell the function where start highlighting
     if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
         cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 &&
@@ -38,26 +39,31 @@ function clickFunc(cell) {
     }
 
     //User clicked on line number. Prompt for delete.
-    if (colNum == 0 && rowNum != editor.getSelectedRowIndex() && cellVal.trim().length > 0) {
-        var alert = new Alert();
-        alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
-            if (evt) {
-                if (rowString.indexOf("repeat") >= 0) {
-                    deleteLoop("repeat", rowNum);
-                } else if (rowString.indexOf("endloop") >= 0) {
-                    deleteLoop("endloop", rowNum);
-                } else if (rowString.indexOf("loop") >= 0) {
-                    deleteLoop("loop", rowNum);
-                } else if (rowString.charAt(0) == 'g') {
-                    deletePolygon(rowNum);
-                } else {
-                    if (!(rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) != '(')) {
-                        editor.deleteRow(rowNum);
+    if (colNum == 0 && rowNum != editor.getSelectedRowIndex()) {
+        if(cellVal.trim().length > 0 && cellVal.indexOf(">") == -1) {
+            var alert = new Alert();
+            alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
+                if (evt) {
+                    if (rowString.indexOf("repeat") >= 0) {
+                        deleteLoop("repeat", rowNum);
+                    } else if (rowString.indexOf("endloop") >= 0) {
+                        deleteLoop("endloop", rowNum);
+                    } else if (rowString.indexOf("loop") >= 0) {
+                        deleteLoop("loop", rowNum);
+                    } else if (rowString.charAt(0) == 'g') {
+                        deletePolygon(rowNum);
+                    } else {
+                        if (!(rowToString(rowNum).charAt(0) == '(' && rowToString(rowNum + 1).charAt(0) != '(')) {
+                            editor.deleteRow(rowNum);
+                        }
                     }
-                }
-            } else
-                return;
-        });
+                } else
+                    return;
+            });
+        } else {
+            var insertRow = $(this).parent().index();
+            editor.selectRowByIndex(insertRow);
+        }
     }
 
     //User clicked on variable number. Generate keypad pop up
@@ -89,7 +95,7 @@ function clickFunc(cell) {
                     } else if (evt.indexOf("constant") >= 0) {
                         var numpad = new NumberPad();
                         numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                            currentElement.html(evt);
+                            if(evt != null & evt.length > 0) currentElement.html(evt);
                         });
                     }
                 });
@@ -106,18 +112,18 @@ function clickFunc(cell) {
                         if (evt.indexOf("constant") >= 0) {
                             var numpad = new NumberPad();
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                                currentElement.html(evt);
+                                if(evt != null & evt.length > 0) currentElement.html(evt);
                             });
                         } else {
                             if (evt.length > 0) {
-                                currentElement.html(evt);
+                                if(evt != null & evt.length > 0) currentElement.html(evt);
                             }
                         }
                     });
                 } else {
                     var numpad = new NumberPad();
                     numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                        currentElement.html(evt);
+                        if(evt != null & evt.length > 0) currentElement.html(evt);
                     });
                 }
             }
@@ -136,19 +142,20 @@ function clickFunc(cell) {
                         if (evt.indexOf("constant") >= 0) {
                             var numpad = new NumberPad();
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                                currentElement.html(evt);
+                                if(evt != null & evt.length > 0) currentElement.html(evt);
                                 fixPolygons();
                             });
                         } else {
-                            currentElement.html(evt);
+                            if(evt != null & evt.length > 0) currentElement.html(evt);
                             fixPolygons();
                         }
                     }
                 });
             } else {
                 var numpad = new NumberPad();
+                console.log("here");
                 numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                    currentElement.html(evt);
+                    if(evt != null & evt.length > 0) currentElement.html(evt);
                     fixPolygons();
                 });
             }
@@ -173,7 +180,7 @@ function clickFunc(cell) {
             var selector = new Selector();
             selector.open("test title", arr, function (evt) {
                 if (evt.length > 0)
-                    currentElement.html(evt);
+                    if(evt != null & evt.length > 0) currentElement.html(evt);
             });
         } else
             alert("No drawable objects..");
@@ -193,7 +200,7 @@ function clickFunc(cell) {
             var selector = new Selector();
             selector.open("test title", arr, function (evt) {
                 if (evt.length > 0)
-                    currentElement.html(evt);
+                    if(evt != null & evt.length > 0) currentElement.html(evt);
             });
         } else
             alert("No erasable objects...");
@@ -208,7 +215,7 @@ function clickFunc(cell) {
         var selector = new Selector();
         selector.open("Choice Selection Panel", arr, function (evt) {
             if (evt.length > 0)
-                currentElement.html(evt);
+                if(evt != null & evt.length > 0) currentElement.html(evt);
         });
     }
 
@@ -219,18 +226,20 @@ function clickFunc(cell) {
         var currentElement = $(this);
         var numpad = new NumberPad();
         numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function (evt) {
-            currentElement.html(evt);
+            if(evt != null & evt.length > 0) currentElement.html(evt);
         });
     }
 
     //User clicked on item 'EXPRESSION'. Generate appropriate alert message
     else if (cellVal.indexOf("EXPRESSION") >= 0) {
-        alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" +
-            "Right Hand Side expression");
+        var alert = new Alert();
+        alert.open("Error", "When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" +
+            "Right Hand Side expression", true, function(){});
     }
 
     //User clicked a variable on the left side of an assignment operator
-    else if (colNum < editor.rowToArray(rowNum).length - 1) {
+    else if (colNum < editor.rowToArray(rowNum).length-1 || cellVal.indexOf("VARIABLE") >= 0) {
+        console.log("variable clicked");
         if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
             var currentElement = $(this);
             var arr = new Array();
@@ -285,14 +294,14 @@ function clickFunc(cell) {
 
 //
 function insertClickFunc(cell) {
-    
-    //~ var insertRow = $(this).parent().index();
-    //~ if ((insertRow < editor.getRowCount() - 2 || editor.getSelectedRowIndex() != editor.getRowCount() - 1) &&
-        //~ insertRow + 1 < editor.getRowCount() && rowToString(insertRow + 1) != "loop") {
-        //~ if (insertRow + 1 != editor.getSelectedRowIndex()) {
-            //~ editor.selectRowByIndex(insertRow + 1);
-        //~ }
-    //~ }
+    cell.stopImmediatePropagation(); //Prevent multiple events being thrown from the same event
+    var insertRow = $(this).parent().index();
+    if ((insertRow < editor.getRowCount() - 2 || editor.getSelectedRowIndex() != editor.getRowCount() - 1) &&
+        insertRow + 1 < editor.getRowCount() && rowToString(insertRow + 1) != "loop") {
+            if (insertRow + 1 != editor.getSelectedRowIndex()) {
+                editor.moveInsertionBarCursor(insertRow);
+        }
+    }
 }
 
 function addNewRow(index, arr) {
@@ -387,8 +396,13 @@ function beenAssigned(variable, row) {
 //This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
 function isEditableValue(cellVal, row) {
     var rowString = rowToString(row);
-    if ((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) || (cellVal.indexOf('distanceValue') >= 0 &&
-        cellVal.indexOf("EXPRESSION") == -1 || cellVal.indexOf("Y") >= 0 || cellVal.indexOf("X") >= 0 || cellVal.indexOf("RADIUS") >= 0))
+    if (((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) 
+        || (cellVal.indexOf('distanceValue') >= 0 
+        && cellVal.indexOf("EXPRESSION") == -1 
+        || cellVal.indexOf("Y") >= 0 
+        || cellVal.indexOf("X") >= 0 
+        || cellVal.indexOf("RADIUS") >= 0))
+        && cellVal.trim().length > 0)
         return true;
     else
         return false;
@@ -406,18 +420,18 @@ function deleteLoop(type, rowNum) {
             var rowString = rowToString(startDel - 1);
             if (rowString.indexOf("endloop") >= 0) endloop++;
             else if (rowString.indexOf("repeat") >= 0) endloop--;
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
             startDel--;
             deleteNum++;
         }
-        if (selRow < rowNum && selRow > ((codeTable.rows.length - 1) - deleteNum)) {
+        if (selRow < rowNum && selRow > ((editor.getRowCount() - 1) - deleteNum)) {
             selRow = startDel;
             moveToLine(selRow + 1);
         } else if (selRow > rowNum) {
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
             selRow -= deleteNum;
         } else
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
     } else if (type.indexOf("loop") >= 0 || type.indexOf("repeat") >= 0) {
         var repeat = 1;
         var deleteNum = 1;
@@ -427,17 +441,17 @@ function deleteLoop(type, rowNum) {
             var rowString = rowToString(startDel + 1);
             if (rowString.indexOf("repeat") >= 0) repeat++;
             else if (rowString.indexOf("endloop") >= 0) repeat--;
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
             deleteNum++;
         }
         if (selRow > startDel && selRow < startDel + deleteNum) {
             selRow = startDel;
             moveToLine(selRow + 1);
         } else if (selRow > startDel) {
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
             selRow -= deleteNum;
         } else {
-            codeTable.deleteRow(startDel);
+            editor.deleteRow(startDel);
         }
     }
 }
@@ -446,27 +460,23 @@ function deleteLoop(type, rowNum) {
 function fixPolygons() {
     var x = 0;
     var y = 0;
-    for (var i = 0; i < codeTable.rows.length - 1; i++) {
+    for (var i = 0; i < editor.getRowCount() - 1; i++) {
         var rowString = rowToString(i);
         if (rowString.indexOf("g") < rowString.indexOf("=") && rowString.indexOf("g") >= 0) {
             x = rowString.substring(rowString.indexOf("(") + 2, rowString.indexOf(","));
             y = rowString.substring(rowString.indexOf(",") + 1, rowString.indexOf(")"));
         } else if (rowString.indexOf("))") >= 0 && rowString.indexOf("((") == -1) {
-            codeTable.deleteRow(i);
-            insertTable.deleteRow(-1);
+            editor.deleteRow(i);
             addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
-            selRow--;
         }
     }
 }
 
 //deletes all rows of a polygon
 function deletePolygon(rowNum) {
-    codeTable.deleteRow(rowNum);
-    if (rowNum < selRow) selRow--;
+    editor.deleteRow(rowNum);
     while (rowToString(rowNum).charAt(0) == '(') {
-        codeTable.deleteRow(rowNum);
-        if (rowNum < selRow) selRow--;
+        editor.deleteRow(rowNum);
     }
 }
 

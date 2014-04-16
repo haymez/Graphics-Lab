@@ -5,7 +5,7 @@ var figNum = 0; //This will be removed eventually when dealing with namespace is
 var editor; //Global variable for editor
 
 //Find the container element
-var container = document.getElementById("container");
+var container = document.getElementById("container" + figNum);
 container.style.width = "650px";
 container.style.height = "450px";
 
@@ -216,9 +216,6 @@ $("#" + walkButton.id).click(function() { walk(); });
 $(document).ready(function() {
 	editor = new Editor(programDiv.id, true, true, 1, -1, true); //Initialize editor
 	editor.setCellClickListener(clickFunc); //Set click listener for editor
-	//~ editor.setCellClickListener(function(evt) {
-        //~ console.log("hey");
-        //~ });
 	editor.setInsertBarMouseEnterListener(insertClickFunc); //Listener for insertion area
 });
 
