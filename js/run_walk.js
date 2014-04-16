@@ -57,7 +57,6 @@ function walk() {
     if (!programRunning) {
         //check if selected row is before end of code
         if (editor.getSelectedRowIndex() < editor.getRowCount() - 1) {
-            console.log("here");
             editor.selectRowByIndex(editor.getRowCount()-1);
         }
     }
@@ -75,7 +74,6 @@ function walk() {
     
     //Don't allow step to go beyond program scope
     if (step == editor.getRowCount()-1) {
-        console.log("end!");
         editor.setSelectedRow(editor.getRowCount()-1);
         $('td').removeClass("running selected");
         
@@ -130,7 +128,6 @@ function walk() {
             loopArray.splice(loopArray.length - 1, 1);
         }
     } else {
-        console.log("step " + step + ": " + rowToString(step));
         interpret(rowToString(step));
         step++;
     }
