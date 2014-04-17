@@ -43,7 +43,7 @@ function Run_walk(figNum) {
             clearInterval(delay);
             step = 0;
             editor.setSelectedRow(editor.getRowCount() - 1);
-            $('td').removeClass("selected running");
+            editor.clearHighlighting();
             $("#runButton" + figNum).html("Run").off("click").click(function () {
                 run();
             });
@@ -92,7 +92,7 @@ function Run_walk(figNum) {
         //Don't allow step to go beyond program scope
         if (step == editor.getRowCount()-1) {
             editor.setSelectedRow(editor.getRowCount()-1);
-            $('td').removeClass("running selected");
+            editor.clearHighlighting();
             
             step = 0;
             $("#runButton" + figNum).html("Run").off("click").click(function () {

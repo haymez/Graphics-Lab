@@ -63,19 +63,19 @@ function Variables(figNum) {
         
         editor.addRow(0, [{text:"//Program Code", type:["comment"]}]);
         if(distanceVariables.length > 0) {
-            editor.addRow(0, [{text:"Distance&nbsp;", type:["literal"]}].concat(distance));
+            editor.addRow(0, [{text:"Distance&nbsp;", type:["datatype"]}].concat(distance));
         }
         if(pointVariables.length > 0) {
-            editor.addRow(0, [{text:"Point&nbsp;", type:"literal"}].concat(point));
+            editor.addRow(0, [{text:"Point&nbsp;", type:"datatype"}].concat(point));
         }
         if(lineVariables.length > 0) {
-            editor.addRow(0, [{text:"Line&nbsp;", type:"literal"}].concat(line));
+            editor.addRow(0, [{text:"Line&nbsp;", type:"datatype"}].concat(line));
         }
         if(polygonVariables.length > 0) {
-            editor.addRow(0, [{text:"Polygon&nbsp;", type:"literal"}].concat(polygon));
+            editor.addRow(0, [{text:"Polygon&nbsp;", type:"datatype"}].concat(polygon));
         }
         if(circleVariables.length > 0) {
-            editor.addRow(0, [{text:"Circle&nbsp;", type:"literal"}].concat(circle));
+            editor.addRow(0, [{text:"Circle&nbsp;", type:"datatype"}].concat(circle));
         }
         editor.addRow(0, [{text:"//Variable Declarations", type:["comment"]}]); 
     }
