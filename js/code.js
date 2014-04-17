@@ -4,8 +4,24 @@
  * Co-Authors: Bidur Shrestha
  */
 
-function Code() {
+function Code(figNum) {
+    //Local variables
     var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    var editor;
+    
+    //Public functions
+    this.drawShape = drawShape;
+    this.changeColor = changeColor;
+    this.assign = assign;
+    this.addNewRow = addNewRow;
+    this.erase = erase;
+    this.loop = loop;
+    this.rowToString = rowToString;
+    this.getObjects = getObjects;
+    this.getIndent = getIndent;
+    this.clickFunc = clickFunc;
+    this.insertClickFunc = insertClickFunc;
+    
 
     //Listen for click events on the table
     function clickFunc(cell) {
@@ -490,6 +506,11 @@ function Code() {
             string += indent;
         }
         return string;
+    }
+    
+    //get objects
+    function getObjects(editorObj) {
+        editor = editorObj;
     }
 }
 

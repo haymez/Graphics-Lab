@@ -5,32 +5,37 @@
 * the declared variables
 */
 
-function Variables() {
-    //Declare all variables
+function Variables(figNum) {
+    
+    //Declare all local variables
     var pointVariables = new Array();
     var lineVariables = new Array();
     var circleVariables = new Array();
     var polygonVariables = new Array();
     var distanceVariables = new Array();
-
+    var code;
+    var editor;
+    
+    //Public functions
+    this.printVars = printVars;
+    this.newDistance = newDistance;
+    this.getObjects = getObjects;
+    this.getPointVars = getPointVars;
+    this.getLineVars = getLineVars;
+    this.getPolyVars = getPolyVars;
+    this.getCircleVars = getCircleVars;
+    this.getDistVars = getDistVars;
 
     //Print all declared variables into the variables window
     function printVars() {
-        var d = "";
-        var p = "";
-        var l = "";
-        var c = "";
-        var g = "";
-        var total = "";
-        
         var point = new Array();
         var line = new Array();
         var circle = new Array();
         var polygon = new Array();
         var distance = new Array();
         
-        if(rowToString(0).indexOf("//Variable") >= 0) {
-            while(rowToString(0).indexOf("//Program") == -1) {
+        if(code.rowToString(0).indexOf("//Variable") >= 0) {
+            while(code.rowToString(0).indexOf("//Program") == -1) {
                 editor.deleteRow(0);
             }
             editor.deleteRow(0);
@@ -79,6 +84,37 @@ function Variables() {
     function newDistance() {
         distanceVariables[distanceVariables.length] = 'd' + (distanceVariables.length+1);
         printVars();
+    }
+    
+    //pointVariables getter
+    function getPointVars() {
+        return pointVariables;
+    }
+    
+    //lineVariables getter
+    function getLineVars() {
+        return lineVariables;
+    }
+    
+    //polygonVariables getter
+    function getPolyVars() {
+        return polygonVariables;
+    }
+    
+    //circleVariables getter
+    function getCircleVars() {
+        return circleVariables;
+    }
+    
+    //distanceVariables getter
+    function getDistVars() {
+        return distanceVariables;
+    }
+    
+    //get Code object
+    function getObjects(codeObj, editorObj) {
+        code = codeObj;
+        editor = editorObj
     }
 }
 

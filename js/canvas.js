@@ -4,14 +4,31 @@
  * the variables that are created to the appropriate arrays.
  */
 
-function Canvas() {
+function Canvas(figNum) {
 
-    //Declare all variables
+    //Declare all local variables
     var toDraw = new Array();
     var message = "";
+    var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    var canvas = document.getElementById("drawcanvas"+figNum);
+    var variables;
+    var shapes;
+    var code;
+    var editor;
+    
+    //public functions
+    this.clear = clear;
+    this.draw = draw;
+    this.drawPoint = drawPoint;
+    this.drawLine = drawLine;
+    this.drawCircle = drawCircle;
+    this.drawPolygon = drawPolygon;
+    this.getObjects = getObjects;
+    this.getToDraw = getToDraw;
+    this.setToDraw = setToDraw;
 
     //Event listener for cursor position on canvas
-    $('#' + addElements.canvas.id).on('vmousemove', function(evt) {
+    $('#' + canvas.id).on('vmousemove', function(evt) {
         $(this).css('cursor', 'crosshair');
         var cursorPos = getCursorPos(evt);
         message = Math.floor(cursorPos.x) + " x " + Math.floor(cursorPos.y);
@@ -116,18 +133,17 @@ function Canvas() {
         var startX;
         var startY;
         var rect = canvas.getBoundingClientRect();
-        pointVariables[pointVariables.length] = 'p' + (pointVariables.length+1);
-        printVars();
+        variables.getPointVars().push('p' + (variables.getPointVars().length+1));
+        variables.printVars();
         $('#' + canvas.id).off('.draw');
         $('#' + canvas.id).on('vmouseup.draw', function(evt) {
             startX = evt.clientX - rect.left;
             startY = evt.clientY - rect.top;
             if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
-                toDraw[toDraw.length] = new point(startX, startY);
-
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + pointVariables[pointVariables.length-1], "&nbsp;=&nbsp;", 
+                toDraw[toDraw.length] = new shapes.point(startX, startY);
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getPointVars()[variables.getPointVars().length-1], "&nbsp;=&nbsp;", 
                 "(", startX,",", 300-startY, ")"]);
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", pointVariables[pointVariables.length-1], ")"]);
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getPointVars()[variables.getPointVars().length-1], ")"]);
                 draw();
             }
 
@@ -143,8 +159,8 @@ function Canvas() {
         var endX;
         var endY;
         var rect = canvas.getBoundingClientRect();
-        lineVariables[lineVariables.length] = 'l' + (lineVariables.length+1);
-        printVars();
+        variables.getLineVars()[variables.getLineVars().length] = 'l' + (variables.getLineVars().length+1);
+        variables.printVars();
         $('#' + canvas.id).off('.draw');
         $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             
@@ -167,11 +183,11 @@ function Canvas() {
                 endY = evt.clientY - rect.top;
                 
                 if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
-                    toDraw[toDraw.length] = new line(startX, startY, endX, endY, "line");
+                    toDraw[toDraw.length] = new shapes.line(startX, startY, endX, endY, "line");
                     
-                    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + lineVariables[lineVariables.length-1], "&nbsp;=&nbsp;", 
+                    code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getLineVars()[variables.getLineVars().length-1], "&nbsp;=&nbsp;", 
                         "(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
-                    addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", lineVariables[lineVariables.length-1], ")"]);
+                    code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getLineVars()[variables.getLineVars().length-1], ")"]);
                 }
                 //Turn off all .draw listeners
                 $('#' + canvas.id).off('.draw');
@@ -187,8 +203,8 @@ function Canvas() {
         var endX;
         var endY;
         var rect = canvas.getBoundingClientRect();
-        circleVariables[circleVariables.length] = 'c' + (circleVariables.length+1);
-        printVars();
+        variables.getCircleVars()[variables.getCircleVars().length] = 'c' + (variables.getCircleVars().length+1);
+        variables.printVars();
         
         $('#' + canvas.id).off('.draw');
         $('#' + canvas.id).on('vmousedown.draw', function(evt) {
@@ -210,11 +226,11 @@ function Canvas() {
             endY = evt.clientY - rect.top;
             
             if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
-                toDraw[toDraw.length] = new circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
+                toDraw[toDraw.length] = new shapes.circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
                 
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + circleVariables[circleVariables.length-1], "&nbsp;=&nbsp;", "(", "(",  
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getCircleVars()[variables.getCircleVars().length-1], "&nbsp;=&nbsp;", "(", "(",  
                 startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", circleVariables[circleVariables.length-1], ")"]);
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getCircleVars()[variables.getCircleVars().length-1], ")"]);
             }
             //Turn off all .draw listeners
             $('#' + canvas.id).off('.draw');
@@ -234,8 +250,8 @@ function Canvas() {
         var coor = new Array();
         var rect = canvas.getBoundingClientRect();
         var finished = false;
-        polygonVariables[polygonVariables.length] = 'g' + (polygonVariables.length+1);
-        printVars();
+        variables.getPolyVars()[variables.getPolyVars().length] = 'g' + (variables.getPolyVars().length+1);
+        variables.printVars();
         
         //defines a point (or angle) on the polygon
         function point(startX, startY, endX, endY) {
@@ -307,39 +323,57 @@ function Canvas() {
             //This is our first edge
             if(edgeCount == 0) {
                 //Set this line to temporary because it's merely a preview
-                toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
+                toDraw[toDraw.length] = new shapes.line(startX, startY, endX, endY, "temp");
                 coor[coor.length] = new point(startX, startY, endX, endY);
             }
             else if(edgeCount >= 2 && finished) {
                 //Turn off all listeners
                 $('#' + canvas.id).off('.draw');
                 
-                toDraw[toDraw.length] = new line(startX, startY, coor[0].startX, coor[0].startY, "temp");
+                toDraw[toDraw.length] = new shapes.line(startX, startY, coor[0].startX, coor[0].startY, "temp");
                 coor[coor.length] = new point(startX, startY, coor[0].startX, coor[0].startY);
                 
                 //Erase all line elements in toDraw that were used for polygon. Save polygon.
                 toDraw = toDraw.slice(0, toDraw.length-coor.length);
-                toDraw[toDraw.length] = new polygon(coor);
+                toDraw[toDraw.length] = new shapes.polygon(coor);
 
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + polygonVariables[polygonVariables.length-1], "&nbsp;=&nbsp;", 
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getPolyVars()[variables.getPolyVars().length-1], "&nbsp;=&nbsp;", 
                     "(", "(", coor[0].startX, ",", 300-coor[0].startY, ")", ","]);
                 for(var i = 1; i < coor.length; i++) {
                     if (i == coor.length-1) {
-                        addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
-                        addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+                        code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+                        code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
                     }
                     else
-                        addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
+                        code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
                 }
-                addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", polygonVariables[polygonVariables.length-1], ")"]);
+                code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getPolyVars()[variables.getPolyVars().length-1], ")"]);
                 draw();
             }
             else {
-                toDraw[toDraw.length] = new line(startX, startY, endX, endY, "temp");
+                toDraw[toDraw.length] = new shapes.line(startX, startY, endX, endY, "temp");
                 coor[coor.length] = new point(startX, startY, endX, endY);
             }
             edgeCount++;
         });
+    }
+    
+    //toDraw getter
+    function getToDraw() {
+        return toDraw;
+    }
+    
+    //toDraw setter
+    function setToDraw(value) {
+        toDraw = value;
+    }
+    
+    //get objects
+    function getObjects(variablesObj, shapesObj, codeObj, editorObj) {
+        variables = variablesObj
+        shapes = shapesObj;
+        code = codeObj;
+        editor = editorObj;
     }
 }
 

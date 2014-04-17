@@ -4,7 +4,7 @@
 //Note: this is an adapted method from a previous Watson Graphics Lab rewritten
 //for javascript.
 
-function Interpreter() {
+function Interpreter(figNum) {
     var d = new Array();
     var p = new Array();
     var l = new Array();
@@ -13,6 +13,19 @@ function Interpreter() {
     var color = "red";
     var variableNumber;
     var variableType;
+    var run_walk;
+    var variables;
+    var shapes;
+    var canvas;
+    
+    //Public functions
+    this.interpret = interpret;
+    this.getObjects = getObjects;
+    this.getD = getD;
+    this.getP = getP;
+    this.getL = getL;
+    this.getG = getG;
+    this.getC = getC;
 
 
     //these next two functions are for testing purposes. Ignore. Erase if you want.
@@ -33,29 +46,29 @@ function Interpreter() {
 
     function interpret(input)
     {
-        if (fresh)
+        if (run_walk.getFresh())
         {
-            fresh = false;
-            toDraw = [];
-            for (var i = 0; i < distanceVariables.length; i++)
+            run_walk.setFresh(false);
+            canvas.setToDraw([]);
+            for (var i = 0; i < variables.getDistVars().length; i++)
             {
                 d[i] = 0;
             }
-            for (var i = 0; i < pointVariables.length; i++)
+            for (var i = 0; i < variables.getPointVars().length; i++)
             {
-                p[i] = new point(0, 0);
+                p[i] = new shapes.point(0, 0);
             }
-            for (var i = 0; i < lineVariables.length; i++)
+            for (var i = 0; i < variables.getLineVars().length; i++)
             {
-                l[i] = new line(0, 0, 0, 0);
+                l[i] = new shapes.line(0, 0, 0, 0);
             }
-            for (var i = 0; i < polygonVariables.length; i++)
+            for (var i = 0; i < variables.getPolyVars().length; i++)
             {
                 g[i] = new Array();
             }
-            for (var i = 0; i < circleVariables.length; i++)
+            for (var i = 0; i < variables.getCircleVars().length; i++)
             {
-                c[i] = new circle(0, 0, 0);
+                c[i] = new shapes.circle(0, 0, 0);
             }
         }
         //input is assumed to be some string variable with the instructions
@@ -82,7 +95,7 @@ function Interpreter() {
                     var shape = p[index];
                     shape.color = color;
                     color = "red"
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
 
                 }
                 else if (tokens[1].charAt(0) == 'l')
@@ -90,14 +103,14 @@ function Interpreter() {
                     var shape = l[index];
                     shape.color = color;
                     color = "red"
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
                 else if (tokens[1].charAt(0) == 'g')
                 {
                     var shape = g[index];
                     shape.color = color;
                     color = "red"
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
                 //assume circle
                 else
@@ -105,7 +118,7 @@ function Interpreter() {
                     var shape = c[index];
                     shape.color = color;
                     color = "red"
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
             }
             else if (tokens[0].localeCompare("OBJECT") == 0)
@@ -136,26 +149,26 @@ function Interpreter() {
                 {
                     var shape = p[index];
                     shape.color = "white";
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
                 else if (tokens[1].charAt(0) == 'l')
                 {
                     var shape = l[index];
                     shape.color = "white";
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
                 else if (tokens[1].charAt(0) == 'g')
                 {
                     var shape = g[index];
                     shape.color = "white";
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
                 //assume circle
                 else
                 {
                     var shape = c[index];
                     shape.color = "white";
-                    toDraw.push(shape);
+                    canvas.getToDraw().push(shape);
                 }
             }
             else if (tokens[0].localeCompare("OBJECT") == 0)
@@ -399,7 +412,7 @@ function Interpreter() {
                 valid = validPoint(tokens.slice(2, 4));
                 if (valid[0])
                 {
-                    p[assignmentVariableNumber - 1] = new point(valid[1], valid[2]);
+                    p[assignmentVariableNumber - 1] = new shapes.point(valid[1], valid[2]);
                 }
                 else
                 {
@@ -412,7 +425,7 @@ function Interpreter() {
                 valid = validLine(tokens.slice(2, -1));
                 if (valid[0])
                 {
-                    l[assignmentVariableNumber-1] = new line(valid[1], valid[2], valid[3], valid[4], "line");
+                    l[assignmentVariableNumber-1] = new shapes.line(valid[1], valid[2], valid[3], valid[4], "line");
                 }
                 else
                 {
@@ -432,15 +445,15 @@ function Interpreter() {
                     {
                         if(i+1==points.length)
                         {
-                            lines[i] = new line(points[i].startX,points[i].startY,points[0].startX,points[0].startY, "line");
+                            lines[i] = new shapes.line(points[i].startX,points[i].startY,points[0].startX,points[0].startY, "line");
                         }
                         else
                         {
-                            lines[i] = new line(points[i].startX,points[i].startY,points[i+1].startX,points[i+1].startY, "line");
+                            lines[i] = new shapes.line(points[i].startX,points[i].startY,points[i+1].startX,points[i+1].startY, "line");
                         }
                         i++;
                     }
-                    g[assignmentVariableNumber - 1] = new polygon(lines);
+                    g[assignmentVariableNumber - 1] = new shapes.polygon(lines);
                 }
                 else
                 {
@@ -797,7 +810,6 @@ function Interpreter() {
         var index;
         var parse = new Array();
         var returned = new Array();
-        var rect = canvas.getBoundingClientRect();
         if (isValid(tokens[0]) && tokens.charAt(0) == 'c')
         {
             if ((c[variableNumber - 1].startX != -1) &&
@@ -894,7 +906,7 @@ function Interpreter() {
             // transfer to return arrray
             if(parse[0])
             {
-                    returned[c++] = new point(parse[1], parse[2]);
+                    returned[c++] = new shapes.point(parse[1], parse[2]);
             }
             else // point error
             {
@@ -971,6 +983,39 @@ function Interpreter() {
     function handleOutOfBoundsError()
     {
         alert("You have create a number which exceeds the dimensions of the canvas.");
+    }
+    
+    //d getter
+    function getD() {
+        return d;
+    }
+    
+    //p getter
+    function getP() {
+        return p;
+    }
+    
+    //l getter
+    function getL() {
+        return l;
+    }
+    
+    //c getter
+    function getC() {
+        return c;
+    }
+    
+    //g getter
+    function getG() {
+        return g;
+    }
+    
+    //Gets objects
+    function getObjects(run_walkObj, variablesObj, shapesObj, canvasObj) {
+        run_walk = run_walkObj;
+        variables = variablesObj;
+        shapes = shapesObj;
+        canvas = canvasObj;
     }
 }
 
