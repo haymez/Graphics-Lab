@@ -42,8 +42,6 @@ function AddElements(figNum) {
     programDiv.id = "program_code" + figNum;
     programDiv.style.width = "460px";
     programDiv.style.height = programWindowDiv.style.height;
-    //programDiv.style.border = "1px solid";
-    //programDiv.style.overflow = "auto";
     programDiv.style.cssFloat = "left";
 
 

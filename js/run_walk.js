@@ -42,14 +42,17 @@ function Run_walk(figNum) {
             fresh = true;
             clearInterval(delay);
             step = 0;
-            editor.selectRowByIndex(editor.getRowCount() - 1);
+            editor.setSelectedRow(editor.getRowCount() - 1);
+            $('td').removeClass("selected running");
             $("#runButton" + figNum).html("Run").off("click").click(function () {
                 run();
             });
             $(this).html("Walk").off("click").click(function () {
                 walk();
             });
-            $(".button" + figNum).attr("disabled", false);
+            changeBtnState(false);
+            canvas.clear();
+            canvas.draw();
         });
         //Pause
         $("#runButton" + figNum).html("Pause").off("click").click(function () {
@@ -232,7 +235,6 @@ function Run_walk(figNum) {
         document.getElementById("eraseButton" + figNum).disabled = state;
         document.getElementById("colorButton" + figNum).disabled = state;
         document.getElementById("loopButton" + figNum).disabled = state;
-        //document.getElementById("editor" + figNum).disabled = state;
     }
     
     //fresh getter
