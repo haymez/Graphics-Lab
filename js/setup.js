@@ -32,7 +32,7 @@ function Setup(figNum) {
     variables.getObjects(code, editor);
     
     //Pass objects to code
-    code.getObjects(editor);
+    code.getObjects(editor, variables);
     
     //Pass objects to canvas
     canvas.getObjects(variables, shapes, code, editor);

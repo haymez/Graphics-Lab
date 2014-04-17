@@ -8,6 +8,8 @@ function Code(figNum) {
     //Local variables
     var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     var editor;
+    var variables;
+    var container = document.getElementById("container" + figNum);
     
     //Public functions
     this.drawShape = drawShape;
@@ -95,9 +97,9 @@ function Code(figNum) {
                     var arr = new Array();
                     arr.push(distanceVar + " + distanceValue");
                     arr.push(distanceVar + " - distanceValue");
-                    for (var i = 0; i < distanceVariables.length; i++) {
-                        if (beenAssigned(distanceVariables[i], rowNum))
-                            arr.push(distanceVariables[i]);
+                    for (var i = 0; i < variables.getDistVars().length; i++) {
+                        if (beenAssigned(variables.getDistVars()[i], rowNum))
+                            arr.push(variables.getDistVars()[i]);
                     }
                     arr.push("constant");
                     var selector = new Selector();
@@ -119,9 +121,9 @@ function Code(figNum) {
                     }, container);
                 } else {
                     var arr = new Array();
-                    for (var i = 0; i < distanceVariables.length; i++) {
-                        if (beenAssigned(distanceVariables[i], rowNum))
-                            arr.push(distanceVariables[i]);
+                    for (var i = 0; i < variables.getDistVars().length; i++) {
+                        if (beenAssigned(variables.getDistVars()[i], rowNum))
+                            arr.push(variables.getDistVars()[i]);
                     }
                     arr.push("constant");
                     if (arr.length > 1) {
@@ -148,9 +150,9 @@ function Code(figNum) {
 
             } else {
                 var arr = new Array();
-                for (var i = 0; i < distanceVariables.length; i++) {
-                    if (beenAssigned(distanceVariables[i], rowNum))
-                        arr.push(distanceVariables[i]);
+                for (var i = 0; i < variables.getDistVars().length; i++) {
+                    if (beenAssigned(variables.getDistVars()[i], rowNum))
+                        arr.push(variables.getDistVars()[i]);
                 }
                 arr.push("constant");
                 if (arr.length > 1) {
@@ -259,20 +261,20 @@ function Code(figNum) {
             if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
                 var currentElement = $(this);
                 var arr = new Array();
-                for (var i = 0; i < distanceVariables.length; i++) {
-                    arr.push(distanceVariables[i]);
+                for (var i = 0; i < variables.getDistVars().length; i++) {
+                    arr.push(variables.getDistVars()[i]);
                 }
-                for (var i = 0; i < pointVariables.length; i++) {
-                    arr.push(pointVariables[i]);
+                for (var i = 0; i < variables.getPointVars().length; i++) {
+                    arr.push(variables.getPointVars()[i]);
                 }
-                for (var i = 0; i < lineVariables.length; i++) {
-                    arr.push(lineVariables[i]);
+                for (var i = 0; i < variables.getLineVars().length; i++) {
+                    arr.push(variables.getLineVars()[i]);
                 }
-                for (var i = 0; i < circleVariables.length; i++) {
-                    arr.push(circleVariables[i]);
+                for (var i = 0; i < variables.getCircleVars().length; i++) {
+                    arr.push(variables.getCircleVars()[i]);
                 }
-                for (var i = 0; i < polygonVariables.length; i++) {
-                    arr.push(polygonVariables[i]);
+                for (var i = 0; i < variables.getPolyVars().length; i++) {
+                    arr.push(variables.getPolyVars()[i]);
                 }
                 if (arr.length > 0) {
                     var selector = new Selector();
@@ -509,8 +511,9 @@ function Code(figNum) {
     }
     
     //get objects
-    function getObjects(editorObj) {
+    function getObjects(editorObj, variablesObj) {
         editor = editorObj;
+        variables = variablesObj;
     }
 }
 
