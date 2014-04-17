@@ -28,26 +28,11 @@ function Interpreter(figNum) {
     this.getC = getC;
 
 
-    //these next two functions are for testing purposes. Ignore. Erase if you want.
-    function assignP1()
-    {
-        interpret("p1 = (200,200)");
-        //interpret("p2 = (100,100)");
-        interpret("color(blue)");
-        interpret("l1 = (p1,100,100)");
-    }
-
-
-    function drawP1()
-    {
-        interpret("draw(l1)");
-        interpret("color(black)");
-    }
-
     function interpret(input)
     {
         if (run_walk.getFresh())
         {
+            color = "red";
             run_walk.setFresh(false);
             canvas.setToDraw([]);
             for (var i = 0; i < variables.getDistVars().length; i++)
@@ -94,7 +79,7 @@ function Interpreter(figNum) {
                 {
                     var shape = p[index];
                     shape.color = color;
-                    color = "red"
+                    //color = "red"
                     canvas.getToDraw().push(shape);
 
                 }
@@ -102,14 +87,14 @@ function Interpreter(figNum) {
                 {
                     var shape = l[index];
                     shape.color = color;
-                    color = "red"
+                    //color = "red"
                     canvas.getToDraw().push(shape);
                 }
                 else if (tokens[1].charAt(0) == 'g')
                 {
                     var shape = g[index];
                     shape.color = color;
-                    color = "red"
+                    //color = "red"
                     canvas.getToDraw().push(shape);
                 }
                 //assume circle
@@ -117,7 +102,7 @@ function Interpreter(figNum) {
                 {
                     var shape = c[index];
                     shape.color = color;
-                    color = "red"
+                    //color = "red"
                     canvas.getToDraw().push(shape);
                 }
             }
