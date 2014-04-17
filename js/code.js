@@ -9,7 +9,7 @@ function Code(figNum) {
     var indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     var editor;
     var variables;
-    var container = document.getElementById("container" + figNum);
+    var container = document.getElementById("graphicsLab" + figNum);
     
     //Public functions
     this.drawShape = drawShape;

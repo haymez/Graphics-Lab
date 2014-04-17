@@ -13,9 +13,8 @@ function AddElements(figNum) {
     this.getObjects = getObjects;
     
     //Find the container element
-    var container = document.getElementById("container" + figNum);
+    var container = document.getElementById("graphicsLab" + figNum);
     container.style.width = "650px";
-    container.style.height = "450px";
 
     //Drawing window <div>
     var drawDiv = document.createElement('div');
@@ -215,6 +214,7 @@ function AddElements(figNum) {
     container.appendChild(drawOffsetDiv);
     container.appendChild(drawDiv);
     container.style.position = "relative"; 
+    container.style.height = $("#"+programDiv.id).height() + $("#"+drawDiv.id).height() + "px";
 
     //Add listeners for walk and run
     $("#" + runButton.id).click(function() { run_walk.run(); });
