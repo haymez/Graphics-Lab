@@ -604,12 +604,24 @@ function Code(figNum) {
                     break;
                 //Figure 6.17
                 case 5:
-                    //Finish this...
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#lineButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["color", "(", "blue", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "250"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "20", "&nbsp;times"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["loop"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["l1", "&nbsp;=&nbsp;", "(", "(", "50", ",", "d1", ")", ",", "(", "250", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "l1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;-&nbsp;", "10"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"erase", "(", "l1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["endloop"]);
+                    break;
             }
         } else {
             //This is Sandbox mode, set up listeners for editor
             editor.setCellClickListener(clickFunc); //Set click listener for editor
             editor.setInsertBarMouseEnterListener(insertClickFunc); //Listener for insertion area
+            
         }
     });
 }

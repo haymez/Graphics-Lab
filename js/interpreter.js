@@ -1,8 +1,12 @@
-//Note: how to tokenize in javascript:
-//input.split(/[(,)\s]+/);
-//Author: Mitchell James Martin
-//Note: this is an adapted method from a previous Watson Graphics Lab rewritten
-//for javascript.
+/*
+ *
+ * Note: how to tokenize in javascript:
+ * input.split(/[(,)\s]+/);
+ * Author: Mitchell James Martin
+ * Note: This is an adapted method from a previous Watson Graphics Lab rewritten
+ * for javascript. 
+ * 
+ */
 
 function Interpreter(figNum) {
     var d = new Array();
