@@ -17,11 +17,6 @@ function Setup(figNum) {
     var interpreter = new Interpreter(figNum);
     var canvas = new Canvas(figNum);
     
-    //Set up listeners for editor
-    editor.setCellClickListener(code.clickFunc); //Set click listener for editor
-    editor.setInsertBarMouseEnterListener(code.insertClickFunc); //Listener for insertion area
-    
-    
     
     /* ************Pass Objects to other classes*************** */
     

@@ -515,7 +515,108 @@ function Code(figNum) {
         editor = editorObj;
         variables = variablesObj;
     }
+
+    $(document).ready(function() {
+        if(figNum >= 0) {
+            $("#program_buttons"+figNum).hide();
+            $("#var_buttons"+figNum).hide();
+            $("#drawOffsetDiv"+figNum).width(80);
+            
+            switch(figNum) {
+                //Figure 6.10
+                case 0:
+                    $("#circleButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["c1", "&nbsp;=&nbsp;", "(", "(", "150", ",", "150", ")", ",", "50", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "c1", ")"]);
+                    break;
+                //Figure 6.12
+                case 1:
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#lineButton"+figNum).trigger("click");
+                    $("#polygonButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "100"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["d2", "&nbsp;=&nbsp;", "200"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p1", "&nbsp;=&nbsp;", "(", "d1", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p2", "&nbsp;=&nbsp;", "(", "d2", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p3", "&nbsp;=&nbsp;", "(", "d2", ",", "d2", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p3", "&nbsp;=&nbsp;", "(", "d2", ",", "d2", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p4", "&nbsp;=&nbsp;", "(", "d1", ",", "d2", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["l1", "&nbsp;=&nbsp;", "(", "p1", ",", "p3", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["l2", "&nbsp;=&nbsp;", "(", "p2", ",", "p4", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["g1", "&nbsp;=&nbsp;", "(", "p1", ")", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p1", ")", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p2", ")", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p3", ")", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p4", ")", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p1", ")", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "l1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "l2", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "g1", ")"]);
+                    break;
+                //Figure 6.14
+                case 2:
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#circleButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["color", "(", "blue", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "50"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p1", "&nbsp;=&nbsp;", "(", "150", ",", "150", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "10", "&nbsp;times"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["loop"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ")", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "c1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;+&nbsp;", "10"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["endloop"]);
+                    break;
+                //Figure 6.15
+                case 3:
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#circleButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["color", "(", "blue", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "50"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "10", "&nbsp;times"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["loop"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "150", ",", "150", ")", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "c1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;+&nbsp;", "10"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["endloop"]);
+                    break;
+                //Figure 6.16
+                case 4:
+                    $("#distanceButton"+figNum).trigger("click");
+                    $("#pointButton"+figNum).trigger("click");
+                    $("#circleButton"+figNum).trigger("click");
+                    addNewRow(editor.getSelectedRowIndex(), ["color", "(", "blue", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "50"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["p1", "&nbsp;=&nbsp;", "(", "150", ",", "150", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "10", "&nbsp;times"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["loop"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ")", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "c1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;+&nbsp;", "10"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"erase", "(", "c1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["endloop"]);
+                    break;
+                //Figure 6.17
+                case 5:
+                    //Finish this...
+            }
+        } else {
+            //This is Sandbox mode, set up listeners for editor
+            editor.setCellClickListener(clickFunc); //Set click listener for editor
+            editor.setInsertBarMouseEnterListener(insertClickFunc); //Listener for insertion area
+        }
+    });
 }
+
+
+
+
 
 
 
