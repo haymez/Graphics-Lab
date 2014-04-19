@@ -108,10 +108,7 @@ function Interpreter(figNum) {
                     shape.color = color;
                     //color = "red"
                     var print = canvas.getToDraw();
-                    console.log(print[0]);
-                    console.log("hi");
                     canvas.getToDraw().push(shape);
-                    console.log(print[0]);
                 }
             }
             else if (tokens[0].localeCompare("OBJECT") == 0)

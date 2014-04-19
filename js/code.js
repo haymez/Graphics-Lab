@@ -10,7 +10,6 @@ function Code(figNum) {
     var editor;
     var variables;
     var container = document.getElementById("graphicsLab" + figNum);
-    console.log(container);
     
     //Public functions
     this.drawShape = drawShape;
