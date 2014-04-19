@@ -186,7 +186,7 @@ function Canvas(figNum) {
                     toDraw[toDraw.length] = new shapes.line(startX, startY, endX, endY, "line");
                     
                     code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getLineVars()[variables.getLineVars().length-1], "&nbsp;=&nbsp;", 
-                        "(", "(", startX, ",", 300-startY, ")", "(", endX, ",", 300-endY, ")", ")"]);
+                        "(", "(", startX, ",", 300-startY, ")", ",", "(", endX, ",", 300-endY, ")", ")"]);
                     code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getLineVars()[variables.getLineVars().length-1], ")"]);
                 }
                 //Turn off all .draw listeners

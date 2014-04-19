@@ -34,13 +34,12 @@ function Code(figNum) {
         var rowNum = $(this).parent().parent().parent().parent().parent().index(); //Get the row number
         var rowString = rowToString(rowNum);
         
-        // we pass rowNum and colNum to tell the function where start highlighting
-        if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
-            cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 &&
-            cellVal.indexOf('endloop') == -1) {
-            
-            //THIS SHOULD BE HANDLED BY API... MAYBE?
-            
+        //~ // we pass rowNum and colNum to tell the function where start highlighting
+        //~ if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
+            //~ cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 &&
+            //~ cellVal.indexOf('endloop') == -1) {
+            //~ //THIS SHOULD BE HANDLED BY API... MAYBE?
+            //~ 
             //~ if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
                 //~ if (colNum == 0) {
                     //~ if (rowString.indexOf("repeat") >= 0)
@@ -56,11 +55,14 @@ function Code(figNum) {
                     //~ while (rowToString(++rowNum).charAt(0) == '(') highlightLine(rowNum);
                 //~ }
             //~ }
-        }
+        //~ }
 
         //User clicked on line number. Prompt for delete.
         if (colNum == 0 && rowNum != editor.getSelectedRowIndex()) {
-            if(cellVal.trim().length > 0 && cellVal.indexOf(">") == -1) {
+            var classes = $(this).parent().children().eq(2).attr("class");
+            if(cellVal.trim().length > 0 && cellVal.indexOf(">") == -1
+                && classes.indexOf("comment") == -1
+                && classes.indexOf("datatype") == -1) {
                 var alert = new Alert();
                 alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
                     if (evt) {
@@ -88,6 +90,7 @@ function Code(figNum) {
 
         //User clicked on variable number. Generate keypad pop up
         else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
+            console.log("variables");
             var currentElement = $(this);
             //updating a distance variable
             if (isDistanceAssign(rowNum)) {
@@ -184,6 +187,7 @@ function Code(figNum) {
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 &&
             cellVal.indexOf(")") == -1) {
+                console.log("draw");
             var arr = new Array();
             //finds all drawable shapes above the current row
             for (var i = 0; i < rowNum; i++) {
@@ -257,7 +261,7 @@ function Code(figNum) {
         }
 
         //User clicked a variable on the left side of an assignment operator
-        else if (colNum < editor.rowToArray(rowNum).length-1 || cellVal.indexOf("VARIABLE") >= 0) {
+        else if (colNum == 2 || cellVal.indexOf("VARIABLE") >= 0) {
             if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
                 var currentElement = $(this);
                 var arr = new Array();
@@ -308,16 +312,48 @@ function Code(figNum) {
                 }
             }
         }
+        
+        //User clicked on a comma
+        else if(cellVal.indexOf(",") >= 0) {
+            console.log("comma");
+            //if comma is between two number/distances: display list of points
+            //if comma has left parentheses on left and nothing on right: display list of lines
+        }
+        
+        //User clicked on right paranthesis
+        else if(cellVal.indexOf(")") >= 0) {
+            console.log("rparen");
+            //if this line is a point assignment: display list of points
+            //if this line is a line assignment and there isn't another right paren directly to the left: show list of points
+            //if this line is a line assignment and there is another right paren directly to the left: show list of lines
+        }
+        
+        //User clicked on left paranthesis
+        else if(cellVal.indexOf("(") >= 0) {
+            console.log("Left paren");
+            //if this line is a point assignment: display list of points
+            //if this line is a line assignment and there isn't another left paren directly to the right: show list of points
+            //if this line is a line assignment and there is another left paren directly to the right: show list of lines
+        }
     }
 
     //
     function insertClickFunc(cell) {
         cell.stopImmediatePropagation(); //Prevent multiple events being thrown from the same event
         var insertRow = $(this).parent().index()+1;
+        var rowString = rowToString(insertRow-1);
         
-        if((insertRow < editor.getSelectedRowIndex() || insertRow > editor.getSelectedRowIndex()+1) && rowToString(insertRow-1).indexOf("repeat") == -1) {
+        if((insertRow < editor.getSelectedRowIndex() || insertRow > editor.getSelectedRowIndex()+1)
+            && rowString.indexOf("repeat") == -1
+            && rowString.indexOf("//Variable") == -1
+            && rowString.indexOf("Distance") == -1
+            && rowString.indexOf("Point") == -1
+            && rowString.indexOf("Line") == -1
+            && rowString.indexOf("Circle") == -1
+            && rowString.indexOf("Polygon") == -1) {
             editor.moveInsertionBarCursor(insertRow-1);
         }
+        //~ editor.moveInsertionBarCursor(insertRow-1);
     }
 
     function addNewRow(index, arr) {
