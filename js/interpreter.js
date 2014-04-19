@@ -651,7 +651,7 @@ function Interpreter(figNum) {
             if ((p[variableNumber - 1].startX != -1) &&
                 (p[variableNumber - 1].startY != -1))
             {
-                returning[0] = true;
+                returned[0] = true;
                 returned[1] = p[variableNumber - 1].startX;
                 returned[2] = 300 - p[variableNumber - 1].startY;
                 return returned;
