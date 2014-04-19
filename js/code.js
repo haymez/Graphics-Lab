@@ -10,6 +10,7 @@ function Code(figNum) {
     var editor;
     var variables;
     var container = document.getElementById("graphicsLab" + figNum);
+    console.log(container);
     
     //Public functions
     this.drawShape = drawShape;
@@ -538,6 +539,7 @@ function Code(figNum) {
                     $("#pointButton"+figNum).trigger("click");
                     $("#pointButton"+figNum).trigger("click");
                     $("#lineButton"+figNum).trigger("click");
+                    $("#lineButton"+figNum).trigger("click");
                     $("#polygonButton"+figNum).trigger("click");
                     addNewRow(editor.getSelectedRowIndex(), ["d1", "&nbsp;=&nbsp;", "100"]);
                     addNewRow(editor.getSelectedRowIndex(), ["d2", "&nbsp;=&nbsp;", "200"]);
@@ -549,7 +551,6 @@ function Code(figNum) {
                     addNewRow(editor.getSelectedRowIndex(), ["l1", "&nbsp;=&nbsp;", "(", "p1", ",", "p3", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["l2", "&nbsp;=&nbsp;", "(", "p2", ",", "p4", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["g1", "&nbsp;=&nbsp;", "(", "p1", ")", ","]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p1", ")", ","]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p2", ")", ","]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p3", ")", ","]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p4", ")", ","]);

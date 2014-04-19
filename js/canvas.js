@@ -239,7 +239,7 @@ function Canvas(figNum) {
 
     //Allows user to draw a polygon on canvas. Saves polygon in toDraw array
     function drawPolygon() {
-        var paintbrush = 0;
+        var paintbrush = 0; 
         paintbrush++; 
         var curr = paintbrush;
         var edgeCount = 0; //Keep track of which edge we're working on.

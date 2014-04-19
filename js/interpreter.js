@@ -107,7 +107,11 @@ function Interpreter(figNum) {
                     var shape = c[index];
                     shape.color = color;
                     //color = "red"
+                    var print = canvas.getToDraw();
+                    console.log(print[0]);
+                    console.log("hi");
                     canvas.getToDraw().push(shape);
+                    console.log(print[0]);
                 }
             }
             else if (tokens[0].localeCompare("OBJECT") == 0)
@@ -455,9 +459,10 @@ function Interpreter(figNum) {
                 valid = validCircle(tokens.slice(2, -1));
                 if (valid[0])
                 {
-                    c[assignmentVariableNumber - 1].startX = valid[1];
-                    c[assignmentVariableNumber - 1].startY = valid[2];
-                    c[assignmentVariableNumber - 1].diameter = valid[3];
+                    c[assignmentVariableNumber - 1] = new shapes.circle(valid[1], valid[2], valid[3]);
+                    //c[assignmentVariableNumber - 1].startX = valid[1];
+                   //c[assignmentVariableNumber - 1].startY = valid[2];
+                    //c[assignmentVariableNumber - 1].diameter = valid[3];
                 }
                 else
                 {
@@ -761,7 +766,6 @@ function Interpreter(figNum) {
                 {
                     index = 2;
                 }
-
                 // get the next token.  
                 if (tokens.length < 2)
                 {
@@ -799,7 +803,7 @@ function Interpreter(figNum) {
         var index;
         var parse = new Array();
         var returned = new Array();
-        if (isValid(tokens[0]) && tokens.charAt(0) == 'c')
+        if (isValid(tokens[0]) && tokens[0].charAt(0) == 'c')
         {
             if ((c[variableNumber - 1].startX != -1) &&
                 (c[variableNumber - 1].startY != -1) &&
@@ -837,7 +841,7 @@ function Interpreter(figNum) {
                 }
 
                 // get the next token.  
-                if (tokens.length < 3)
+                if (tokens.length < 2)
                 {
                     //TODO:
                     //handleUnexpectedEndOfProgram();
@@ -872,8 +876,11 @@ function Interpreter(figNum) {
         var returned = new Array();
         var parse = new Array();
         var isStart = true;
+        //used to put tokens into a array,
+        //so that validators do not parse tokens as a string.
+        var encapsulator = [];
         var i = 0, c = 1, firstX = 0, firstY = 0;
-        if (isValid(tokens[0]) && tokens.charAt(0) == 'g')
+        if (isValid(tokens[0]) && tokens[0].charAt(0) == 'g')
         {
             returned[0] = true;
             returned[1] = g[variableNumber-1].angles;
@@ -884,7 +891,8 @@ function Interpreter(figNum) {
              // point variable
             if(isValid(tokens[i]) && tokens[i].charAt(0) == 'p')
             {
-                parse = validPoint(tokens[i]);
+                encapsulator[0] = tokens[i];
+                parse = validPoint(encapsulator);
                 i++;
             }
             else // constant
@@ -910,7 +918,7 @@ function Interpreter(figNum) {
                 firstX = parse[1];
                 firstY = parse[2];
             }
-            else if(firstX == parse[1] && firsttY == parse[2]) // its the end, if not continue
+            else if(firstX == parse[1] && firstY == parse[2]) // its the end, if not continue
             {
                 returned[0] = true;
                 return returned;
