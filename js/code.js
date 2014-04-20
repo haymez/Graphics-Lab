@@ -188,16 +188,8 @@ function Code(figNum) {
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 &&
             cellVal.indexOf(")") == -1) {
                 console.log("draw");
-            var arr = new Array();
-            //finds all drawable shapes above the current row
-            for (var i = 0; i < rowNum; i++) {
-                if (rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1 && !isDistanceAssign(rowNum)) {
-                    var variable = rowToString(i).substring(0, rowToString(i).indexOf("="));
-                    if (variable.length > 0 && $.inArray(variable, arr) == -1)
-                        if (variable.charAt(0) != 'd')
-                            arr.push(variable);
-                }
-            }
+            var arr = getAssignedVars(rowNum);
+
             var currentElement = $(this);
             if (arr.length > 0) {
                 var selector = new Selector();
@@ -315,9 +307,16 @@ function Code(figNum) {
         
         //User clicked on a comma
         else if(cellVal.indexOf(",") >= 0) {
+            var arr = editor.rowToArray(rowNum);
             console.log("comma");
-            //if comma is between two number/distances: display list of points
             //if comma has left parentheses on left and nothing on right: display list of lines
+            
+            //if comma is between two number/distances: display list of points
+            console.log(editor.rowToArray(rowNum)[colNum-3] + ", " + editor.rowToArray(rowNum)[colNum-1])
+            if((!isNaN(arr[colNum-3]) || arr[colNum-3].charAt(0) == "d")
+            && (!isNaN(arr[colNum-1]) || arr[colNum-1].charAt(0) == "d")) {
+                console.log("here");
+            }
         }
         
         //User clicked on right paranthesis
@@ -544,6 +543,29 @@ function Code(figNum) {
             string += indent;
         }
         return string;
+    }
+    
+    //Returns array of variables of a specific type that have been assigned.
+    //If no type is given, it will give a list of all drawable items.
+    function getAssignedVars(row, type) {
+        console.log(type);
+        var arr = new Array();
+        for(var i = 0; i < row; i++) {
+            if(rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1 && !isDistanceAssign(row)) {
+                var variable = rowToString(i).substring(0, rowToString(i).indexOf("="));
+                if(variable.length > 0 && $.inArray(variable, arr) == -1) {
+                    if(type != undefined) {
+                        if(variable.charAt(0) == type) arr.push(variable);
+                    }
+                    
+                    //This will yeild a list of all drawable items
+                    else {
+                        if(variable.charAt(0) != 'd') arr.push(variable);
+                    }
+                }
+            }
+        }
+        return arr;
     }
     
     //get objects
