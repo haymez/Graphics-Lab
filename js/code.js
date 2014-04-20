@@ -307,15 +307,26 @@ function Code(figNum) {
         
         //User clicked on a comma
         else if(cellVal.indexOf(",") >= 0) {
-            var arr = editor.rowToArray(rowNum);
-            console.log("comma");
+            var rowArr = editor.rowToArray(rowNum);
+            var currentElement = $(this);
             //if comma has left parentheses on left and nothing on right: display list of lines
             
             //if comma is between two number/distances: display list of points
-            console.log(editor.rowToArray(rowNum)[colNum-3] + ", " + editor.rowToArray(rowNum)[colNum-1])
-            if((!isNaN(arr[colNum-3]) || arr[colNum-3].charAt(0) == "d")
-            && (!isNaN(arr[colNum-1]) || arr[colNum-1].charAt(0) == "d")) {
-                console.log("here");
+            if((!isNaN(rowArr[colNum-3]) || rowArr[colNum-3].charAt(0) == "d")
+            && (!isNaN(rowArr[colNum-1]) || rowArr[colNum-1].charAt(0) == "d")) {
+                var vars = getAssignedVars(rowNum, "p");
+                var selector = new Selector();
+                selector.open("Choice Selection Panel", vars, function (evt) {
+                    if(evt != null)
+                        if(evt.length > 0) {
+                            //Remove td's that need to be removed
+                            currentElement.next().remove();
+                            currentElement.next().remove();
+                            currentElement.prev().remove();
+                            currentElement.prev().remove();
+                            currentElement.html(evt.trim());
+                        }
+                }, container);
             }
         }
         
