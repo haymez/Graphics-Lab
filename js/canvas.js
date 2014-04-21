@@ -136,7 +136,7 @@ function Canvas(figNum) {
         variables.getPointVars().push('p' + (variables.getPointVars().length+1));
         variables.printVars();
         $('#' + canvas.id).off('.draw');
-        $('#' + canvas.id).on('vmouseup.draw', function(evt) {
+        if(figNum < 0) $('#' + canvas.id).on('vmouseup.draw', function(evt) {
             startX = evt.clientX - rect.left;
             startY = evt.clientY - rect.top;
             if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
@@ -162,7 +162,7 @@ function Canvas(figNum) {
         variables.getLineVars()[variables.getLineVars().length] = 'l' + (variables.getLineVars().length+1);
         variables.printVars();
         $('#' + canvas.id).off('.draw');
-        $('#' + canvas.id).on('vmousedown.draw', function(evt) {
+        if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             
             startX = evt.clientX - rect.left;
             startY = evt.clientY - rect.top;
@@ -207,7 +207,7 @@ function Canvas(figNum) {
         variables.printVars();
         
         $('#' + canvas.id).off('.draw');
-        $('#' + canvas.id).on('vmousedown.draw', function(evt) {
+        if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             
             startX = evt.clientX - rect.left;
             startY = evt.clientY - rect.top;
@@ -263,7 +263,7 @@ function Canvas(figNum) {
         
         //Turn off all .draw listeners
         $('#' + canvas.id).off('.draw');
-        $('#' + canvas.id).on('vmousedown.draw', function(evt) {
+        if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             if(edgeCount == 0) {
                 startX = evt.clientX - rect.left;
                 startY = evt.clientY - rect.top;

@@ -90,7 +90,6 @@ function Code(figNum) {
 
         //User clicked on variable number. Generate keypad pop up
         else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
-            console.log("variables");
             var currentElement = $(this);
             //updating a distance variable
             if (isDistanceAssign(rowNum)) {
@@ -118,7 +117,7 @@ function Code(figNum) {
                         } else if (evt.indexOf("constant") >= 0) {
                             var numpad = new NumberPad();
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                                if(evt != null & evt.length > 0) currentElement.html(evt);
+                                if(evt != null && evt.length > 0) currentElement.html(evt);
                             }, container);
                         }
                     }, container);
@@ -135,18 +134,18 @@ function Code(figNum) {
                             if (evt.indexOf("constant") >= 0) {
                                 var numpad = new NumberPad();
                                 numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                                    if(evt != null & evt.length > 0) currentElement.html(evt);
+                                    if(evt != null && evt.length > 0) currentElement.html(evt);
                                 }, container);
                             } else {
                                 if (evt.length > 0) {
-                                    if(evt != null & evt.length > 0) currentElement.html(evt);
+                                    if(evt != null && evt.length > 0) currentElement.html(evt);
                                 }
                             }
                         }, container);
                     } else {
                         var numpad = new NumberPad();
                         numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                            if(evt != null & evt.length > 0) currentElement.html(evt);
+                            if(evt != null && evt.length > 0) currentElement.html(evt);
                         }, container);
                     }
                 }
@@ -165,11 +164,11 @@ function Code(figNum) {
                             if (evt.indexOf("constant") >= 0) {
                                 var numpad = new NumberPad();
                                 numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                                    if(evt != null & evt.length > 0) currentElement.html(evt);
+                                    if(evt != null && evt.length > 0) currentElement.html(evt);
                                     fixPolygons();
                                 }, container);
                             } else {
-                                if(evt != null & evt.length > 0) currentElement.html(evt);
+                                if(evt != null && evt.length > 0) currentElement.html(evt);
                                 fixPolygons();
                             }
                         }
@@ -177,7 +176,7 @@ function Code(figNum) {
                 } else {
                     var numpad = new NumberPad();
                     numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
-                        if(evt != null & evt.length > 0) currentElement.html(evt);
+                        if(evt != null && evt.length > 0) currentElement.html(evt);
                         fixPolygons();
                     }, container);
                 }
@@ -187,15 +186,14 @@ function Code(figNum) {
         //User clicked on something within draw(). Generate list of drawable items
         else if (rowToString(rowNum).indexOf("draw") >= 0 && cellVal.indexOf("draw") == -1 && cellVal.indexOf("(") == -1 &&
             cellVal.indexOf(")") == -1) {
-                console.log("draw");
             var arr = getAssignedVars(rowNum);
 
             var currentElement = $(this);
             if (arr.length > 0) {
                 var selector = new Selector();
                 selector.open("test title", arr, function (evt) {
-                    if (evt.length > 0)
-                        if(evt != null & evt.length > 0) currentElement.html(evt);
+                    if (evt != null && evt.length > 0)
+                        if(evt != null && evt.length > 0) currentElement.html(evt);
                 }, container);
             } else
                 alert("No drawable objects..");
@@ -214,8 +212,8 @@ function Code(figNum) {
             if (arr.length > 0) {
                 var selector = new Selector();
                 selector.open("test title", arr, function (evt) {
-                    if (evt.length > 0)
-                        if(evt != null & evt.length > 0) currentElement.html(evt);
+                    if (evt != null && evt.length > 0)
+                        if(evt != null && evt.length > 0) currentElement.html(evt);
                 }, container);
             } else
                 alert("No erasable objects...");
@@ -229,8 +227,8 @@ function Code(figNum) {
             arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
             var selector = new Selector();
             selector.open("Choice Selection Panel", arr, function (evt) {
-                if (evt.length > 0)
-                    if(evt != null & evt.length > 0) currentElement.html(evt);
+                if (evt != null && evt.length > 0)
+                    if(evt != null && evt.length > 0) currentElement.html(evt);
             }, container);
         }
 
@@ -241,7 +239,7 @@ function Code(figNum) {
             var currentElement = $(this);
             var numpad = new NumberPad();
             numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function (evt) {
-                if(evt != null & evt.length > 0) currentElement.html(evt);
+                if(evt != null && evt.length > 0) currentElement.html(evt);
             }, container);
         }
 
@@ -275,7 +273,7 @@ function Code(figNum) {
                 if (arr.length > 0) {
                     var selector = new Selector();
                     selector.open("Choice Selection Panel", arr, function (evt) {
-                        if (evt.length > 0) {
+                        if (evt != null && evt.length > 0) {
                             // if old variable was polygon , delete all its lines
                             if (rowToString(rowNum).charAt(0) == 'g') deletePolygon(rowNum + 1);
                             var currRow = rowNum;
@@ -315,18 +313,20 @@ function Code(figNum) {
             if((!isNaN(rowArr[colNum-3]) || rowArr[colNum-3].charAt(0) == "d")
             && (!isNaN(rowArr[colNum-1]) || rowArr[colNum-1].charAt(0) == "d")) {
                 var vars = getAssignedVars(rowNum, "p");
-                var selector = new Selector();
-                selector.open("Choice Selection Panel", vars, function (evt) {
-                    if(evt != null)
-                        if(evt.length > 0) {
-                            //Remove td's that need to be removed
-                            currentElement.next().remove();
-                            currentElement.next().remove();
-                            currentElement.prev().remove();
-                            currentElement.prev().remove();
-                            currentElement.html(evt.trim());
-                        }
-                }, container);
+                if(vars.length > 0) {
+                    var selector = new Selector();
+                    selector.open("Choice Selection Panel", vars, function (evt) {
+                        if(evt != null)
+                            if(evt.length > 0) {
+                                //Remove td's that need to be removed
+                                currentElement.next().remove();
+                                currentElement.next().remove();
+                                currentElement.prev().remove();
+                                currentElement.prev().remove();
+                                currentElement.html(evt.trim());
+                            }
+                    }, container);
+                }
             }
         }
         
@@ -559,7 +559,6 @@ function Code(figNum) {
     //Returns array of variables of a specific type that have been assigned.
     //If no type is given, it will give a list of all drawable items.
     function getAssignedVars(row, type) {
-        console.log(type);
         var arr = new Array();
         for(var i = 0; i < row; i++) {
             if(rowToString(i).indexOf("=") >= 0 && rowToString(i).indexOf("VARIABLE") == -1 && !isDistanceAssign(row)) {
