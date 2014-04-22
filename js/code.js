@@ -106,15 +106,21 @@ function Code(figNum) {
                     arr.push("constant");
                     var selector = new Selector();
                     selector.open("Choice Selection Panel", arr, function (evt) {
-                        if (evt.indexOf("+") >= 0) {
+                        if (evt != null && evt.indexOf("+") >= 0) {
                             var currRow = rowNum;
-                            editor.deleteRow(currRow);
-                            addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
-                        } else if (evt.indexOf("-") >= 0) {
+                            currentElement.after("\
+                                <td class='cellprogram_code" + figNum + " code'>" + distanceVar + "</td>\
+                                <td class='cellprogram_code" + figNum + " code'>&nbsp;+&nbsp;</td>\
+                                <td class='cellprogram_code" + figNum + " code'>distanceValue</td>").remove();
+                            //editor.deleteRow(currRow);
+                            //addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
+                        } else if (evt != null && evt.indexOf("-") >= 0) {
                             var currRow = rowNum;
-                            editor.deleteRow(currRow);
-                            addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;-&nbsp;", "X"]);
-                        } else if (evt.indexOf("constant") >= 0) {
+                            currentElement.after("\
+                                <td class='cellprogram_code" + figNum + " code'>" + distanceVar + "</td>\
+                                <td class='cellprogram_code" + figNum + " code'>&nbsp;-&nbsp;</td>\
+                                <td class='cellprogram_code" + figNum + " code'>distanceValue</td>").remove();
+                        } else if (evt != null && evt.indexOf("constant") >= 0) {
                             var numpad = new NumberPad();
                             numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
                                 if(evt != null && evt.length > 0) currentElement.html(evt);
@@ -157,7 +163,9 @@ function Code(figNum) {
                         arr.push(variables.getDistVars()[i]);
                 }
                 arr.push("constant");
-                if (arr.length > 1) {
+                if (arr.length > 1
+                && currentElement.prev().text().indexOf("-") == -1
+                && currentElement.prev().text().indexOf("+") == -1) {
                     var selector = new Selector();
                     selector.open("Choice Selection Panel", arr, function (evt) {
                         if (evt.length > 0) {
