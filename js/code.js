@@ -713,7 +713,7 @@ function Code(figNum) {
                     addNewRow(editor.getSelectedRowIndex(), ["p1", "&nbsp;=&nbsp;", "(", "150", ",", "150", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "10", "&nbsp;times"]);
                     addNewRow(editor.getSelectedRowIndex(), ["loop"]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ")", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ",", "d1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "c1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;+&nbsp;", "10"]);
                     addNewRow(editor.getSelectedRowIndex(), ["endloop"]);
@@ -741,7 +741,7 @@ function Code(figNum) {
                     addNewRow(editor.getSelectedRowIndex(), ["p1", "&nbsp;=&nbsp;", "(", "150", ",", "150", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["repeat&nbsp;", "10", "&nbsp;times"]);
                     addNewRow(editor.getSelectedRowIndex(), ["loop"]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ")", ",", "d1", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+"c1", "&nbsp;=&nbsp;", "(", "p1", ",", "d1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"draw", "(", "c1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"d1", "&nbsp;=&nbsp;", "d1", "&nbsp;+&nbsp;", "10"]);
                     addNewRow(editor.getSelectedRowIndex(), [indent+"erase", "(", "c1", ")"]);
