@@ -247,7 +247,7 @@ function Code(figNum) {
         }
 
         //User clicked a variable on the left side of an assignment operator
-        else if (colNum == 2 || cellVal.indexOf("VARIABLE") >= 0) {
+        else if ((colNum == 2 || cellVal.indexOf("VARIABLE") >= 0) && cellVal.indexOf("//") == -1) {
             if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
                 var arr = new Array();
                 for (var i = 0; i < variables.getDistVars().length; i++) {
@@ -361,6 +361,11 @@ function Code(figNum) {
                             currentElement.html(evt.trim());
                         }
                     }, container);
+                } else {
+                    var alert = new Alert();
+                    alert.open("Program Editor Dialog", "No point variables have\nappeared on the left hand side\nof assignment\
+                        statements up to\nthis point in the program, so\nthere are no variables with which\nto replace \
+                        this expression", true, function (evt) {}, container);
                 }
             }
         }
@@ -387,6 +392,11 @@ function Code(figNum) {
                             currentElement.html(evt.trim());
                         }
                     }, container);
+                } else {
+                    var alert = new Alert();
+                    alert.open("Program Editor Dialog", "No point variables have\nappeared on the left hand side\nof assignment\
+                        statements up to\nthis point in the program, so\nthere are no variables with which\nto replace \
+                        this expression", true, function (evt) {}, container);
                 }
             }
             
@@ -416,6 +426,11 @@ function Code(figNum) {
                             currentElement.html(evt.trim());
                         }
                     }, container);
+                } else {
+                    var alert = new Alert();
+                    alert.open("Program Editor Dialog", "No point variables have\nappeared on the left hand side\nof assignment\
+                        statements up to\nthis point in the program, so\nthere are no variables with which\nto replace \
+                        this expression", true, function (evt) {}, container);
                 }
             }
             
