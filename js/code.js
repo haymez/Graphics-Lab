@@ -33,6 +33,7 @@ function Code(figNum) {
         var colNum = $(this).index(); //Grab the hovered cell's index
         var rowNum = $(this).parent().parent().parent().parent().parent().index(); //Get the row number
         var rowString = rowToString(rowNum);
+        var currentElement = $(this);
         
         //~ // we pass rowNum and colNum to tell the function where start highlighting
         //~ if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
@@ -90,7 +91,6 @@ function Code(figNum) {
 
         //User clicked on variable number. Generate keypad pop up
         else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
-            var currentElement = $(this);
             //updating a distance variable
             if (isDistanceAssign(rowNum)) {
                 var distanceVar = rowToString(rowNum).substring(0, rowToString(rowNum).indexOf("=") - 1);
@@ -138,7 +138,7 @@ function Code(figNum) {
                                 }, container);
                             } else {
                                 if (evt.length > 0) {
-                                    if(evt != null && evt.length > 0) currentElement.html(evt);
+                                    if(evt != null && evt.length > 0) currentElement.html(evt.trim());
                                 }
                             }
                         }, container);
@@ -188,12 +188,11 @@ function Code(figNum) {
             cellVal.indexOf(")") == -1) {
             var arr = getAssignedVars(rowNum);
 
-            var currentElement = $(this);
             if (arr.length > 0) {
                 var selector = new Selector();
                 selector.open("test title", arr, function (evt) {
                     if (evt != null && evt.length > 0)
-                        if(evt != null && evt.length > 0) currentElement.html(evt);
+                        if(evt != null && evt.length > 0) currentElement.html(evt.trim());
                 }, container);
             } else
                 alert("No drawable objects..");
@@ -208,12 +207,11 @@ function Code(figNum) {
                     arr.push(rowString.substring(rowString.indexOf("(") + 1, rowString.indexOf(")")));
                 }
             }
-            var currentElement = $(this);
             if (arr.length > 0) {
                 var selector = new Selector();
                 selector.open("test title", arr, function (evt) {
                     if (evt != null && evt.length > 0)
-                        if(evt != null && evt.length > 0) currentElement.html(evt);
+                        if(evt != null && evt.length > 0) currentElement.html(evt.trim());
                 }, container);
             } else
                 alert("No erasable objects...");
@@ -223,12 +221,11 @@ function Code(figNum) {
         else if (rowToString(rowNum).indexOf("color") >= 0 && cellVal.indexOf("color") == -1 && cellVal.indexOf("(") == -1 &&
             cellVal.indexOf(")") == -1) {
             var arr = new Array();
-            var currentElement = $(this);
             arr.push("red", "blue", "green", "yellow", "orange", "black", "white");
             var selector = new Selector();
             selector.open("Choice Selection Panel", arr, function (evt) {
                 if (evt != null && evt.length > 0)
-                    if(evt != null && evt.length > 0) currentElement.html(evt);
+                    if(evt != null && evt.length > 0) currentElement.html(evt.trim());
             }, container);
         }
 
@@ -236,7 +233,6 @@ function Code(figNum) {
         //Make sure user isn't clicking 'repeat' or 'times'
         else if (rowToString(rowNum).indexOf("repeat") >= 0 && cellVal.indexOf("repeat") == -1 && cellVal.indexOf("times") == -1 &&
             (!isNaN(Number(cellVal)) || cellVal.indexOf("COUNTER") >= 0)) {
-            var currentElement = $(this);
             var numpad = new NumberPad();
             numpad.open(0, 99, "Numeric Entry Pad", "Enter Two Digits", false, 10, function (evt) {
                 if(evt != null && evt.length > 0) currentElement.html(evt);
@@ -253,7 +249,6 @@ function Code(figNum) {
         //User clicked a variable on the left side of an assignment operator
         else if (colNum == 2 || cellVal.indexOf("VARIABLE") >= 0) {
             if (editor.rowToArray(rowNum)[colNum-1].indexOf("=") >= 0) {
-                var currentElement = $(this);
                 var arr = new Array();
                 for (var i = 0; i < variables.getDistVars().length; i++) {
                     arr.push(variables.getDistVars()[i]);
@@ -303,28 +298,68 @@ function Code(figNum) {
             }
         }
         
+        //User clicked on a variable on the right side of an assignment
+        else if(colNum > 3 && (cellVal.charAt(0) == "p"
+                            || cellVal.charAt(0) == "l"
+                            || cellVal.charAt(0) == "c"
+                            || cellVal.charAt(0) == "g")) {
+            
+            var arr = getAssignedVars(rowNum, cellVal.charAt(0));
+            arr.push("(X,Y)");
+            var selector = new Selector();
+            selector.open("Choice Selection Panel", arr, function (evt) {
+                if(evt != null && evt.length > 0) {
+                    if(evt.charAt(0) == "(") {
+                        currentElement.after("\
+                                    <td class='cellprogram_code" + figNum + " code openParen'>(</td>\
+                                    <td class='cellprogram_code" + figNum + " code'>X</td>\
+                                    <td class='cellprogram_code" + figNum + " code'>,</td>\
+                                    <td class='cellprogram_code" + figNum + " code'>Y</td>\
+                                    <td class='cellprogram_code" + figNum + " code closeParen'>)</td>").remove();
+                    }
+                }
+            }, container);
+        }
+        
         //User clicked on a comma
         else if(cellVal.indexOf(",") >= 0) {
             var rowArr = editor.rowToArray(rowNum);
-            var currentElement = $(this);
-            //if comma has left parentheses on left and nothing on right: display list of lines
             
-            //if comma is between two number/distances: display list of points
-            if((!isNaN(rowArr[colNum-3]) || rowArr[colNum-3].charAt(0) == "d")
-            && (!isNaN(rowArr[colNum-1]) || rowArr[colNum-1].charAt(0) == "d")) {
+            //Talk to Mike about how we're going to handle lines
+            //~ //if comma has nothing on right: display list of lines
+            //~ if($(this).next().text().length == 0) {
+                //~ var vars = getAssignedVars(rowNum, "l");
+                //~ if(vars.length > 0) {
+                    //~ var selector = new Selector();
+                    //~ selector.open("Choice Selection Panel", vars, function (evt) {
+                        //~ if(evt != null && evt.length > 0) {
+                            //~ //Remove td's that need to be removed
+                            //~ 
+                            //~ currentElement.html(evt.trim());
+                        //~ }
+                    //~ }, container);
+                //~ }
+            //~ }
+            
+            //if comma is between two numbers/distances or an X/Y: display list of points
+            if((!isNaN($(this).prev().text())
+                    || $(this).prev().text().charAt(0) == "d"
+                    || $(this).prev().text().charAt(0) == "X")
+                    && (!isNaN($(this).next().text())
+                    || $(this).next().text().charAt(0) == "d"
+                    || $(this).next().text().charAt(0) == "Y")) {
                 var vars = getAssignedVars(rowNum, "p");
                 if(vars.length > 0) {
                     var selector = new Selector();
                     selector.open("Choice Selection Panel", vars, function (evt) {
-                        if(evt != null)
-                            if(evt.length > 0) {
-                                //Remove td's that need to be removed
-                                currentElement.next().remove();
-                                currentElement.next().remove();
-                                currentElement.prev().remove();
-                                currentElement.prev().remove();
-                                currentElement.html(evt.trim());
-                            }
+                        if(evt != null && evt.length > 0) {
+                            //Remove td's that need to be removed
+                            currentElement.next().remove();
+                            currentElement.next().remove();
+                            currentElement.prev().remove();
+                            currentElement.prev().remove();
+                            currentElement.html(evt.trim());
+                        }
                     }, container);
                 }
             }
@@ -332,18 +367,60 @@ function Code(figNum) {
         
         //User clicked on right paranthesis
         else if(cellVal.indexOf(")") >= 0) {
-            console.log("rparen");
-            //if this line is a point assignment: display list of points
-            //if this line is a line assignment and there isn't another right paren directly to the left: show list of points
-            //if this line is a line assignment and there is another right paren directly to the left: show list of lines
+            //if the item to the left and the item three to the left are numbers/distance or an X/Y: show list of points
+            if((!isNaN($(this).prev().text())
+            || $(this).prev().text().charAt(0) == "d"
+            || $(this).prev().text().charAt(0) == "Y")
+            && (!isNaN($(this).prev().prev().prev().text())
+            || $(this).prev().prev().prev().text().charAt(0) == "d"
+            || $(this).prev().prev().prev().text().charAt(0) == "X")) {
+                var vars = getAssignedVars(rowNum, "p");
+                if(vars.length > 0) {
+                    var selector = new Selector();
+                    selector.open("Choice Selection Panel", vars, function (evt) {
+                        if(evt != null && evt.length > 0) {
+                            //Remove td's that need to be removed
+                            currentElement.prev().remove()
+                            currentElement.prev().remove()
+                            currentElement.prev().remove()
+                            currentElement.prev().remove();
+                            currentElement.html(evt.trim());
+                        }
+                    }, container);
+                }
+            }
+            
+            //if this is a line assignment and there is another right paren directly to the left: show list of lines
+            //Talk to Mike about this
         }
         
         //User clicked on left paranthesis
         else if(cellVal.indexOf("(") >= 0) {
-            console.log("Left paren");
-            //if this line is a point assignment: display list of points
-            //if this line is a line assignment and there isn't another left paren directly to the right: show list of points
-            //if this line is a line assignment and there is another left paren directly to the right: show list of lines
+            //if the item to the right and the item three to the right are numbers/distance or an X/Y: show list of points
+            if((!isNaN($(this).next().text())
+            || $(this).next().text().charAt(0) == "d"
+            || $(this).next().text().charAt(0) == "Y")
+            && (!isNaN($(this).next().next().next().text())
+            || $(this).next().next().next().text().charAt(0) == "d"
+            || $(this).next().next().next().text().charAt(0) == "X")) {
+                var vars = getAssignedVars(rowNum, "p");
+                if(vars.length > 0) {
+                    var selector = new Selector();
+                    selector.open("Choice Selection Panel", vars, function (evt) {
+                        if(evt != null && evt.length > 0) {
+                            //Remove td's that need to be removed
+                            currentElement.next().remove()
+                            currentElement.next().remove()
+                            currentElement.next().remove()
+                            currentElement.next().remove();
+                            currentElement.html(evt.trim());
+                        }
+                    }, container);
+                }
+            }
+            
+            //if this is a line assignment and there is another left paren directly to the right: show list of lines
+            //Talk to Mike about this
         }
     }
 

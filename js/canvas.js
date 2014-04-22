@@ -229,7 +229,7 @@ function Canvas(figNum) {
                 toDraw[toDraw.length] = new shapes.circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
                 
                 code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getCircleVars()[variables.getCircleVars().length-1], "&nbsp;=&nbsp;", "(", "(",  
-                startX, ",", 300-startY, ")", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
+                startX, ",", 300-startY, ")", ",", Math.round(findDistance(startX, startY, endX, endY)), ")"]);
                 code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + "draw", "(", variables.getCircleVars()[variables.getCircleVars().length-1], ")"]);
             }
             //Turn off all .draw listeners
