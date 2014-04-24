@@ -58,9 +58,11 @@ function Code(figNum) {
             //~ }
         //~ }
 
-        //User clicked on line number. Prompt for delete.
+        //User clicked on line number or possibly the insertion area
         if (colNum == 0 && rowNum != editor.getSelectedRowIndex()) {
             var classes = $(this).parent().children().eq(2).attr("class");
+
+            //User clicked on a line number. Prompt for delete.
             if(cellVal.trim().length > 0 && cellVal.indexOf(">") == -1
                 && classes.indexOf("comment") == -1
                 && classes.indexOf("datatype") == -1) {
@@ -83,13 +85,22 @@ function Code(figNum) {
                     } else
                         return;
                 }, container);
+            
+            //User clicked on the insertion area.
             } else {
                 var insertRow = $(this).parent().index();
-                editor.selectRowByIndex(insertRow, true);
+                //This insertion is within a polygon. Add new point to polygon
+                if((rowToString(insertRow).charAt(0) == "g" || rowToString(insertRow).charAt(0) == "(")
+                && rowToString(insertRow+1).indexOf("draw") == -1) {
+                    addNewRow(insertRow+1, [getIndent(insertRow)+indent+"(", "X", ",", "Y", ")", ","])
+                //Select this row
+                } else {
+                    editor.selectRowByIndex(insertRow, true);
+                }
             }
         }
 
-        //User clicked on variable number. Generate keypad pop up
+        //User clicked on an editable value. Generate correct pop up
         else if (isEditableValue(cellVal, rowNum) && rowString.indexOf("VARIABLE") == -1) {
             //updating a distance variable
             if (isDistanceAssign(rowNum)) {
@@ -112,8 +123,6 @@ function Code(figNum) {
                                 <td class='cellprogram_code" + figNum + " code'>" + distanceVar + "</td>\
                                 <td class='cellprogram_code" + figNum + " code'>&nbsp;+&nbsp;</td>\
                                 <td class='cellprogram_code" + figNum + " code'>distanceValue</td>").remove();
-                            //editor.deleteRow(currRow);
-                            //addNewRow(currRow, [getIndent(currRow) + distanceVar, "&nbsp;=&nbsp;", distanceVar, "&nbsp;+&nbsp;", "X"]);
                         } else if (evt != null && evt.indexOf("-") >= 0) {
                             var currRow = rowNum;
                             currentElement.after("\
@@ -168,7 +177,7 @@ function Code(figNum) {
                 && currentElement.prev().text().indexOf("+") == -1) {
                     var selector = new Selector();
                     selector.open("Choice Selection Panel", arr, function (evt) {
-                        if (evt.length > 0) {
+                        if (evt != null && evt.length > 0) {
                             if (evt.indexOf("constant") >= 0) {
                                 var numpad = new NumberPad();
                                 numpad.open(0, 300, "Numeric Entry Pad", "Enter up to three Digits (0-300)", false, 10, function (evt) {
@@ -294,8 +303,7 @@ function Code(figNum) {
                                 addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ","]);
                                 addNewRow(currRow + 1, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
                                 addNewRow(currRow + 2, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
-                                addNewRow(currRow + 3, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
-                                addNewRow(currRow + 4, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ")"]);
+                                addNewRow(currRow + 3, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ")"]);
                             } else if (evt.indexOf("c") >= 0) {
                                 editor.deleteRow(currRow);
                                 addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
@@ -324,6 +332,7 @@ function Code(figNum) {
                                     <td class='cellprogram_code" + figNum + " code'>,</td>\
                                     <td class='cellprogram_code" + figNum + " code'>Y</td>\
                                     <td class='cellprogram_code" + figNum + " code closeParen'>)</td>").remove();
+                        fixPolygons();
                     }
                 }
             }, container);
@@ -355,7 +364,8 @@ function Code(figNum) {
                     || $(this).prev().text().charAt(0) == "X")
                     && (!isNaN($(this).next().text())
                     || $(this).next().text().charAt(0) == "d"
-                    || $(this).next().text().charAt(0) == "Y")) {
+                    || $(this).next().text().charAt(0) == "Y")
+                    && !lastPolyLine(rowNum)) {
                 var vars = getAssignedVars(rowNum, "p");
                 if(vars.length > 0) {
                     var selector = new Selector();
@@ -367,6 +377,7 @@ function Code(figNum) {
                             currentElement.prev().remove();
                             currentElement.prev().remove();
                             currentElement.html(evt.trim());
+                            fixPolygons();
                         }
                     }, container);
                 } else {
@@ -386,7 +397,8 @@ function Code(figNum) {
             || $(this).prev().text().charAt(0) == "Y")
             && (!isNaN($(this).prev().prev().prev().text())
             || $(this).prev().prev().prev().text().charAt(0) == "d"
-            || $(this).prev().prev().prev().text().charAt(0) == "X")) {
+            || $(this).prev().prev().prev().text().charAt(0) == "X")
+            && !lastPolyLine(rowNum)) {
                 var vars = getAssignedVars(rowNum, "p");
                 if(vars.length > 0) {
                     var selector = new Selector();
@@ -398,6 +410,7 @@ function Code(figNum) {
                             currentElement.prev().remove()
                             currentElement.prev().remove();
                             currentElement.html(evt.trim());
+                            fixPolygons();
                         }
                     }, container);
                 } else {
@@ -420,7 +433,8 @@ function Code(figNum) {
             || $(this).next().text().charAt(0) == "Y")
             && (!isNaN($(this).next().next().next().text())
             || $(this).next().next().next().text().charAt(0) == "d"
-            || $(this).next().next().next().text().charAt(0) == "X")) {
+            || $(this).next().next().next().text().charAt(0) == "X")
+            && !lastPolyLine(rowNum)) {
                 var vars = getAssignedVars(rowNum, "p");
                 if(vars.length > 0) {
                     var selector = new Selector();
@@ -432,6 +446,7 @@ function Code(figNum) {
                             currentElement.next().remove()
                             currentElement.next().remove();
                             currentElement.html(evt.trim());
+                            fixPolygons();
                         }
                     }, container);
                 } else {
@@ -463,7 +478,6 @@ function Code(figNum) {
             && rowString.indexOf("Polygon") == -1) {
             editor.moveInsertionBarCursor(insertRow-1);
         }
-        //~ editor.moveInsertionBarCursor(insertRow-1);
     }
 
     function addNewRow(index, arr) {
@@ -564,7 +578,8 @@ function Code(figNum) {
             || cellVal.indexOf("Y") >= 0 
             || cellVal.indexOf("X") >= 0 
             || cellVal.indexOf("RADIUS") >= 0))
-            && cellVal.trim().length > 0)
+            && cellVal.trim().length > 0
+            && !lastPolyLine(row))
             return true;
         else
             return false;
@@ -620,16 +635,17 @@ function Code(figNum) {
 
     //Makes the last row in polygon equal to first row
     function fixPolygons() {
-        var x = 0;
-        var y = 0;
+        var topValue = new Array();
         for (var i = 0; i < editor.getRowCount() - 1; i++) {
             var rowString = rowToString(i);
-            if (rowString.indexOf("g") < rowString.indexOf("=") && rowString.indexOf("g") >= 0) {
-                x = rowString.substring(rowString.indexOf("(") + 2, rowString.indexOf(","));
-                y = rowString.substring(rowString.indexOf(",") + 1, rowString.indexOf(")"));
-            } else if (rowString.indexOf("))") >= 0 && rowString.indexOf("((") == -1) {
+            if (rowString.charAt(0) == "g") {
+                topValue = editor.rowToArray(i).slice(3, editor.rowToArray(i).length-1);
+            } else if (lastPolyLine(i)) {
                 editor.deleteRow(i);
-                addNewRow(i, [getIndent(i) + indent + "(", x, ",", y, ")", ")"]);
+                if(topValue.length == 1) addNewRow(i, [getIndent(i)+indent+topValue[0], ")"]);
+                else {
+                    addNewRow(i, [getIndent(i)+indent+topValue[0]].concat(topValue.slice(1)).concat([")"]));
+                }
             }
         }
     }
@@ -640,6 +656,19 @@ function Code(figNum) {
         while (rowToString(rowNum).charAt(0) == '(') {
             editor.deleteRow(rowNum);
         }
+    }
+
+    //Returns true if rowNum is last line in polygon
+    function lastPolyLine(rowNum) {
+        var rowString = rowToString(rowNum);
+        if ((rowString.indexOf("))") >= 0
+        && rowString.indexOf("((") == -1)
+        || (rowString.indexOf(")") >= 0
+        && rowString.indexOf("=") == -1
+        && rowString.indexOf("a") == -1
+        && rowString.indexOf("color") == -1
+        && rowString.indexOf(",") == -1)) return true;
+        else return false;
     }
 
     //return string with correct number of indents.
