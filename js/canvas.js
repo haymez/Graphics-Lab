@@ -342,7 +342,7 @@ function Canvas(figNum) {
                 for(var i = 1; i < coor.length; i++) {
                     if (i == coor.length-1) {
                         code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);
-                        code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"]);
+                        code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[0].startX, ",", 300-coor[0].startY, ")", ")"], true);
                     }
                     else
                         code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + indent, "(", coor[i].startX, ",", 300-coor[i].startY, ")", ","]);

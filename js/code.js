@@ -34,6 +34,7 @@ function Code(figNum) {
         var rowNum = $(this).parent().parent().parent().parent().parent().index(); //Get the row number
         var rowString = rowToString(rowNum);
         var currentElement = $(this);
+        var classList = $(this).attr("class")
         
         //~ // we pass rowNum and colNum to tell the function where start highlighting
         //~ if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
@@ -65,9 +66,10 @@ function Code(figNum) {
             //User clicked on a line number. Prompt for delete.
             if(cellVal.trim().length > 0 && cellVal.indexOf(">") == -1
                 && classes.indexOf("comment") == -1
+                && classes.indexOf("lastPolygonLine") == -1
                 && classes.indexOf("datatype") == -1) {
                 var alert = new Alert();
-                alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
+                alert.open("Warning", "Are you sure you want to delete the highlighted text?", false, function (evt) {
                     if (evt) {
                         if (rowString.indexOf("repeat") >= 0) {
                             deleteLoop("repeat", rowNum);
@@ -305,7 +307,7 @@ function Code(figNum) {
                                 addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "(", "X", ",", "Y", ")", ","]);
                                 addNewRow(currRow + 1, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
                                 addNewRow(currRow + 2, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ","]);
-                                addNewRow(currRow + 3, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ")"]);
+                                addNewRow(currRow + 3, [getIndent(rowNum) + indent + "(", "X", ",", "Y", ")", ")"], true);
                             } else if (evt.indexOf("c") >= 0) {
                                 editor.deleteRow(currRow);
                                 addNewRow(currRow, [getIndent(rowNum) + evt, "&nbsp;=&nbsp;", "(", "X", ",", "Y", ",", "RADIUS", ")"]);
@@ -481,7 +483,7 @@ function Code(figNum) {
         }
     }
 
-    function addNewRow(index, arr) {
+    function addNewRow(index, arr, lastPolygonLine) {
         var objects = new Array();
         for (var i = 0; i < arr.length; i++) {
             var text = arr[i];
@@ -490,6 +492,7 @@ function Code(figNum) {
                 type: []
             };
             if (isNaN(text)) {
+                if (lastPolygonLine) objects[objects.length - 1].type.push("lastPolygonLine");
                 if (isKeyWord(text)) objects[objects.length - 1].type.push("keyword");
                 if (text.indexOf("(") >= 0) objects[objects.length - 1].type.push("openParen");
                 if (text.indexOf(")") >= 0) objects[objects.length - 1].type.push("closeParen");
@@ -642,11 +645,13 @@ function Code(figNum) {
             if (rowString.charAt(0) == "g") {
                 topValue = editor.rowToArray(i).slice(3, editor.rowToArray(i).length-1);
             } else if (lastPolyLine(i)) {
+                var first = editor.getSelectedRowIndex();
                 editor.deleteRow(i);
-                if(topValue.length == 1) addNewRow(i, [getIndent(i)+indent+topValue[0], ")"]);
+                if(topValue.length == 1) addNewRow(i, [getIndent(i)+indent+topValue[0], ")"], true);
                 else {
-                    addNewRow(i, [getIndent(i)+indent+topValue[0]].concat(topValue.slice(1)).concat([")"]));
+                    addNewRow(i, [getIndent(i)+indent+topValue[0]].concat(topValue.slice(1)).concat([")"]), true);
                 }
+                editor.setSelectedRow(first);
             }
         }
     }
@@ -654,26 +659,16 @@ function Code(figNum) {
     //deletes all rows of a polygon
     function deletePolygon(rowNum) {
         editor.deleteRow(rowNum);
-        while (rowToString(rowNum).charAt(0) == '(') {
+        do {
             editor.deleteRow(rowNum);
-        }
+        } while (!lastPolyLine(rowNum));
+        editor.deleteRow(rowNum);
     }
 
     //Returns true if rowNum is last line in polygon
     function lastPolyLine(rowNum) {
-        var rowString = rowToString(rowNum);
-        if ((rowString.indexOf("))") >= 0
-        && rowString.indexOf("((") == -1)
-        || (rowString.indexOf(")") >= 0
-        && rowString.indexOf("=") == -1
-        && rowString.indexOf("a") == -1
-        && rowString.indexOf("color") == -1
-        && rowString.indexOf(",") == -1
-        && rowString.trim().charAt(0) != "l")) {
-            //console.log(rowString.trim().charAt(0));
-            //console.log("last poly line");
-            return true;
-    }
+        var rowObject = $("#figEditorprogram_code" + figNum).children().children(":nth-child(" + Number(rowNum+1) + ")");
+        if(rowObject.html().indexOf("lastPolygonLine") >= 0) return true;
         else return false;
     }
 
