@@ -53,8 +53,8 @@ function Variables(figNum) {
             else line[line.length] = {text:"l" + Number(i+1), type:[]};
         }
         for(var i = 0; i < polygonVariables.length; i++) {
-            if(i != 0) polygon[polygon.length] = {text:",&nbsp;p" + Number(i+1), type:[]};
-            else polygon[polygon.length] = {text:"p" + Number(i+1), type:[]};
+            if(i != 0) polygon[polygon.length] = {text:",&nbsp;g" + Number(i+1), type:[]};
+            else polygon[polygon.length] = {text:"g" + Number(i+1), type:[]};
         }
         for(var i = 0; i < circleVariables.length; i++) {
             if(i != 0) circle[circle.length] = {text:",&nbsp;c" + Number(i+1), type:[]};

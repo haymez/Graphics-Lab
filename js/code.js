@@ -165,7 +165,9 @@ function Code(figNum) {
                     }
                 }
 
-            } else {
+            }
+            //Not updating a distance variable
+            else {
                 var arr = new Array();
                 for (var i = 0; i < variables.getDistVars().length; i++) {
                     if (beenAssigned(variables.getDistVars()[i], rowNum))
@@ -315,11 +317,10 @@ function Code(figNum) {
         }
         
         //User clicked on a variable on the right side of an assignment
-        else if(colNum > 3 && (cellVal.charAt(0) == "p"
+        else if(cellVal.trim().charAt(0) == "p"
                             || cellVal.charAt(0) == "l"
                             || cellVal.charAt(0) == "c"
-                            || cellVal.charAt(0) == "g")) {
-            
+                            || cellVal.charAt(0) == "g") {            
             var arr = getAssignedVars(rowNum, cellVal.charAt(0));
             arr.push("(X,Y)");
             var selector = new Selector();
@@ -667,7 +668,12 @@ function Code(figNum) {
         && rowString.indexOf("=") == -1
         && rowString.indexOf("a") == -1
         && rowString.indexOf("color") == -1
-        && rowString.indexOf(",") == -1)) return true;
+        && rowString.indexOf(",") == -1
+        && rowString.trim().charAt(0) != "l")) {
+            //console.log(rowString.trim().charAt(0));
+            //console.log("last poly line");
+            return true;
+    }
         else return false;
     }
 
@@ -713,7 +719,9 @@ function Code(figNum) {
         variables = variablesObj;
     }
 
+    //Handles all the figures for the Graphics chapter
     $(document).ready(function() {
+        //All figNum's greater then zero are figure mode. Otherwise sandbox mode
         if(figNum >= 0) {
             $("#program_buttons"+figNum).hide();
             $("#var_buttons"+figNum).hide();
@@ -746,11 +754,11 @@ function Code(figNum) {
                     addNewRow(editor.getSelectedRowIndex(), ["p4", "&nbsp;=&nbsp;", "(", "d1", ",", "d2", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["l1", "&nbsp;=&nbsp;", "(", "p1", ",", "p3", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["l2", "&nbsp;=&nbsp;", "(", "p2", ",", "p4", ")"]);
-                    addNewRow(editor.getSelectedRowIndex(), ["g1", "&nbsp;=&nbsp;", "(", "p1", ")", ","]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p2", ")", ","]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p3", ")", ","]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p4", ")", ","]);
-                    addNewRow(editor.getSelectedRowIndex(), [indent+"(", "(", "p1", ")", ")"]);
+                    addNewRow(editor.getSelectedRowIndex(), ["g1", "&nbsp;=&nbsp;", "(", "p1", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+ "&nbsp;p2", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+ "&nbsp;p3", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+ "&nbsp;p4", ","]);
+                    addNewRow(editor.getSelectedRowIndex(), [indent+ "&nbsp;p1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "l1", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "l2", ")"]);
                     addNewRow(editor.getSelectedRowIndex(), ["draw", "(", "g1", ")"]);
