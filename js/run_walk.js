@@ -176,28 +176,28 @@ function Run_walk(figNum) {
     function updateVarValueWindow() {
         var cSpace = "&nbsp&nbsp&nbsp&nbsp&nbsp";
         var vvDiv = document.getElementById("varValDiv" + figNum);
-        var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level' + cSpace + '</td><td>variable' + cSpace + '</td><td>type' + cSpace + '</td><td>value' + cSpace + '</td></tr>';
+        var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><td>variable' + cSpace + '</td><td>type' + cSpace + '</td><td>value' + cSpace + '</td></tr>';
         var i, canShow = 0;
 
         for (i = 0; i < interpreter.getD().length; i++) {
-            html += '<tr><td>0</td><td>d' + (i + 1) + '</td><td>distance</td><td>' + interpreter.getD()[i] + '</td></tr>';
+            html += '<tr><td>d' + (i + 1) + '</td><td>distance</td><td>' + interpreter.getD()[i] + '</td></tr>';
             canShow++;
         }
         for (i = 0; i < interpreter.getP().length; i++) {
             if (interpreter.getP()[i].type != undefined) {
-                html += '<tr><td>0</td><td>p' + (i + 1) + '</td><td>' + interpreter.getP()[i].type + '</td><td>( ' + interpreter.getP()[i].startX + ', ' + Math.abs(interpreter.getP()[i].startY - 300) + ' )</td></tr>';
+                html += '<tr><td>p' + (i + 1) + '</td><td>' + interpreter.getP()[i].type + '</td><td>( ' + interpreter.getP()[i].startX + ', ' + Math.abs(interpreter.getP()[i].startY - 300) + ' )</td></tr>';
                 canShow++;
             }
         }
         for (i = 0; i < interpreter.getL().length; i++) {
             if (interpreter.getL()[i].type != undefined) {
-                html += '<tr><td>0</td><td>l' + (i + 1) + '</td><td>' + interpreter.getL()[i].type + '</td><td>' + '( ( ' + interpreter.getL()[i].startX + ', ' + Math.abs(interpreter.getL()[i].startY - 300) + ' ) ( ' + interpreter.getL()[i].endX + ', ' + Math.abs(interpreter.getL()[i].endY - 300) + ' ) )' + '</td></tr>';
+                html += '<tr><td>l' + (i + 1) + '</td><td>' + interpreter.getL()[i].type + '</td><td>' + '( ( ' + interpreter.getL()[i].startX + ', ' + Math.abs(interpreter.getL()[i].startY - 300) + ' ) ( ' + interpreter.getL()[i].endX + ', ' + Math.abs(interpreter.getL()[i].endY - 300) + ' ) )' + '</td></tr>';
                 canShow++;
             }
         }
         for (i = 0; i < interpreter.getG().length; i++) {
             if (interpreter.getG()[i].type != undefined) {
-                html += '<tr><td>0</td><td>g' + (i + 1) + '</td><td>' + interpreter.getG()[i].type + '</td>';
+                html += '<tr><td>g' + (i + 1) + '</td><td>' + interpreter.getG()[i].type + '</td>';
                 html += '<td>';
                 for (var j = 0; j < interpreter.getG()[i].angles.length; j++) {
                     html += ((j == 0) ? '( ( ' : '( ') + interpreter.getG()[i].angles[j].startX + ', ' + Math.abs(interpreter.getG()[i].angles[j].startY - 300) + ' ) ';
@@ -213,7 +213,7 @@ function Run_walk(figNum) {
         for (i = 0; i < interpreter.getC().length; i++) {
             if (interpreter.getC()[i].type != undefined && interpreter.getC()[i].startX != 0 && interpreter.getC()[i].startY != 0) {
                 canShow++;
-                html += '<tr><td>0</td><td>c' + (i + 1) + '</td><td>' + interpreter.getC()[i].type + '</td><td>' + '( ( ' + interpreter.getC()[i].startX + ', ' + Math.abs(interpreter.getC()[i].startY - 300) + ' ) ' + interpreter.getC()[i].diameter + ' )</td></tr>';
+                html += '<tr><td>c' + (i + 1) + '</td><td>' + interpreter.getC()[i].type + '</td><td>' + '( ( ' + interpreter.getC()[i].startX + ', ' + Math.abs(interpreter.getC()[i].startY - 300) + ' ) ' + interpreter.getC()[i].diameter + ' )</td></tr>';
             }
         }
         if (canShow > 0 && !runMode) {
