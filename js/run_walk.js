@@ -184,7 +184,7 @@ function Run_walk(figNum) {
             canShow++;
         }
         for (i = 0; i < interpreter.getP().length; i++) {
-            if (interpreter.getP()[i].type != undefined) {
+            if (interpreter.getP()[i].type != undefined && interpreter.getP()[i].startX != -1) {
                 html += '<tr><td>p' + (i + 1) + '</td><td>' + interpreter.getP()[i].type + '</td><td>( ' + interpreter.getP()[i].startX + ', ' + Math.abs(interpreter.getP()[i].startY - 300) + ' )</td></tr>';
                 canShow++;
             }

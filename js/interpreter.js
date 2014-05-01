@@ -45,7 +45,7 @@ function Interpreter(figNum) {
             }
             for (var i = 0; i < variables.getPointVars().length; i++)
             {
-                p[i] = new shapes.point(0, 0);
+                p[i] = new shapes.point(-1, 0);
             }
             for (var i = 0; i < variables.getLineVars().length; i++)
             {
