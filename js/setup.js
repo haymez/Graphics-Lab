@@ -6,7 +6,6 @@
 
 
 function Setup(figNum) {
-    
     //Initialize all variables
     var code = new Code(figNum);
     var variables = new Variables(figNum);
@@ -15,14 +14,15 @@ function Setup(figNum) {
     var run_walk = new Run_walk(figNum);
     var interpreter = new Interpreter(figNum);
     var canvas = new Canvas(figNum);
-
+    
     //Figure mode
     if(figNum >= 0) {
-        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", figNum, true, true, 1, true, false, true); //Initialize editor
+        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", Math.abs(figNum), true, true, 1, true, false, true); //Initialize editor
     }
+
     //Sandbox mode
     else {
-        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", figNum, true, true, 1, true, true, true); //Initialize editor
+        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", Math.abs(figNum), true, true, 1, true, true, true); //Initialize editor
     }
     
     
