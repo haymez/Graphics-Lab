@@ -69,7 +69,7 @@ function Code(figNum) {
                 && classes.indexOf("lastPolygonLine") == -1
                 && classes.indexOf("datatype") == -1) {
                 var alert = new Alert();
-                alert.open("Warning", "Are you sure you want to delete the highlighted text?", false, function (evt) {
+                alert.open("Warning", "Are you sure you want to delete the text?", false, function (evt) {
                     if (evt) {
                         if (rowString.indexOf("repeat") >= 0) {
                             deleteLoop("repeat", rowNum);
@@ -215,8 +215,10 @@ function Code(figNum) {
                     if (evt != null && evt.length > 0)
                         if(evt != null && evt.length > 0) currentElement.html(evt.trim());
                 }, container);
-            } else
-                alert("No drawable objects..");
+            } else {
+                var alert = new Alert();
+                alert.open("Program Editor Dialog", "No drawable objects have yet been assigned values.", true, function() {}, container);
+            }
         }
 
         //User clicked on an an item within erase(). Generate list of erasable items
@@ -234,8 +236,10 @@ function Code(figNum) {
                     if (evt != null && evt.length > 0)
                         if(evt != null && evt.length > 0) currentElement.html(evt.trim());
                 }, container);
-            } else
-                alert("No erasable objects...");
+            } else {
+                var alert = new Alert();
+                alert.open("Program Editor Dialog", "No erasable objects were found.", true, function() {}, container);
+            }
         }
 
         //User clicked on an item within color(). Generate list of supported colors.

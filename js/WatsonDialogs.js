@@ -134,8 +134,8 @@ function NumberPad() {
 			$( "#" + buttonIDs[i] + thisID).button();								// make the button look pretty
 		}
 		
-		window.onkeypress = function(e) { decimalKeyPressed(e); };					// for numkey listeners
-		window.onkeydown = function(e) { backspaceDown(e); };						// for backspace (must be under 'keydown' event rather than 'keypress'
+		document.onkeypress = function(e) { decimalKeyPressed(e); };					// for numkey listeners
+		document.onkeydown = function(e) { backspaceDown(e); };						// for backspace (must be under 'keydown' event rather than 'keypress'
 		
 		$( "#numpadInput" + thisID).focus();										// to make smart phones focus on the input box
 	}
@@ -210,8 +210,8 @@ function NumberPad() {
 			$( "#" + buttonIDs[i] + thisID).button();								// make the button pretty
 		}
 		
-		window.onkeypress = function(e) { hexKeyPressed(e); };						// for num key listeners
-		window.onkeydown = function(e) { backspaceDown(e); };						// for backpace pressed (must be on the keydown event rather than keypress)
+		document.onkeypress = function(e) { hexKeyPressed(e); };						// for num key listeners
+		document.onkeydown = function(e) { backspaceDown(e); };						// for backpace pressed (must be on the keydown event rather than keypress)
 		
 		$( "#numpadInput" + thisID).focus();										// to make smartphones focus on text box
 	}
@@ -353,12 +353,12 @@ function NumberPad() {
 	}
 	
 	function enterFunc() {
+		document.onkeypress = null;
+		document.onkeydown = null;
 		var input = document.getElementById("numpadInput" + thisID);
 		if (input.value == "") callback(null);
 		else callback(input.value);								// call the callback function (specified by the user in the open() function call) with the input box value
 		$( "#numpadDialog" + thisID).dialog('close');		// close the dialog
-		window.onkeypress = null;
-		window.onkeydown = null;
 	}
 	
 	/*
@@ -429,8 +429,8 @@ function NumberPad() {
 	function clearFunc() {
 		$( "#numpadDialog" + thisID).dialog('close');	// close the dialog
 		callback(null);									// call the callback function (specified by the user in the open() function call) with null
-		window.onkeypress = null;
-		window.onkeydown = null;
+		document.onkeypress = null;
+		document.onkeydown = null;
 	}
 	
 	/*
@@ -489,10 +489,10 @@ function NumberPad() {
 	
 		if (code == 13) {								// if the code is 13, the "Enter" key was pressed
 			var input = document.getElementById("numpadInput" + thisID);
+			document.onkeypress = null;
+			document.onkeydown = null;
 			callback(input.value);						// call the callback with the input box value
 			$( "#numpadDialog" + thisID).dialog('close');	// close the dialog
-			window.onkeypress = null;
-			window.onkeydown = null;
 		}
 		else if (code == 45) numberKeyClick("-");						// if the code is 45, it's the negative sign; call the numberKeyClick function with '-'
 		else if (code == 46) numberKeyClick(".");						// if the code is 46, it's the decimal; call the numberKeyClick function with '.'
@@ -510,10 +510,10 @@ function NumberPad() {
 		
 		if (code == 13) {									// 13 is enter
 			var input = document.getElementById("numpadInput" + thisID);
+			document.onkeypress = null;
+			document.onkeydown = null;
 			callback(input.value);							// call the callback function with the input box value
 			$( "#numpadDialog" + thisID).dialog('close');	// close the dialog
-			window.onkeypress = null;
-			window.onkeydown = null;
 		}
 		else if (code >= 97 && code <= 102) hexKeyClick(String.fromCharCode(code-32));	// if its 97 - 102, it's the lower case a - f; convert it to its upper case ASCII character representation (subtract 32)
 		else if (code >= 65 && code <= 70) hexKeyClick(String.fromCharCode(code));		// if its 65 - 70, it's the upper case A - F; convert it to its ASCII character representation
@@ -584,7 +584,7 @@ function StringPad() {
 		
 		// the okay button closes the dialog and calls the callback function specified by the user with the input value currently entered in the input box
 		button = document.getElementById("stringPadOkay" + thisID);
-		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); callback(input.value); window.onkeypress = null; });
+		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); document.onkeypress = null; callback(input.value); });
 		$( "#stringPadOkay" + thisID).button();		// make the button pretty
 	
 		// the clear button clears the input box
@@ -594,10 +594,10 @@ function StringPad() {
 		
 		// the cancel button closes the dialog and calls the call back function with null as its parameter
 		button = document.getElementById("stringPadCancel" + thisID);
-		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); callback(null); window.onkeypress = null; });
+		button.addEventListener("click", function() { $( "#stringPadDialog" + thisID).dialog('close'); document.onkeypress = null; callback(null); });
 		$( "#stringPadCancel" + thisID).button();	// make the button pretty
 	
-		window.onkeypress = function(e) { keyPress(e); };
+		document.onkeypress = function(e) { keyPress(e); };
 	}
 	
 	function keyPress(e) {
@@ -606,7 +606,7 @@ function StringPad() {
 			var input = document.getElementById("stringInput" + thisID);
 			$( "#stringPadDialog" + thisID).dialog('close');
 			callback(input.value);
-			window.onkeypress = null;
+			document.onkeypress = null;
 		}
 	}
 }
@@ -624,7 +624,10 @@ function Selector() {
 	Selector.nextDialogID++;				// increase the value of this static variable
 	var callback;							// a variable to hold the call back function given by user in open function
 	
+	var len;
+	var items = [];
 	var selectedItem = null;
+	var selectedIndex = -1;
 	
 	/*
 	// the inner HTML to populate the dialog's div
@@ -689,20 +692,29 @@ function Selector() {
 		select.selectedIndex = 0;
 		*/
 		
-		var len = options.length;
+		len = options.length;
 		for (var i = 0; i < len; i++) {
 			var newNumberListItem = document.createElement("li");
 			newNumberListItem.ondblclick = function() {
 				OkayButton();
 			}
-			newNumberListItem.className += " ui-widget-content";
+			newNumberListItem.className += " ui-widget-content index" + i;
             var numberListValue = document.createTextNode(options[i]);
             newNumberListItem.appendChild(numberListValue);
             select.appendChild(newNumberListItem);
+			items.push(newNumberListItem);
 		}
 		$( "#selector" + thisID).selectable({
 			selected: function(event, ui) {
 				selectedItem = ui.selected.textContent;
+				var classNames = ui.selected.className;
+				var start = classNames.indexOf("index") + 5;
+				var ind = "";
+				for (var i = start; i < classNames.length; i++) {
+					if (classNames.charAt(i) != " ") ind += classNames.charAt(i);
+					else break;
+				}
+				selectedIndex = parseFloat(ind);
 			}
 		});
 		
@@ -719,11 +731,98 @@ function Selector() {
 		button = document.getElementById("selectorCancel" + thisID);
 		button.addEventListener("click", function() { $( "#selectorDialog" + thisID).dialog('close'); callback(null); });
 		$( "#selectorCancel" + thisID).button();	// make the button pretty
+		
+		document.onkeydown = function(e) { keyDown(e); }
+		document.onkeypress = function(e) { keyPress(e); }
 	}
 	
 	function OkayButton() {
+		document.onkeypress = null;
+		document.onkeydown = null;
 		$( "#selectorDialog" + thisID).dialog('close');
 		callback(selectedItem);
+	}
+	
+	function keyPress(evt) {
+		var code = event.keyCode || event.which;
+		if (code == 13) {
+			OkayButton();
+			evt.preventDefault();
+		}
+	}
+	
+	function keyDown(evt) {
+		var code = event.keyCode || event.which;
+		var select = document.getElementById("selector" + thisID);
+		
+		if (code == 38) { //up key
+			if (selectedIndex == -1) {
+				items[0].className += " ui-selected ";
+				selectedItem = items[0].textContent;
+				selectedIndex = 0;
+			}
+			else if (selectedIndex != 0) {
+				items[selectedIndex].className = items[selectedIndex].className.replace("ui-selected", "");
+				items[selectedIndex - 1].className += " ui-selected ";
+				selectedItem = items[selectedIndex - 1].textContent;
+				selectedIndex--;
+				select.scrollTop = selectedIndex * 21;
+			}
+			
+			evt.preventDefault();
+		}
+		else if (code == 40) {	// down key
+			if (selectedIndex == -1) {
+				items[0].className += " ui-selected ";
+				selectedItem = items[0].textContent;
+				selectedIndex = 0;
+			}
+			else if (selectedIndex != len - 1) {
+				items[selectedIndex].className = items[selectedIndex].className.replace("ui-selected", "");
+				items[selectedIndex + 1].className += " ui-selected ";
+				selectedItem = items[selectedIndex + 1].textContent;
+				selectedIndex++;
+				select.scrollTop = selectedIndex * 21;
+			}
+			
+			evt.preventDefault();
+		}
+		else if (code >= 65 && code <= 90) {
+			highlightOptionByKey(String.fromCharCode(code).toLowerCase());
+			evt.preventDefault();
+		}
+	}
+	
+	/*
+	 * highlightOptionByKey()
+	 *
+	 * When a key is pressed with the selector dialog box open, it will attempt to highlight
+	 * an option that begins with the letter pressed.
+	 */
+	function highlightOptionByKey(code) {
+		var select = document.getElementById("selector" + thisID);
+
+		var i;
+		if (selectedIndex == -1) i = 0;
+		else i = selectedIndex;
+		
+		for (var j = 0; j < 2; j++) {
+			for ( ; i < len; i++) {	
+				//console.log("Key to look for: " + code + " :: Current key: " + items[i].textContent.charAt(0));
+				if (items[i].textContent.charAt(0) == code) {
+					if (selectedIndex == i) continue;
+					
+					if (selectedIndex != -1) items[selectedIndex].className = items[selectedIndex].className.replace("ui-selected", "");
+					items[i].className += " ui-selected ";
+					selectedItem = items[i].textContent;
+					selectedIndex = i;
+					select.scrollTop = i * 21;
+										
+					return;
+				}
+			}
+			i = 0;
+		} 
 	}
 }
 

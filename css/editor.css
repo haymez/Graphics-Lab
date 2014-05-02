@@ -38,8 +38,16 @@
 	border-style: ridge;
 	margin:auto auto;
 	font-family:monospace;
-	/*font-size: 87.5%;*/
+	font-size: 100%;
 	overflow: auto;
+}
+
+.savePopup{
+	position: absolute;
+	right: 0;
+    background-color: #DDDDDD;
+	display: none;
+	font-family: arial;
 }
 
 .codeTable{
@@ -65,6 +73,7 @@ td {
 
 .codeContainer{
 	overflow: auto;
+	position: relative;
 }
 
 /*insert bar stuff*/
@@ -84,13 +93,13 @@ td {
 
 .insertTable {
 	width: 14px;
-	font-size: 14px;
+	/*font-size: 14px;*/
 	float: left;
 	border-color: black;
 }
 
 .insert{
-	font-size: 14px;
+	/*font-size: 11px;*/
 }
 
 .divider {

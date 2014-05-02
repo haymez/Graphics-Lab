@@ -12,6 +12,7 @@ function DataStore() {
 	
 	this.saveExerciseData = saveExerciseData;
 	this.loadExerciseData = loadExerciseData;
+	this.checkExerciseData = checkExerciseData;
 	this.submitExercise = submitExercise;
 	
 	if(typeof(Storage) === "undefined")					// test to see if session storage is available for this platform
@@ -45,6 +46,19 @@ function DataStore() {
 		
 		var key = "WatsonChapter" + chapter + "Exercise" + exercise;		// Example: WatsonChapter12Exercise3
 		return localStorage.getItem(key);									// return this key's contents
+	}
+	
+	/*
+	*	checkExerciseData()
+	*
+	*	Checks if an exercise's data exists in local storage based of the chapter and exercise number.
+	*	Returns true if data exists, false otherwise.
+	*/
+	function checkExerciseData(chapter, exercise) {
+		if (store == false) return null;									// session storage not available
+		
+		var key = "WatsonChapter" + chapter + "Exercise" + exercise;		// Example: WatsonChapter12Exercise3
+		return (localStorage.getItem(key) != null);									// return this key's contents
 	}
 	
 	/*

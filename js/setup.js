@@ -11,11 +11,19 @@ function Setup(figNum) {
     var code = new Code(figNum);
     var variables = new Variables(figNum);
     var addElements = new AddElements(figNum); //Initialize addElements
-    var editor = new Editor("program_code"+figNum, true, true, 1, -1, true); //Initialize editor
     var shapes = new Shapes(figNum);
     var run_walk = new Run_walk(figNum);
     var interpreter = new Interpreter(figNum);
     var canvas = new Canvas(figNum);
+
+    //Figure mode
+    if(figNum >= 0) {
+        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", figNum, true, true, 1, true, false, true); //Initialize editor
+    }
+    //Sandbox mode
+    else {
+        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", figNum, true, true, 1, true, true, true); //Initialize editor
+    }
     
     
     /* ************Pass Objects to other classes*************** */

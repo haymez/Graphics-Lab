@@ -74,7 +74,6 @@ function Run_walk(figNum) {
         if (!programRunning) {
             //check if selected row is before end of code
             if (editor.getSelectedRowIndex() < editor.getRowCount() - 1) {
-                console.log("here");
                 editor.selectRowByIndex(editor.getRowCount()-1);
             }
         }
