@@ -197,13 +197,13 @@ function Run_walk(figNum) {
         }
         for (i = 0; i < interpreter.getG().length; i++) {
             if (interpreter.getG()[i].type != undefined) {
-                html += '<tr><td>g' + (i + 1) + '</td><td>' + interpreter.getG()[i].type + '</td>';
+                html += '<tr><td>g' + (i + 1) + '</td><td>' + interpreter.getG()[i].type + '' + cSpace + '</td>';
                 html += '<td>';
                 for (var j = 0; j < interpreter.getG()[i].angles.length; j++) {
                     html += ((j == 0) ? '( ( ' : '( ') + interpreter.getG()[i].angles[j].startX + ', ' + Math.abs(interpreter.getG()[i].angles[j].startY - 300) + ' ) ';
-                    if (j != interpreter.getG()[i].angles.length - 1)
-                        html += ', ';
-                    else
+                    if (j <= interpreter.getG()[i].angles.length - 1) html += ', ';
+                    html += '</td></tr><tr><td></td><td></td><td>';
+                    if(j == interpreter.getG()[i].angles.length - 1)
                         html += ' ( ' + interpreter.getG()[i].angles[0].startX + '. ' + Math.abs(interpreter.getG()[i].angles[0].startY - 300) + ' ) ) ';
                 }
                 html += '</td></tr>';
