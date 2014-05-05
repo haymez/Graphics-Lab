@@ -63,7 +63,7 @@ function AddElements(figNum) {
     var varValueDiv = document.createElement('div');
     varValueDiv.id = "varValDiv" + figNum;
     varValueDiv.style.overflow = "auto";
-    varValueDiv.style.width = container.style.width;
+    varValueDiv.style.width = programDiv.style.width;
     varValueDiv.style.height = "100px";
     varValueDiv.style.resize = "none";
     varValueDiv.style.border = "1px solid #000";
@@ -75,8 +75,6 @@ function AddElements(figNum) {
     vvDivHolder.appendChild(varValueDiv);
     vvDivHolder.style.display = "none";
     vvDivHolder.style.cssFloat = "left";
-    //vvDivHolder.style.position = "absolute";
-    //vvDivHolder.style.top = "410px";
 
     //<div> for buttons on right
     var progButtonDiv = document.createElement('div');
@@ -217,6 +215,9 @@ function AddElements(figNum) {
     //Add listeners for walk and run
     $("#" + runButton.id).click(function() { run_walk.run(); });
     $("#" + walkButton.id).click(function() { run_walk.walk(); });
+    
+    //center var tracker under code window
+    vvDivHolder.style.paddingLeft = $("#var_buttons"+figNum).css('width');
     
     function getObjects(variablesObj, canvasObj, codeObj, run_walkObj) {
         variables = variablesObj;
