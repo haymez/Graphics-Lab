@@ -225,6 +225,9 @@ function AddElements(figNum) {
     //Add listeners for walk and run
     $("#" + runButton.id).click(function() { run_walk.run(); });
     $("#" + walkButton.id).click(function() { run_walk.walk(); });
+
+    //center var tracker under code window
+    if(figNum < 0) vvDivHolder.style.paddingLeft = $("#var_buttons"+figNum).css('width');
     
     function getObjects(variablesObj, canvasObj, codeObj, run_walkObj) {
         variables = variablesObj;

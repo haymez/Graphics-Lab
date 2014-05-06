@@ -175,7 +175,8 @@ function Run_walk(figNum) {
     function updateVarValueWindow() {
         var cSpace = "&nbsp&nbsp&nbsp&nbsp&nbsp";
         var vvDiv = document.getElementById("varValDiv" + figNum);
-        var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level' + cSpace + '</td><td>variable' + cSpace + '</td><td>type' + cSpace + '</td><td>value' + cSpace + '</td></tr>';
+        //var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level' + cSpace + '</td><td>variable' + cSpace + '</td><td>type' + cSpace + '</td><td>value' + cSpace + '</td></tr>';
+        var html = '<table id="varValueTable" style="border-spacing:15px 1px"><tbody><tr><td>level'+cSpace+'</td><td>variable'+cSpace+'</td><td>type'+Array(4).join(cSpace)+'</td><td>value'+cSpace+'</td></tr>';
         var i, canShow = 0;
 
         for (i = 0; i < interpreter.getD().length; i++) {
@@ -183,7 +184,7 @@ function Run_walk(figNum) {
             canShow++;
         }
         for (i = 0; i < interpreter.getP().length; i++) {
-            if (interpreter.getP()[i].type != undefined) {
+            if (interpreter.getP()[i].type != undefined && interpreter.getP()[i].startX != -1) {
                 html += '<tr><td>0</td><td>p' + (i + 1) + '</td><td>' + interpreter.getP()[i].type + '</td><td>( ' + interpreter.getP()[i].startX + ', ' + Math.abs(interpreter.getP()[i].startY - 300) + ' )</td></tr>';
                 canShow++;
             }
@@ -225,17 +226,19 @@ function Run_walk(figNum) {
 
     // disable / enable buttons for run walk
     function changeBtnState(state) {
-        document.getElementById("distanceButton" + figNum).disabled = state;
-        document.getElementById("pointButton" + figNum).disabled = state;
-        document.getElementById("lineButton" + figNum).disabled = state;
-        document.getElementById("polygonButton" + figNum).disabled = state;
-        document.getElementById("circleButton" + figNum).disabled = state;
-        document.getElementById("assignButton" + figNum).disabled = state;
-        document.getElementById("drawButton" + figNum).disabled = state;
-        document.getElementById("eraseButton" + figNum).disabled = state;
-        document.getElementById("colorButton" + figNum).disabled = state;
-        document.getElementById("loopButton" + figNum).disabled = state;
-        document.getElementById("resetButton" + figNum).disabled = state;
+        if(figNum < 0) {
+            document.getElementById("distanceButton" + figNum).disabled = state;
+            document.getElementById("pointButton" + figNum).disabled = state;
+            document.getElementById("lineButton" + figNum).disabled = state;
+            document.getElementById("polygonButton" + figNum).disabled = state;
+            document.getElementById("circleButton" + figNum).disabled = state;
+            document.getElementById("assignButton" + figNum).disabled = state;
+            document.getElementById("drawButton" + figNum).disabled = state;
+            document.getElementById("eraseButton" + figNum).disabled = state;
+            document.getElementById("colorButton" + figNum).disabled = state;
+            document.getElementById("loopButton" + figNum).disabled = state;
+            document.getElementById("resetButton" + figNum).disabled = state;
+        }
     }
     
     //fresh getter
