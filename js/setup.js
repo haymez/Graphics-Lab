@@ -4,26 +4,25 @@
  * 
  */
 
-//Sets up new lab. figNum refers to the unique figure number. isEx is true if this is an exercise, false otherwise.
+//Sets up new lab.
+//figNum refers to the unique figure number.
 function Setup(figNum, isEx) {
     //Initialize all variables
-    var code = new Code(figNum);
-    var variables = new Variables(figNum);
+    var code = new Code(figNum); //Initialize code
+    var variables = new Variables(figNum); //Initialize variables
     var addElements = new AddElements(figNum); //Initialize addElements
-    var shapes = new Shapes(figNum);
-    var run_walk = new Run_walk(figNum);
-    var interpreter = new Interpreter(figNum);
-    var canvas = new Canvas(figNum);
+    var shapes = new Shapes(figNum); //Initialize shapes
+    var run_walk = new Run_walk(figNum); //Initialize run_walk
+    var interpreter = new Interpreter(figNum); //Initialize interpreter
+    var canvas = new Canvas(figNum); //Initialize canvas
+
+    //Sandbox version
+    if(figNum < 0) var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, true); //Initialize editor
+    //Figure mode
+    else var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), false, true, 1, true, false, false); //Initialize editor
     
-    //Sandbox
-    if (figNum < 0) {
-        var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, true); //Initialize editor
-    }
-    //Figure Mode
-    else {
-        var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
-    }
-    
+    //If this is an exercise, attempt to load saved data
+    if(isEx) editor.loadEditor(true);
     
     /* ************Pass Objects to other classes*************** */
     

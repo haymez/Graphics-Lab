@@ -20,12 +20,9 @@
 			Adding new lines to the editor
 		Deleting Lines
 			Deleting old lines from the editor
-		
-	March 28, 2014 - Should now conform to the pre-alpha API v2
-	April 3, 2014 - Now conforms to the pre-alpha API v3, and first stable release
 */
 
-/* Constructor - constructs the editor
+/* Editor - constructs the editor
 	@param {number} divID - the ID of the div to place the editor in
 	@param {string} chapterName - the name of the chapter this editor is in, used for data storage
 	@param {number} exerciseNum - the number of the exercise this editor is in, used for data storage
@@ -39,6 +36,8 @@
 function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlightingBool, lineNumStart, insertBetweenRowsBool, editable, autoSave){
 
 	/*GLOBAL VARIABLES********************************************************/
+	
+	this.divID = divID;
 	
 	var editorDiv = document.getElementById(divID);			//the div marked by the divID
 	var clickHandler;		//the click handler
@@ -64,30 +63,21 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	var innerTableTemplate;			// template used for a newly added row in the codeTable
 	var innerTableArrowTemplate;	// template used for a newly selected row
 	
-	if(lineNumBool){
-		innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
-			<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
-			<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
-			</tr></table>";
-			
-		innerTableArrowTemplate = "<table class='innerTable" + divID + "'><tr>\
-			<td class='cell" + divID + " code lineNum'>&nbsp;&nbsp;</td>\
-			<td class='cell" + divID + " code lineNum'>" + arrow + "</td>\
-			</tr></table>";
-	}
-	else{
-		//if the editor does not have line numbers, make the first cell disappear
-		innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
-			<td class='cell" + divID + " code lineNum'></td>\
-			<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
-			</tr></table>";
-			
-		innerTableArrowTemplate = "<table class='innerTable" + divID + "'><tr>\
-			<td class='cell" + divID + " code lineNum'></td>\
-			<td class='cell" + divID + " code lineNum'>" + arrow + "</td>\
-			</tr></table>";
+	var lineNumSpacing = '&nbsp;&nbsp;';
+	if(!lineNumBool){
+		//if line numbers are turned off, we want this space to disappear
+		lineNumSpacing = '';
 	}
 	
+	innerTableTemplate = "<table class='innerTable" + divID + "'><tr>\
+		<td class='cell" + divID + " code lineNum'>" + lineNumSpacing + "</td>\
+		<td class='cell" + divID + " code lineNum'>" + blank + "</td>\
+		</tr></table>";
+
+	innerTableArrowTemplate = "<table class='innerTable" + divID + "'><tr>\
+		<td class='cell" + divID + " code lineNum'>" + lineNumSpacing + "</td>\
+		<td class='cell" + divID + " code lineNum'>" + arrow + "</td>\
+		</tr></table>";
 	var rowType = [];
 	var curLine;
 	var nextLine;
@@ -112,8 +102,14 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	init();
 	
 	/* init - .... it initializes some important stuff .. o_0
+		@param {boolean} load - if true tries to load data using Watson Data Store, for use with clearEditor
 	*/
-	function init() {
+	function init(load) {
+		//set the default for load
+		if(typeof saveState == 'undefined'){
+			load = true;
+		}
+		
 		var row;
 		var cell;
 		var innerTable;
@@ -133,16 +129,19 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
         cell.className = 'cell' + divID + ' insert insert' + divID;
         cell.innerHTML = "&nbsp;";
 		
-		if(editable){
-			//if there is already data in the data store for this exercise, load it
-			if(dataStore.checkExerciseData(chapterName,exerciseNum)){
-				loadEditor();
+		/*if(editable){
+			if(load){
+				//if there is already data in the data store for this exercise, load it
+				if(dataStore.checkExerciseData(chapterName,exerciseNum)){
+					loadEditor();
+				}
+				
+				//set the auto save interval
+				autoSaveIntervalObject = setInterval(saveEditor, saveInterval);
 			}
-			
-			//set the auto save interval
-			autoSaveIntervalObject = setInterval(saveEditor, saveInterval);
 		}
-		else{
+		else{*/
+		if(!editable){
 			//hide the insertion bar
 			$(insertTable).parent().css("display", "none");
 		}
@@ -157,6 +156,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	this.addRow = addRow;
 	this.addCell = addCell;
 	this.deleteRow = deleteRow;
+	this.deleteCell = deleteCell;
 	this.selectRowByIndex = selectRowByIndex;
 	this.selectAndHighlightRowByIndex = selectAndHighlightRowByIndex;
 	this.setSelectedRow = setSelectedRow;
@@ -167,7 +167,9 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	this.setInsertBarMouseEnterListener = setInsertBarMouseEnterListener;
 	this.saveEditor = saveEditor;
 	this.loadEditor = loadEditor;
+	this.clearEditor = clearEditor;
 	this.checkEditorData = checkEditorData;
+	this.changeDivID = changeDivID;
 	
 	this.selectRowByStartEnd = selectRowByStartEnd;	//DEPRECATED
 	this.getEditor = getEditor;			//DEPRECATED
@@ -219,8 +221,8 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		return codeTable.rows[index].cells[0].children[0].rows[0].cells;
 	}
 	
-	/* getRowCount() - returns the number of rows in the editor
-		@returns {numer} the number of rows in the editor
+	/* getRowCount - returns the number of rows in the editor
+		@returns {number} the number of rows in the editor
 	*/
 	function getRowCount(){
 		return codeTable.rows.length;
@@ -317,29 +319,31 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		@param {object} values - an array of objects with two things: the text of the cell and the class for syntax highlighting
 			every cell automatically receives the "code" class
 	*/
-	function addCell(cell, values){
-		//to make things easier, if cell is not a jQuery object, turn it into one
-		if(!(cell instanceof jQuery))
-			cell = $(cell);
-	
+	function addCell(cell, values){		
+		//if the cell is a jQuery object, turn it back to DOM
+		if((cell instanceof jQuery))
+			cell = cell[0];
+		
+		var row = cell.parentNode;
+		
 		for(var i = 0; i < values.length; i++){
 			//insert a blank cell
-			cell.after('<td class="cell' + divID + ' code"></td>')
+			cell = row.insertCell($(cell).index() + 1);
 			
-			//move to the new cell
-			cell = cell.next();
+			cell.className += "cell" + divID + " code";
 			
 			//set the text
-			cell.html(values[i].text);
+			cell.innerHTML = values[i].text;
 			
 			//if no Highlighting, add class to override others
 			if(!syntaxHighlightingBool){
 				cell.className += " noHighlighting";
 			}
 			
+			cell.className += " ";
 			//if the class is not equal to "code", add whatever it is
 			if(values[i].type != "code" && typeof values[i].type != "undefined")
-				cell.addClass(values[i].type);
+				cell.className += values[i].type;
 		}
 	}
 	
@@ -370,6 +374,28 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		
 		if(saveState){
 			saveEditor();
+		}
+	}
+		
+	/* deleteCell - deletes the cells after the specified cell
+		@param {DOM object} cell - the initial cell, this is NOT deleted
+		@param {number} numberOfCells - the number of cells after the one passed to be deleted
+	*/
+	function deleteCell(cell, numberOfCells){
+		//if the cell is a jQuery object, turn it back to DOM
+		if((cell instanceof jQuery))
+			cell = cell[0];
+		
+		var row = cell.parentNode;
+		var index = $(cell).index() + 1;
+		
+		for(var i = 0; i < numberOfCells; i++){
+			//a bit of error catching
+			if(index >= row.cells.length)
+				break;
+				
+			//delete the cell
+			row.deleteCell(index);
 		}
 	}
 	
@@ -429,6 +455,16 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 			//the list of elements to affect
 			var elements = thisElement;
 			
+			//begin curly brace and scope stuff, the same concepts as parenthesis, but with more DOM traversing!
+			//this is the cell on the next row that should contain a {
+			var targetCell = thisElement.parent().parent().parent().parent().parent().next().children().first().children().first().children().first().children().first().children().last();
+			
+			if(targetCell.length > 0 && thisElement.index() == 2 && targetCell.hasClass('openBrack'))
+			{
+				thisElement = targetCell;
+				elements = thisElement;
+			}
+		
 			//do some highlighting stuff, this is all copy pasted from onHover
 			//check the last character of the html to account for indentation
 			if(thisElement.hasClass('openBrack') || thisElement.hasClass('startLoop'))
@@ -516,11 +552,24 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		
 		//add the 'selected' and 'running' classes
 		// the 'running' class means that onHover will not remove the selected highlighting
-		//console.log('adding classes');
+		
 		//add the entire row of cells
 		var thisElement = $(innerTable.rows[0].cells);
 		//the list of elements to affect
 		var elements = thisElement;
+					
+		//begin curly brace and scope stuff, the same concepts as parenthesis, but with more DOM traversing!
+		//if there is a next row, look on it for an 'openBrack', if there is one start there
+		if(selRow+1 < getRowCount()){
+			var targetCell = rowToDOMArray(selRow+1);
+			for(var i = 0; i < targetCell.length; i++){
+				if($(targetCell[i]).hasClass('openBrack')){
+					thisElement = $(targetCell[i]);
+					elements = thisElement;
+					break;
+				}
+			}
+		}
 		
 		//do some highlighting stuff, this is all copy pasted from onHover
 		//check the last character of the html to account for indentation
@@ -604,7 +653,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	}
 	
 	/* setSelectedRow - sets the selected row to the value passed
-		@param {numeric} index - the row index to set the selected row to
+		@param {number} index - the row index to set the selected row to
 	*/
 	function setSelectedRow(index){
 		innerTable = codeTable.rows[selRow].cells[0].children[0];
@@ -622,7 +671,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	}
 	
 	/* moveInsertionBarCursor - moves the cursor in the insertion bar, which is removed in the mouse leave event below
-		@param {numeric} index - the index of the row to move the cursor to
+		@param {number} index - the index of the row to move the cursor to
 	*/
 	function moveInsertionBarCursor(index){
 		//console.log("\t" + codeTable.getAttribute('id') + " " + insertTable.getAttribute('id') + " " + insertTable.rows[index].cells[0].className + " " + syntaxHighlightingBool);
@@ -634,7 +683,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	}
 	
 	/* getSelectedRowIndex - returns the currently selected row's index
-		@returns {numeric} the index of the current row
+		@returns {number} the index of the current row
 	*/
 	function getSelectedRowIndex(){
 		return selRow;
@@ -668,18 +717,33 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	}
 	
 	/* saveEditor - uses the Watson Data Store to save the editor based on the chapter and exercise number
+		@param {boolean} force - if true a save is forced regardless of editable and autoSave, defaults to false
 	*/
-	function saveEditor(){
+	function saveEditor(force){
+		//set force to default to false
+		if(typeof force == 'undefined'){
+			force = false;
+		}
+		
 		//if the editor is in figure mode, you should not need to save anything
-		if(!editable || !autoSave){
+		if(!force &&(!editable || !autoSave)){
 			return;
 		}
 	
 		//console.log(editorDiv.innerHTML);
 		var tempSelRow = selRow;
 		
+		var isBlankLine = false;
+		var highlighted = false;
+		
+		if($(codeTable).find('.code').hasClass('running')){
+			highlighted = true;
+		}
+			
 		//delete the selected row to make things easier
+		//console.log(rowToArray(selRow).length);
 		if(rowToArray(selRow).length <= 0){
+			isBlankLine = true;
 			//force the delete
 			codeTable.deleteRow(selRow);
 			insertTable.deleteRow(selRow);
@@ -688,11 +752,25 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 			
 			refreshLineCount(); // refresh the line count along the left margin
 		}
+		else{
+			var innerTable = codeTable.rows[selRow].cells[0].children[0];
+			innerTable.rows[0].cells[1].innerHTML = blank;
+		}
+		
+		//remove all the selected/running highlighting
+		clearHighlighting();
 		
 		//save the code table
 		dataStore.saveExerciseData(chapterName,exerciseNum,editorDiv.innerHTML);
 		
-		selectRowByIndex(tempSelRow, false);
+		//console.log(isBlankLine, highlighted);
+		if(isBlankLine){
+			selectRowByIndex(tempSelRow, false);
+		}
+		
+		if(highlighted){
+			selectAndHighlightRowByIndex(tempSelRow);
+		}
 
 		//reset the auto save interval
 		clearInterval(autoSaveIntervalObject);
@@ -717,23 +795,80 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	}
 	
 	/* loadEditor - uses the Watson Data Store to load the editor based on the chapter and exercise number
+		@param {string} oldDivID - if not null, will call changeDivID with this argument
+		@param {string} newDivID - if not null, will call changeDivID with this argument
+		@param {boolean} force - if true a load is forced regardless of editable and autoSave, defaults to false
 	*/
-	function loadEditor(){
+	function loadEditor(oldDivID, newDivID, force){
+		//set force to default to false
+		if(typeof force == 'undefined'){
+			force = false;
+		}
+		
 		//if the editor is in figure mode, you should not need to load anything
-		if(!editable || !autoSave){
+		if(!force && (!editable || !autoSave)){
 			return;
 		}
 		
+		//force checkEditorData to be sure that something exists in the data stroe
+		if(!checkEditorData(true))
+			return;
+		
 		editorDiv.innerHTML = "";	//clear the editor
 		editorDiv.innerHTML = dataStore.loadExerciseData(chapterName,exerciseNum);
+		
+		if(oldDivID != null && newDivID != null){
+			changeDivID(oldDivID, newDivID);
+		}
+		
 		codeTable = document.getElementById('figEditor' + divID);
 		insertTable = document.getElementById('insertTable' + divID);
+		
+		//make it look like it should with insertion bar, no highlighting, and line numbers
+		if(editable){
+			//turn on insertion bar
+			$(insertTable).parent().css("display", "table");
+			
+		}
+		else{
+			//turn off insertion bar
+			$(insertTable).parent().css("display", "none");
+		}
+		
+		//set the lineNumber spacing to whatever it was set to earlier
+		$('.cell' + divID + '.code.lineNum:first-of-type').html(lineNumSpacing);
+		refreshLineCount();
+		
+		if(syntaxHighlightingBool){
+			//turn on syntax highlighting
+			$('.cell' + divID + '.noHighlighting').removeClass('noHighlighting');
+		}
+		else{
+			//turn off syntax highlighting
+			$('.cell' + divID).not('.noHighlighting').addClass('noHighlighting');
+		}
 		
 		//console.log(selRow, getRowCount(),(selRow < getRowCount()-1));
 		if(selRow < getRowCount())
 			selectRowByIndex(getRowCount(), false);
 		else
 			selectRowByIndex(getRowCount()-1, false);
+		
+			
+		//console.log(selRow, getRowCount(),(selRow < getRowCount()));
+		
+		if(selRow < getRowCount()){
+			//if the last row is already blank, selectAndHighlight it and clear the highlighting
+			if(rowToArray(getRowCount()-1).length <= 0){
+				selectAndHighlightRowByIndex(getRowCount()-1);
+				clearHighlighting();
+			}
+			else
+				selectRowByIndex(getRowCount(), false);
+		}
+		else{
+			selectRowByIndex(getRowCount()-1, false);
+		}
 			
 		//$('#savePopup' + divID).removeAttr('style');
 		
@@ -755,23 +890,66 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		}, 1000);
 	}
 	
-	/* checkEditorData - simply wraps Watson Data Store's checkExerciseData()
+	/* clearEditor - clears the editor and uses the Watson Data Store to clear the editor's saved data
 	*/
-	function checkEditorData(){
-		if(!editable || !autoSave) return false;
+	function clearEditor(){
+		//console.log('here3');
+		dataStore.eraseExerciseData(chapterName, exerciseNum);
+	
+		codeTable.innerHTML = "";
+		insertTable.innerHTML = "";
+		
+		init(false);
+	}
+	
+	/* checkEditorData - simply wraps Watson Data Store's checkExerciseData()
+		@param {boolean} force - if true a check is forced regardless of editable and autoSave, defaults to false
+
+	*/
+	function checkEditorData(force){
+		//set force to default to false
+		if(typeof force == 'undefined'){
+			force = false;
+		}
+		
+		if(!force && (!editable || !autoSave))
+			return false;
 		return dataStore.checkExerciseData(chapterName, exerciseNum);
+	}
+
+	/* changeDivID - changes the divID parameter that was passed to the editor an resets it everywhere else as well
+		@param {string} oldDivID - the old divID to replace
+		@param {string} newDivID - the new divID to replace the old one with
+	*/
+	function changeDivID(oldDivID, newDivID){
+		//console.log("here1000", oldDivID, divID, newDivID);
+		//replace the old divID in the editor's innerHTML
+		console.log("bef", editorDiv.innerHTML.indexOf(oldDivID)/*, editorDiv.innerHTML.substring(editorDiv.innerHTML.indexOf(oldDivID), editorDiv.innerHTML.indexOf(oldDivID)+100)*/);
+		while(editorDiv.innerHTML.indexOf(oldDivID) >= 0){
+			editorDiv.innerHTML = editorDiv.innerHTML.replace(oldDivID, newDivID);
+		}
+		//console.log("aft", editorDiv.innerHTML.indexOf(oldDivID)/*, editorDiv.innerHTML.substring(editorDiv.innerHTML.indexOf(oldDivID), editorDiv.innerHTML.indexOf(oldDivID)+100)*/);
+		
+		//set the divID
+		divID = newDivID;
+		
+		//reset codeTable and insertTable
+		codeTable = document.getElementById('figEditor' + divID);
+		insertTable = document.getElementById('insertTable' + divID);
+		
+		//console.log(codeTable.getAttribute('id'));
 	}
 	
 	/*DEPRECATED FUNCTIONS****************************************************/
 	
-	/* getEditor - DEPRECATED - returns the DOM object representing the editor
+	/* getEditor - DEPRECATED, returns the DOM object representing the editor
 		@return {object} the editor's DOM object
 	*/
 	function getEditor(){
 		return editorDiv;
 	}
 	
-	/* rowToString - DEPRECATED - returns a string representing the row
+	/* rowToString - DEPRECATED, returns a string representing the row
 		@param {number} index - the index of the row to process
 		@returns {string} the string representation of the row
 	*/
@@ -788,7 +966,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		return ret;
 	}
 	
-	/* selectRowByStartEnd - DEPRECATED and NOT IMPLEMENTED - selects a row based upon the start and end character indexes
+	/* selectRowByStartEnd - DEPRECATED and NOT IMPLEMENTED, selects a row based upon the start and end character indexes
 		@param {number} start - the start character index
 		@param {number} end - the end character index
 	*/
@@ -844,7 +1022,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		//the element that triggered the event, used for convenience
 		var thisElement = $(this);
 		
-		//the 'running' class overriders normal syntax highlighting
+		//the 'running' class overrides normal syntax highlighting
 		if(thisElement.hasClass('running')){
 			return;
 		}
@@ -1011,6 +1189,10 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 			elements = elements.add(prev);
 		}
 		//end parenthesis stuff
+		
+		elements = elements.filter(function(){
+			return !$(this).hasClass("running");
+		});
 		
 		//actually add or remove classes
 		if(event.data.addClass)

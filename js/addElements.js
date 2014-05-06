@@ -14,7 +14,8 @@ function AddElements(figNum) {
     
     //Find the container element
     var container = document.getElementById("graphicsLab" + figNum);
-    container.style.width = "650px";
+    if(figNum < 0) container.style.width = "615px";
+    else container.style.width = "475px";
 
     //Drawing window <div>
     var drawDiv = document.createElement('div');

@@ -38,16 +38,16 @@ function Run_walk(figNum) {
             }
         }, 100);
         //Reset
-        $("#walkButton" + figNum).html("Reset").off("click").click(function () {
+        $("#walkButton" + figNum).html("Reset").css("background", "rgb(217, 83, 79)").off("click").click(function () {
             fresh = true;
             clearInterval(delay);
             step = 0;
             editor.setSelectedRow(editor.getRowCount() - 1);
             editor.clearHighlighting();
-            $("#runButton" + figNum).html("Run").off("click").click(function () {
+            $("#runButton" + figNum).html("Run").css("background", "rgb(92, 184, 92)").off("click").click(function () {
                 run();
             });
-            $(this).html("Walk").off("click").click(function () {
+            $(this).html("Walk").css("background", "rgb(240, 156, 40)").off("click").click(function () {
                 walk();
             });
             changeBtnState(false);
@@ -55,12 +55,12 @@ function Run_walk(figNum) {
             canvas.draw();
         });
         //Pause
-        $("#runButton" + figNum).html("Pause").off("click").click(function () {
+        $("#runButton" + figNum).html("Pause").css("background", "rgb(240, 173, 78)").off("click").click(function () {
             clearInterval(delay);
-            $(this).html("Play").off("click").click(function () {
+            $(this).html("Play").css("background", "rgb(92, 184, 92)").off("click").click(function () {
                 run();
             });
-            $("#walkButton" + figNum).html("Walk").off("click").click(function () {
+            $("#walkButton" + figNum).html("Walk").css("background", "rgb(240, 156, 40)").off("click").click(function () {
                 walk();
             });
         });
@@ -95,10 +95,10 @@ function Run_walk(figNum) {
             editor.clearHighlighting();
             
             step = 0;
-            $("#runButton" + figNum).html("Run").off("click").click(function () {
+            $("#runButton" + figNum).html("Run").css("background", "rgb(92, 184, 92)").off("click").click(function () {
                 run();
             });
-            $("#walkButton" + figNum).html("Walk").off("click").click(function () {
+            $("#walkButton" + figNum).html("Walk").css("background", "rgb(240, 156, 40)").off("click").click(function () {
                 walk();
             });
             $(".button" + figNum).attr("disabled", false);
