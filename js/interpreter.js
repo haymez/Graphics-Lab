@@ -27,6 +27,7 @@ function Interpreter(figNum) {
     //Public functions
     this.interpret = interpret;
     this.getObjects = getObjects;
+    this.getVariables = getVariables;
     this.getD = getD;
     this.getP = getP;
     this.getL = getL;
@@ -38,7 +39,6 @@ function Interpreter(figNum) {
     {
         if (run_walk.getFresh())
         {
-            getVariables();
             color = "red";
             run_walk.setFresh(false);
             canvas.setToDraw([]);

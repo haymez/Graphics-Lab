@@ -4,8 +4,8 @@
  * 
  */
 
-
-function Setup(figNum) {
+//Sets up new lab. figNum refers to the unique figure number. isEx is true if this is an exercise, false otherwise.
+function Setup(figNum, isEx) {
     //Initialize all variables
     var code = new Code(figNum);
     var variables = new Variables(figNum);
@@ -16,9 +16,13 @@ function Setup(figNum) {
     var canvas = new Canvas(figNum);
     
     //Sandbox
-    if (figNum < 0) var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
+    if (figNum < 0) {
+        var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, true); //Initialize editor
+    }
     //Figure Mode
-    else var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
+    else {
+        var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
+    }
     
     
     /* ************Pass Objects to other classes*************** */
@@ -43,6 +47,11 @@ function Setup(figNum) {
     
     //Pass objects to interpreter
     interpreter.getObjects(run_walk, variables, shapes, canvas, editor, code);
+
+    //To be called when document loads
+    $(document).ready(function() {
+        interpreter.getVariables();
+    });
     
 }
 

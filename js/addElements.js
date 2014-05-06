@@ -102,20 +102,23 @@ function AddElements(figNum) {
     runButton.id = "runButton" + figNum;
     runButton.style.width = "70px";
     runButton.innerHTML = "Run";
-    runButton.className = "btn btn-default btn-sm";
+    runButton.className = "btn btn-sm";
+    runButton.style.background = "rgb(92, 184, 92)";
 
     var walkButton = document.createElement('button');
     walkButton.id = "walkButton" + figNum;
     walkButton.style.width = "70px";
     walkButton.innerHTML = "Walk";
-    walkButton.className = "btn btn-default btn-sm";
+    walkButton.className = "btn btn-sm";
+    walkButton.style.background = "rgb(240, 156, 40)";
 
     var resetButton = document.createElement('button');
     resetButton.id = "resetButton" + figNum;
     resetButton.style.width = "70px";
     resetButton.onclick = function() { code.reset(); };
     resetButton.innerHTML = "Clear";
-    resetButton.className = "btn btn-default btn-sm";
+    resetButton.className = "btn btn-sm";
+    resetButton.style.background = "#CCCCCC";
     
     var distanceButton = document.createElement('button');
     distanceButton.id = "distanceButton" + figNum;
