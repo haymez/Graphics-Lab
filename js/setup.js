@@ -15,15 +15,10 @@ function Setup(figNum) {
     var interpreter = new Interpreter(figNum);
     var canvas = new Canvas(figNum);
     
-    //Figure mode
-    if(figNum >= 0) {
-        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", Math.abs(figNum), true, true, 1, true, false, true); //Initialize editor
-    }
-
-    //Sandbox mode
-    else {
-        var editor = new Editor("program_code"+figNum, "DevelopingAlgorithms", Math.abs(figNum), true, true, 1, true, true, true); //Initialize editor
-    }
+    //Sandbox
+    if (figNum < 0) var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
+    //Figure Mode
+    else var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, true, false); //Initialize editor
     
     
     /* ************Pass Objects to other classes*************** */
@@ -47,7 +42,7 @@ function Setup(figNum) {
     run_walk.getObjects(editor, code, canvas, interpreter, variables);
     
     //Pass objects to interpreter
-    interpreter.getObjects(run_walk, variables, shapes, canvas);
+    interpreter.getObjects(run_walk, variables, shapes, canvas, editor, code);
     
 }
 

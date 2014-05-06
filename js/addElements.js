@@ -49,7 +49,9 @@ function AddElements(figNum) {
     var run_walkDiv = document.createElement('div');
     run_walkDiv.id = "run_walk" + figNum;
     run_walkDiv.style.width = "220px";
-    run_walkDiv.style.cssFloat = "right";
+    if(figNum > 0) run_walkDiv.style.cssFloat = "right";
+    else run_walkDiv.style.cssFloat = "left";
+    if(figNum < 0) run_walkDiv.style.left = "40px";
     run_walkDiv.className = "btn-group";
 
     //<p> for variable value title
@@ -63,9 +65,8 @@ function AddElements(figNum) {
     var varValueDiv = document.createElement('div');
     varValueDiv.id = "varValDiv" + figNum;
     varValueDiv.style.overflow = "auto";
-    varValueDiv.style.width = container.style.width;
     varValueDiv.style.height = "100px";
-    varValueDiv.style.resize = "none";
+    varValueDiv.style.width = programDiv.style.width;
     varValueDiv.style.border = "1px solid #000";
 
     // <div> holder for varValueDiv <div> and varValueTitle <p>
@@ -74,9 +75,8 @@ function AddElements(figNum) {
     vvDivHolder.appendChild(varValueTitle);
     vvDivHolder.appendChild(varValueDiv);
     vvDivHolder.style.display = "none";
+    vvDivHolder.style.width = container.style.width;
     vvDivHolder.style.cssFloat = "left";
-    //vvDivHolder.style.position = "absolute";
-    //vvDivHolder.style.top = "410px";
 
     //<div> for buttons on right
     var progButtonDiv = document.createElement('div');
@@ -109,39 +109,46 @@ function AddElements(figNum) {
     walkButton.style.width = "70px";
     walkButton.innerHTML = "Walk";
     walkButton.className = "btn btn-default btn-sm";
+
+    var resetButton = document.createElement('button');
+    resetButton.id = "resetButton" + figNum;
+    resetButton.style.width = "70px";
+    resetButton.onclick = function() { code.reset(); };
+    resetButton.innerHTML = "Clear";
+    resetButton.className = "btn btn-default btn-sm";
     
     var distanceButton = document.createElement('button');
     distanceButton.id = "distanceButton" + figNum;
     distanceButton.style.width = "70px";
-    distanceButton.onclick = function() {variables.newDistance();};
+    distanceButton.onclick = function() { variables.newDistance(); };
     distanceButton.innerHTML = "Distance";
     distanceButton.className = "btn btn-primary btn-sm";
 
     var pointButton = document.createElement('button');
     pointButton.id = "pointButton" + figNum;
     pointButton.style.width = "70px";
-    pointButton.onclick = function() {canvas.drawPoint();};
+    pointButton.onclick = function() { canvas.drawPoint(); };
     pointButton.innerHTML = "Point";
     pointButton.className = "btn btn-primary btn-sm";
 
     var lineButton = document.createElement('button');
     lineButton.id = "lineButton" + figNum;
     lineButton.style.width = "70px";
-    lineButton.onclick = function() {canvas.drawLine();};
+    lineButton.onclick = function() { canvas.drawLine();  };
     lineButton.innerHTML = "Line";
     lineButton.className = "btn btn-primary btn-sm";
 
     var polygonButton = document.createElement('button');
     polygonButton.id = "polygonButton" + figNum;
     polygonButton.style.width = "70px";
-    polygonButton.onclick = function() {canvas.drawPolygon();};
+    polygonButton.onclick = function() { canvas.drawPolygon(); };
     polygonButton.innerHTML = "Polygon";
     polygonButton.className = "btn btn-primary btn-sm";
 
     var circleButton = document.createElement('button');
     circleButton.id = "circleButton" + figNum;
     circleButton.style.width = "70px";
-    circleButton.onclick = function() {canvas.drawCircle();};
+    circleButton.onclick = function() { canvas.drawCircle(); };
     circleButton.innerHTML = "Circle";
     circleButton.className = "btn btn-primary btn-sm";
 
@@ -155,7 +162,7 @@ function AddElements(figNum) {
     var drawButton = document.createElement('button');
     drawButton.id = "drawButton" + figNum;
     drawButton.style.width = "70px";
-    drawButton.onclick = function() {code.drawShape();};
+    drawButton.onclick = function() { code.drawShape(); };
     drawButton.innerHTML = "Draw";
     drawButton.className = "btn btn-success btn-sm";
 
@@ -169,14 +176,14 @@ function AddElements(figNum) {
     var colorButton = document.createElement('button');
     colorButton.id = "colorButton" + figNum;
     colorButton.style.width = "70px";
-    colorButton.onclick = function() {code.changeColor();};
+    colorButton.onclick = function() { code.changeColor(); };
     colorButton.innerHTML = "Color";
     colorButton.className = "btn btn-success btn-sm";
 
     var loopButton = document.createElement('button');
     loopButton.id = "loopButton" + figNum;
     loopButton.style.width = "70px";
-    loopButton.onclick = function() {code.loop();};
+    loopButton.onclick = function() { code.loop(); };
     loopButton.innerHTML = "Loop";
     loopButton.className = "btn btn-success btn-sm";
 
@@ -188,6 +195,7 @@ function AddElements(figNum) {
     //Add everything to Drawing Window <div>
     run_walkDiv.appendChild(runButton);
     run_walkDiv.appendChild(walkButton);
+    if(figNum < 0) run_walkDiv.appendChild(resetButton);
     drawDiv.appendChild(run_walkDiv);
     drawDiv.appendChild(canvas);
 

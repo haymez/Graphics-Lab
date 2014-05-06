@@ -235,6 +235,7 @@ function Run_walk(figNum) {
         document.getElementById("eraseButton" + figNum).disabled = state;
         document.getElementById("colorButton" + figNum).disabled = state;
         document.getElementById("loopButton" + figNum).disabled = state;
+        document.getElementById("resetButton" + figNum).disabled = state;
     }
     
     //fresh getter

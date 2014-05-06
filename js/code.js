@@ -23,6 +23,7 @@ function Code(figNum) {
     this.getIndent = getIndent;
     this.clickFunc = clickFunc;
     this.insertClickFunc = insertClickFunc;
+    this.reset = reset;
     
 
     //Listen for click events on the table
@@ -710,6 +711,27 @@ function Code(figNum) {
             }
         }
         return arr;
+    }
+
+    //Resets the editor (For use in sandbox mode)
+    function reset() {
+        editor.clearHighlighting();
+        editor.setSelectedRow(0);
+        var alert = new Alert();
+                alert.open("Warning", "Are you sure you want to reset the editor? This cannot be undone.", false, function (evt) {
+                    if(evt) {
+                        var i = 0;
+                        console.log(editor.rowToDOMArray(0).length);
+                        while(/*editor.rowToDOMArray(0).length > 2 && */i < 100) {
+                            console.log(editor.rowToArrayHtml(0));
+                            editor.deleteRow(0);
+                            variables.resetArrays();
+                            i++;
+                        }
+                        $("#drawcanvas" + figNum).off('.draw');
+                        localStorage.removeItem("DevelopingAlgorithms" + figNum);
+                    }
+                }, container);
     }
     
     //get objects

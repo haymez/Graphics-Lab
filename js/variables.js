@@ -25,6 +25,8 @@ function Variables(figNum) {
     this.getPolyVars = getPolyVars;
     this.getCircleVars = getCircleVars;
     this.getDistVars = getDistVars;
+    this.resetArrays = resetArrays;
+    this.setArrays = setArrays;
 
     //Print all declared variables into the variables window
     function printVars() {
@@ -110,11 +112,29 @@ function Variables(figNum) {
     function getDistVars() {
         return distanceVariables;
     }
+
+    function setArrays(distance, point, line, circle, polygon) {
+        distanceVariables = distance;
+        pointVariables = point;
+        lineVariables = line;
+        circleVariables = circle;
+        polygonVariables = polygon;
+    }
+
+    //resets all arrays
+    function resetArrays() {
+        distanceVariables = new Array();
+        pointVariables = new Array();
+        lineVariables = new Array();
+        circleVariables = new Array();
+        polygonVariables = new Array();
+    }
     
     //get Code object
     function getObjects(codeObj, editorObj) {
         code = codeObj;
         editor = editorObj
+
     }
 }
 

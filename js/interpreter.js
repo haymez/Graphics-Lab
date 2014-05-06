@@ -21,6 +21,8 @@ function Interpreter(figNum) {
     var variables;
     var shapes;
     var canvas;
+    var editor;
+    var code;
     
     //Public functions
     this.interpret = interpret;
@@ -36,6 +38,7 @@ function Interpreter(figNum) {
     {
         if (run_walk.getFresh())
         {
+            getVariables();
             color = "red";
             run_walk.setFresh(false);
             canvas.setToDraw([]);
@@ -1003,13 +1006,52 @@ function Interpreter(figNum) {
     function getG() {
         return g;
     }
+
+    //gets all declared variables. for use when loading a program in.
+    function getVariables() {
+        var i = 0;
+        var distance = new Array();
+        var point = new Array();
+        var line = new Array();
+        var circle = new Array();
+        var polygon = new Array();
+
+        while(editor.rowToArray(i).length > 0) {
+            var rowString = code.rowToString(i);
+            //Distance variables
+            if(rowString != null && rowString.indexOf("Distance") >= 0) {
+                var count = rowString.split(",").length;
+                for(var j = 0; j < count; j++) distance.push(j);
+            }
+            else if(rowString != null && rowString.indexOf("Point") >= 0) {
+                var count = rowString.split(",").length;
+                for(var j = 0; j < count; j++) point.push(j);
+            }
+            else if(rowString != null && rowString.indexOf("Line") >= 0) {
+                var count = rowString.split(",").length;
+                for(var j = 0; j < count; j++) line.push(j);
+            }
+            else if(rowString != null && rowString.indexOf("Circle") >= 0) {
+                var count = rowString.split(",").length;
+                for(var j = 0; j < count; j++) circle.push(j);
+            }
+            else if(rowString != null && rowString.indexOf("Polygon") >= 0) {
+                var count = rowString.split(",").length;
+                for(var j = 0; j < count; j++) polygon.push(j);
+            }
+            i++;
+        }
+        variables.setArrays(distance, point, line, circle, polygon);
+    }
     
     //Gets objects
-    function getObjects(run_walkObj, variablesObj, shapesObj, canvasObj) {
+    function getObjects(run_walkObj, variablesObj, shapesObj, canvasObj, editorObj, codeObj) {
         run_walk = run_walkObj;
         variables = variablesObj;
         shapes = shapesObj;
         canvas = canvasObj;
+        editor = editorObj;
+        code = codeObj;
     }
 }
 
