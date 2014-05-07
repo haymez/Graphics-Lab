@@ -40,14 +40,14 @@ function AddElements(figNum, height) {
     if(figNum >= 0) programDiv.style.width = "70%";
     else programDiv.style.width = "50%";
     programDiv.style.cssFloat = "left";
-    if(figNum >= 0) programDiv.className = "col-md-offset-2";
-    else programDiv.className = "col-md-offset-1";
+    if(figNum >= 0) programDiv.className = "col-md-offset-2 col-sm-offset-2";
+    else programDiv.className = "col-md-offset-1 col-sm-offset-1";
 
     //<div> for run and walk buttons
     var run_walkDiv = document.createElement('div');
     run_walkDiv.id = "run_walk" + figNum;
     run_walkDiv.style.width = "220px";
-    run_walkDiv.className = "btn-group col-md-offset-4";
+    run_walkDiv.className = "btn-group col-md-offset-4 col-sm-offset-4";
 
     //<p> for variable value title
     var varValueTitle = document.createElement('p');
@@ -55,7 +55,7 @@ function AddElements(figNum, height) {
     varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
     varValueTitle.style.position = "relative";
     varValueTitle.style.top = "15px";
-    varValueTitle.className = "col-md-offset-2";
+    varValueTitle.className = "col-md-offset-2 col-sm-offset-2";
 
     //<div> for variable value window
     var varValueDiv = document.createElement('div');
@@ -64,7 +64,7 @@ function AddElements(figNum, height) {
     varValueDiv.style.height = "100px";
     varValueDiv.style.width = programDiv.style.width;
     varValueDiv.style.border = "1px solid #000";
-    varValueDiv.className = "col-md-offset-2";
+    varValueDiv.className = "col-md-offset-2 col-sm-offset-2";
 
     // <div> holder for varValueDiv <div> and varValueTitle <p>
     var vvDivHolder = document.createElement('div');
