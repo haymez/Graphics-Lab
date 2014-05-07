@@ -22,7 +22,7 @@ function AddElements(figNum, height) {
     drawDiv.style.width = "300px";
     drawDiv.style.height = "350px";
     drawDiv.style.cssFloat = "left";
-    drawDiv.className = "col-md-offset-4 col-sm-offset-4";
+    drawDiv.className = "col-md-offset-4 col-sm-offset-3";
     drawDiv.style.textAlign = "center";
 
     //Program window <div>
