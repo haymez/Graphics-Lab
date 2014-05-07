@@ -23,14 +23,13 @@ function AddElements(figNum, height) {
     drawDiv.style.width = "300px";
     drawDiv.style.height = "350px";
     drawDiv.style.cssFloat = "left";
-    if(figNum < 0) drawDiv.style.paddingLeft = "25%";
-    else drawDiv.style.paddingLeft = "10%";
-    drawDiv.className = "row";
+    drawDiv.className = "col-md-offset-4";
+    drawDiv.style.textAlign = "center";
 
     //Program window <div>
     var programWindowDiv = document.createElement('div');
     programWindowDiv.id = "program_window" + figNum;
-    programWindowDiv.style.width = "95%";
+    programWindowDiv.style.width = "100%";
     programWindowDiv.style.height = height + "px";
     programWindowDiv.style.cssFloat = "left";
 
@@ -38,16 +37,17 @@ function AddElements(figNum, height) {
     var programDiv = document.createElement('div');
     programDiv.id = "program_code" + figNum;
     programDiv.style.height = programWindowDiv.style.height;
-    programDiv.style.width = "70%";
+    if(figNum >= 0) programDiv.style.width = "70%";
+    else programDiv.style.width = "50%";
     programDiv.style.cssFloat = "left";
+    if(figNum >= 0) programDiv.className = "col-md-offset-2";
+    else programDiv.className = "col-md-offset-1";
 
     //<div> for run and walk buttons
     var run_walkDiv = document.createElement('div');
     run_walkDiv.id = "run_walk" + figNum;
     run_walkDiv.style.width = "220px";
-    if(figNum < 0) run_walkDiv.style.left = "55%";
-    else run_walkDiv.style.left = "40%";
-    run_walkDiv.className = "btn-group";
+    run_walkDiv.className = "btn-group col-md-offset-4";
 
     //<p> for variable value title
     var varValueTitle = document.createElement('p');
@@ -55,6 +55,7 @@ function AddElements(figNum, height) {
     varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
     varValueTitle.style.position = "relative";
     varValueTitle.style.top = "15px";
+    varValueTitle.className = "col-md-offset-2";
 
     //<div> for variable value window
     var varValueDiv = document.createElement('div');
@@ -63,6 +64,7 @@ function AddElements(figNum, height) {
     varValueDiv.style.height = "100px";
     varValueDiv.style.width = programDiv.style.width;
     varValueDiv.style.border = "1px solid #000";
+    varValueDiv.className = "col-md-offset-2";
 
     // <div> holder for varValueDiv <div> and varValueTitle <p>
     var vvDivHolder = document.createElement('div');
