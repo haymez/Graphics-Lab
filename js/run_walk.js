@@ -16,6 +16,7 @@ function Run_walk(figNum) {
     var canvas;
     var interpreter;
     var variables;
+    var trackerVisible = false;
     
     //public functions
     this.walk = walk;
@@ -102,7 +103,9 @@ function Run_walk(figNum) {
                 walk();
             });
             $(".button" + figNum).attr("disabled", false);
-            $("#vvDivHolder" + figNum).slideUp("medium");
+
+            if(trackerVisible) $("#graphicsLab" + figNum).height($("#graphicsLab" + figNum).height() - 120);
+            $("#vvDivHolder" + figNum).slideUp("medium", function() { trackerVisible = false });
             changeBtnState(false);
             programRunning = false;
             fresh = true;
@@ -218,9 +221,10 @@ function Run_walk(figNum) {
         }
         if (canShow > 0 && !runMode) {
             vvDiv.innerHTML = html;
-            $("#vvDivHolder" + figNum).slideDown("medium");
+            if(!trackerVisible) $("#graphicsLab" + figNum).height($("#graphicsLab" + figNum).height() + 120);
+            $("#vvDivHolder" + figNum).slideDown("medium", function() { trackerVisible = true; });
         } else {
-            $("#vvDivHolder" + figNum).slideUp("medium");
+            $("#vvDivHolder" + figNum).slideUp("medium", function() { trackerVisible = false; });
         }
     }
 
