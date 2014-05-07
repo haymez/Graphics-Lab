@@ -6,11 +6,11 @@
 
 //Sets up new lab.
 //figNum refers to the unique figure number.
-function Setup(figNum, isEx) {
+function Setup(figNum, isEx, editorHeight) {
     //Initialize all variables
     var code = new Code(figNum); //Initialize code
     var variables = new Variables(figNum); //Initialize variables
-    var addElements = new AddElements(figNum); //Initialize addElements
+    var addElements = new AddElements(figNum, editorHeight); //Initialize addElements
     var shapes = new Shapes(figNum); //Initialize shapes
     var run_walk = new Run_walk(figNum); //Initialize run_walk
     var interpreter = new Interpreter(figNum); //Initialize interpreter
