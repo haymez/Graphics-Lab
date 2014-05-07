@@ -15,7 +15,6 @@ function AddElements(figNum, height) {
     //Find the container element
     var container = document.getElementById("graphicsLab" + figNum);
     container.className = "col-md-12 col-sm-12 col-xs-12";
-    container.style.border = "ridge";
 
     //Drawing window <div>
     var drawDiv = document.createElement('div');

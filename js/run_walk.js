@@ -16,6 +16,10 @@ function Run_walk(figNum) {
     var canvas;
     var interpreter;
     var variables;
+
+    //Handles resizing container for variable tracker
+    var withoutTracker = $("#graphicsLab" + figNum).height();
+    var withTracker = $("#graphicsLab" + figNum).height()+120;
     var trackerVisible = false;
     
     //public functions
@@ -104,7 +108,7 @@ function Run_walk(figNum) {
             });
             $(".button" + figNum).attr("disabled", false);
 
-            if(trackerVisible) $("#graphicsLab" + figNum).height($("#graphicsLab" + figNum).height() - 120);
+            if(trackerVisible) $("#graphicsLab" + figNum).height(withoutTracker);
             $("#vvDivHolder" + figNum).slideUp("medium", function() { trackerVisible = false });
             changeBtnState(false);
             programRunning = false;
@@ -221,9 +225,10 @@ function Run_walk(figNum) {
         }
         if (canShow > 0 && !runMode) {
             vvDiv.innerHTML = html;
-            if(!trackerVisible) $("#graphicsLab" + figNum).height($("#graphicsLab" + figNum).height() + 120);
+            if(!trackerVisible) $("#graphicsLab" + figNum).height(withTracker);
             $("#vvDivHolder" + figNum).slideDown("medium", function() { trackerVisible = true; });
         } else {
+            if(trackerVisible) $("#graphicsLab" + figNum).height(withoutTracker);
             $("#vvDivHolder" + figNum).slideUp("medium", function() { trackerVisible = false; });
         }
     }
