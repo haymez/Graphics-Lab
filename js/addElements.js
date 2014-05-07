@@ -39,7 +39,7 @@ function AddElements(figNum, height) {
     if(figNum >= 0) programDiv.style.width = "70%";
     else programDiv.style.width = "50%";
     programDiv.style.cssFloat = "left";
-    if(figNum >= 0) programDiv.className = "col-md-offset-2 col-sm-offset-2 col-xs-offset-2";
+    if(figNum >= 0) programDiv.className = "col-md-offset-2 col-sm-offset-2";
     else programDiv.className = "col-md-offset-1 col-sm-offset-1 col-xs-offset-1";
 
     //<div> for run and walk buttons
