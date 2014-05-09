@@ -41,8 +41,8 @@ function Canvas(figNum) {
     //Remove coordinate information if mouse leaves canvas. Also, delete any shape preview lines.
     $('#' + canvas.id).on('vmouseout', function(evt) {
         var rect = canvas.getBoundingClientRect();
-        var x = evt.pageX - rect.left;
-        var y = 300 - (evt.pageY - rect.top);
+        var x = evt.clientX - rect.left;
+        var y = 300 - (evt.clientY - rect.top);
         if(x>300 || x<0 || y>300 || y<0) {
             $('#' + canvas.id).off('.draw');
             var x = 0;
@@ -69,8 +69,8 @@ function Canvas(figNum) {
     function getCursorPos(evt) {
         var rect = canvas.getBoundingClientRect();
         return {
-            x: evt.pageX - rect.left,
-            y: 300 - (evt.pageY - rect.top)
+            x: evt.clientX - rect.left,
+            y: 300 - (evt.clientY - rect.top)
         };
     }
 
@@ -137,8 +137,8 @@ function Canvas(figNum) {
         variables.printVars();
         $('#' + canvas.id).off('.draw');
         if(figNum < 0) $('#' + canvas.id).on('vmouseup.draw', function(evt) {
-            startX = Math.floor(evt.pageX - rect.left);
-            startY = Math.floor(evt.pageY - rect.top);
+            startX = Math.floor(evt.clientX - rect.left);
+            startY = Math.floor(evt.clientY - rect.top);
             if(startX<=300 && startX>=0 && startY<=300 && startY>=0) {
                 toDraw[toDraw.length] = new shapes.point(startX, startY);
                 code.addNewRow(editor.getSelectedRowIndex(), [code.getIndent(editor.getSelectedRowIndex()) + variables.getPointVars()[variables.getPointVars().length-1], "&nbsp;=&nbsp;", 
@@ -164,23 +164,23 @@ function Canvas(figNum) {
         $('#' + canvas.id).off('.draw');
         if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             
-            startX = Math.floor(evt.pageX - rect.left);
-            startY = Math.floor(evt.pageY - rect.top);
+            startX = Math.floor(evt.clientX - rect.left);
+            startY = Math.floor(evt.clientY - rect.top);
             
             //visualize what the line will look like as the user moves the cursor around
             $('#' + canvas.id).on('vmousemove.draw', function(evt) {
                 var ctx = canvas.getContext('2d');
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
-                ctx.lineTo(evt.pageX - rect.left, evt.pageY - rect.top);
+                ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
                 ctx.strokeStyle = "#FF0000";
                 ctx.stroke();
             });
             
             $('#' + canvas.id).on('vmouseup.draw', function(evt) {
                 //Turn mouse move listener off
-                endX = Math.floor(evt.pageX - rect.left);
-                endY = Math.floor(evt.pageY - rect.top);
+                endX = Math.floor(evt.clientX - rect.left);
+                endY = Math.floor(evt.clientY - rect.top);
                 
                 if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
                     toDraw[toDraw.length] = new shapes.line(startX, startY, endX, endY, "line");
@@ -209,21 +209,21 @@ function Canvas(figNum) {
         $('#' + canvas.id).off('.draw');
         if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             
-            startX = Math.floor(evt.pageX - rect.left);
-            startY = Math.floor(evt.pageY - rect.top);
+            startX = Math.floor(evt.clientX - rect.left);
+            startY = Math.floor(evt.clientY - rect.top);
             
             //visualize what the circle will look like as the user moves the cursor around
             $('#' + canvas.id).on('vmousemove.draw', function(evt) {
                 var ctx = canvas.getContext('2d');
                 ctx.beginPath();
-                ctx.arc(startX, startY, findDistance(startX, startY, evt.pageX-rect.left, evt.pageY - rect.top), 0, 2*Math.PI);
+                ctx.arc(startX, startY, findDistance(startX, startY, evt.clientX-rect.left, evt.clientY - rect.top), 0, 2*Math.PI);
                 ctx.strokeStyle = "#FF0000";
                 ctx.stroke();
             });
         });
         $('#' + canvas.id).on('vmouseup.draw', function(evt) {
-            endX = Math.floor(evt.pageX - rect.left);
-            endY = Math.floor(evt.pageY - rect.top);
+            endX = Math.floor(evt.clientX - rect.left);
+            endY = Math.floor(evt.clientY - rect.top);
             
             if(endX>=0 && endX<=300 & endY>=0 && endY<=300) {
                 toDraw[toDraw.length] = new shapes.circle(startX, startY, Math.round(findDistance(startX, startY, endX, endY)));
@@ -265,8 +265,8 @@ function Canvas(figNum) {
         $('#' + canvas.id).off('.draw');
         if(figNum < 0) $('#' + canvas.id).on('vmousedown.draw', function(evt) {
             if(edgeCount == 0) {
-                startX = evt.pageX - rect.left;
-                startY = evt.pageY - rect.top;
+                startX = evt.clientX - rect.left;
+                startY = evt.clientY - rect.top;
             }
             else {
                 startX = endX;
@@ -281,7 +281,7 @@ function Canvas(figNum) {
                 
                 //Snap into place if preview line is within 8 pixels of starting point. If mobile, the size increases to 30 pixels
                 if(edgeCount >= 2) {
-                    var distance = findDistance(evt.pageX - rect.left, evt.pageY - rect.top, coor[0].startX, coor[0].startY);
+                    var distance = findDistance(evt.clientX - rect.left, evt.clientY - rect.top, coor[0].startX, coor[0].startY);
                     if (distance < 8) {
                         finished = true;
                         ctx.lineTo(coor[0].startX, coor[0].startY);
@@ -300,7 +300,7 @@ function Canvas(figNum) {
                     }
                     else {
                         finished = false;
-                        ctx.lineTo(evt.pageX - rect.left, evt.pageY - rect.top);
+                        ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
                         ctx.strokeStyle = "#FF0000";
                         for(var i = 0; i < toDraw.length; i++) {
                             if(toDraw[i].type == "temp") toDraw[i].color = "#FF0000";
@@ -308,7 +308,7 @@ function Canvas(figNum) {
                     }
                 }
                 else {
-                    ctx.lineTo(evt.pageX - rect.left, evt.pageY - rect.top);
+                    ctx.lineTo(evt.clientX - rect.left, evt.clientY - rect.top);
                     ctx.strokeStyle = "#FF0000";
                 }
                 ctx.stroke();
@@ -318,8 +318,8 @@ function Canvas(figNum) {
         $('#' + canvas.id).on('vmouseup.draw', function(evt) {
             //Turn off vmouse move event
             $('#' + canvas.id).off('vmousemove.draw');
-            endX = evt.pageX - rect.left;
-            endY = evt.pageY - rect.top;
+            endX = evt.clientX - rect.left;
+            endY = evt.clientY - rect.top;
             //This is our first edge
             if(edgeCount == 0) {
                 //Set this line to temporary because it's merely a preview

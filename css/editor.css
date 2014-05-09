@@ -45,24 +45,25 @@
 .savePopup{
 	position: absolute;
 	right: 0;
-    background-color: #DDDDDD;
+   	background-color: #DDDDDD;
 	display: none;
 	font-family: arial;
 }
 
 .codeTable{
-	overflow: auto;
+	overflow-y: hidden;
 	display: inline;
 	height: 100%;
-}
-
-table {
+	width: 100%;
 	border: none;
 	border-collapse:collapse;
 	padding: 0px;
 	margin: 0px;
 	float: left;
 }
+/*
+table {
+}*/
 td {
 	border:none;
 	border-collapse:collapse;
@@ -70,7 +71,6 @@ td {
 	margin: 0px;
 	white-space: nowrap;
 }
-
 .codeContainer{
 	overflow: auto;
 	position: relative;
