@@ -711,6 +711,7 @@ function Code(figNum) {
         }
         return arr;
     }
+
     
     //get objects
     function getObjects(editorObj, variablesObj) {

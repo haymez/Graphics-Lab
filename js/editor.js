@@ -448,103 +448,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		innerTable = codeTable.rows[selRow].cells[0].children[0];
 		innerTable.rows[0].cells[1].innerHTML = blank;
 		
-		if(codeTable.rows[selRow].cells.length >= 0){
-			//remove the 'selected' and 'running' classes appropriately
-			//add the entire row of cells
-			var thisElement = $(innerTable.rows[0].cells);
-			//the list of elements to affect
-			var elements = thisElement;
-			
-			//begin curly brace and scope stuff, the same concepts as parenthesis, but with more DOM traversing!
-			//this is the cell on the next row that should contain a {
-			var targetCell = thisElement.parent().parent().parent().parent().parent().next().children().first().children().first().children().first().children().first().children().last();
-			
-			if(targetCell.length > 0 && thisElement.index() == 2 && targetCell.hasClass('openBrack'))
-			{
-				thisElement = targetCell;
-				elements = thisElement;
-			}
-		
-			//do some highlighting stuff, this is all copy pasted from onHover
-			//check the last character of the html to account for indentation
-			if(thisElement.hasClass('openBrack') || thisElement.hasClass('startLoop'))
-			{
-				//console.log('here');
-				//add all the code elements from this row
-				elements = thisElement.parent().parent().parent().parent().parent().find('.code');
-				
-				//only if this cell is an open bracket should we highlight the previous line
-				if(thisElement.hasClass('openBrack')){
-					elements = elements.add(thisElement.parent().parent().parent().parent().parent().prev().find('.code'));
-				}
-			
-				//go up the DOM tree 5 times to get the row, then next() to get the next row
-				var nextRow = thisElement.parent().parent().parent().parent().parent().next();
-				//then look at the next row, go down 5 times and get the html
-				targetCell = nextRow.children().first().children().first().children().first().children().first().children().last();
-				
-				//the count of unclosed scopes so far
-				var count = 1;
-				
-				while(count > 0 && nextRow.length > 0)
-				{
-					//if we find another left brace, then we have another unclosed scope
-					if(targetCell.hasClass('openBrack') || targetCell.hasClass('startLoop'))
-						count++;
-					//if we find a right brace, then we can close a scope
-					else if(targetCell.hasClass('closeBrack') || targetCell.hasClass('endLoop'))
-						count--;
-				
-					//add all of this row's code elements to the elements list
-					elements = elements.add(nextRow.find('.code'));
-					
-					//get the next row
-					nextRow = nextRow.next();
-					//get the html
-					targetCell = nextRow.children().first().children().first().children().first().children().first().children().last();
-				}
-			}
-			else if(thisElement.hasClass('closeBrack') || thisElement.hasClass('endLoop'))
-			{
-				//add all the code elements from this row
-				elements = thisElement.parent().parent().parent().parent().parent().find('.code');
-			
-				//go up the DOM tree 5 times to get the row, then prev() to get the prev row
-				var prevRow = thisElement.parent().parent().parent().parent().parent().prev();
-				//then look at the prev row, go down 5 times and get the html
-				var targetCell = prevRow.children().first().children().first().children().first().children().first().children().last();
-				
-				//the count of unclosed scopes so far
-				var count = 1;
-				
-				while(count > 0 && prevRow.length > 0)
-				{
-					//if we find another right brace, then we have another unclosed scope
-					if(targetCell.hasClass('closeBrack') || targetCell.hasClass('endLoop'))
-						count++;
-					//if we find a left brace, then we can close a scope
-					else if(targetCell.hasClass('openBrack') || targetCell.hasClass('startLoop'))
-						count--;
-				
-					//add all of this row's code elements to the elements list
-					elements = elements.add(prevRow.find('.code'));
-					
-					//get the prev row
-					prevRow = prevRow.prev();
-					//get the html
-					targetCell = prevRow.children().first().children().first().children().first().children().first().children().last();
-				}
-				
-				//only if this cell is an open Bracket should the previous row be added
-				if(thisElement.hasClass("closeBrack")){
-					elements = elements.add(prevRow.find('.code'));
-				}
-			}
-			
-			//actually add the classes
-			elements.removeClass('selected');
-			elements.removeClass('running');
-		}
+		clearHighlighting();
 		
 		selRow = index;
 		innerTable = codeTable.rows[selRow].cells[0].children[0];
@@ -553,8 +457,10 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		//add the 'selected' and 'running' classes
 		// the 'running' class means that onHover will not remove the selected highlighting
 		
+		//console.log('adding classes');
 		//add the entire row of cells
 		var thisElement = $(innerTable.rows[0].cells);
+			//console.log('\t',thisElement.length, thisElement.hasClass('openBrack'));
 		//the list of elements to affect
 		var elements = thisElement;
 					
@@ -575,7 +481,6 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		//check the last character of the html to account for indentation
 		if(thisElement.hasClass('openBrack') || thisElement.hasClass('startLoop'))
 		{
-			//console.log('here');
 			//add all the code elements from this row
 			elements = thisElement.parent().parent().parent().parent().parent().find('.code');
 			
@@ -893,7 +798,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	/* clearEditor - clears the editor and uses the Watson Data Store to clear the editor's saved data
 	*/
 	function clearEditor(){
-		//console.log('here3');
+		//console.log('here3', dataStore);
 		dataStore.eraseExerciseData(chapterName, exerciseNum);
 	
 		codeTable.innerHTML = "";
@@ -922,22 +827,26 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 		@param {string} newDivID - the new divID to replace the old one with
 	*/
 	function changeDivID(oldDivID, newDivID){
-		//console.log("here1000", oldDivID, divID, newDivID);
+		//console.log("here1000 o: " + oldDivID + ' n: ' + newDivID + ' d: ' + divID);
 		//replace the old divID in the editor's innerHTML
-		console.log("bef", editorDiv.innerHTML.indexOf(oldDivID)/*, editorDiv.innerHTML.substring(editorDiv.innerHTML.indexOf(oldDivID), editorDiv.innerHTML.indexOf(oldDivID)+100)*/);
-		while(editorDiv.innerHTML.indexOf(oldDivID) >= 0){
-			editorDiv.innerHTML = editorDiv.innerHTML.replace(oldDivID, newDivID);
+		//console.log("bef", editorDiv.innerHTML.indexOf(oldDivID));
+		if(editorDiv.innerHTML.indexOf(oldDivID) >=0){
+			while(editorDiv.innerHTML.indexOf(oldDivID) >= 0){
+				editorDiv.innerHTML = editorDiv.innerHTML.replace(oldDivID, newDivID);
+			}
+			//console.log(" aft", editorDiv.innerHTML.indexOf(oldDivID));
+			//console.log("aft2", editorDiv.innerHTML.indexOf(divID));
+			
+			//set the divID
+			divID = newDivID;
+			//console.log("here1001", divID);
+			
+			//reset codeTable and insertTable
+			codeTable = document.getElementById('figEditor' + divID);
+			insertTable = document.getElementById('insertTable' + divID);
+			//console.log(codeTable);
+			//console.log(codeTable.getAttribute('id'));
 		}
-		//console.log("aft", editorDiv.innerHTML.indexOf(oldDivID)/*, editorDiv.innerHTML.substring(editorDiv.innerHTML.indexOf(oldDivID), editorDiv.innerHTML.indexOf(oldDivID)+100)*/);
-		
-		//set the divID
-		divID = newDivID;
-		
-		//reset codeTable and insertTable
-		codeTable = document.getElementById('figEditor' + divID);
-		insertTable = document.getElementById('insertTable' + divID);
-		
-		//console.log(codeTable.getAttribute('id'));
 	}
 	
 	/*DEPRECATED FUNCTIONS****************************************************/
@@ -998,6 +907,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	/* mouseleave - a jQuery event handler for mouse leave on insert elements, ie cells in the insert bar
 	*/
 	$('div').on('mouseleave', '.insert' + divID, function(event){
+	//console.log("here30000");
 		if($(this).css('cursor') == 'pointer'){
 			$(this).css('cursor', 'default');
 			$(this).html("&nbsp;");

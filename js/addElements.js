@@ -15,7 +15,7 @@ function AddElements(figNum, height) {
     //Find the container element
     var container = document.getElementById("graphicsLab" + figNum);
     if(figNum >= 0) container.className = "col-md-12 col-sm-12 col-xs-12";
-    else container.className = "col-md-6 col-sm-8 col-xs-12";
+    else container.className = "col-md-8 col-sm-8 col-xs-12 col-md-offset-2 col-sm-offset-1";
 
     //Drawing window <div>
     var drawDiv = document.createElement('div');
@@ -52,9 +52,9 @@ function AddElements(figNum, height) {
     //<p> for variable value title
     var varValueTitle = document.createElement('p');
     varValueTitle.id = "varValOuterP" + figNum;
-    varValueTitle.innerHTML = '<b>&nbspInternal Variables</b>';
+    varValueTitle.innerHTML = '<b>Internal Variables</b>';
     varValueTitle.style.position = "relative";
-    varValueTitle.style.top = "15px";
+    varValueTitle.style.top = "7px";
     if(figNum >= 0) varValueTitle.className = "col-md-offset-2 col-sm-offset-2";
 
     //<div> for variable value window
