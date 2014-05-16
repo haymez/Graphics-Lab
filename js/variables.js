@@ -88,31 +88,48 @@ function Variables(figNum) {
         printVars();
     }
     
-    //pointVariables getter
+    /* getPointVars - gets the pointVariables variable
+     * @return {Array} - All declared point variables
+     */
     function getPointVars() {
         return pointVariables;
     }
     
-    //lineVariables getter
+    /* getLineVars - gets the lineVariables variable
+     * @return {Array} - All declared line variables
+     */
     function getLineVars() {
         return lineVariables;
     }
     
-    //polygonVariables getter
+    /* getPolyVars - gets the polygonVariables variable
+     * @return {Array} - All declared polygon variables
+     */
     function getPolyVars() {
         return polygonVariables;
     }
     
-    //circleVariables getter
+    /* getCircleVars - gets the circleVariables variable
+     * @return {Array} - All declared circle variables
+     */
     function getCircleVars() {
         return circleVariables;
     }
     
-    //distanceVariables getter
+    /* getDistVars - gets the distanceVariables variable
+     * @return {Array} - All declared distance variables
+     */
     function getDistVars() {
         return distanceVariables;
     }
 
+    /* setArrays - Sets all the shape arrays (For use when loading a program from local storage)
+     * @param {Array} distance - Sets the shape array variable.
+     * @param {Array} point    - Sets the shape array variable.
+     * @param {Array} line     - Sets the shape array variable.
+     * @param {Array} circle   - Sets the shape array variable.
+     * @param {Array} polygon  - Sets the shape array variable.
+     */
     function setArrays(distance, point, line, circle, polygon) {
         distanceVariables = distance;
         pointVariables = point;
@@ -130,7 +147,7 @@ function Variables(figNum) {
         polygonVariables = new Array();
     }
     
-    //get Code object
+    //Gets all needed objects for variables.js
     function getObjects(codeObj, editorObj) {
         code = codeObj;
         editor = editorObj

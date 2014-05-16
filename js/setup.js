@@ -4,8 +4,11 @@
  * 
  */
 
-//Sets up new lab.
-//figNum refers to the unique figure number.
+/* Setup - Sets up a new instance of this application.
+ * @param {Number} figNum       - Defines the figure number of this lab. This number is attached to the end
+ *                                of every element on the DOM for this lab
+ * @param {Number} editorHeight - Sets the height in number of pixels for the code window.
+ */
 function Setup(figNum, editorHeight) {
     this.retrieveUpdates = retrieveUpdates;
     this.saveExercise = saveExercise;
@@ -24,11 +27,13 @@ function Setup(figNum, editorHeight) {
     //Figure mode
     else var editor = new Editor("program_code"+figNum, "graphics", Math.abs(figNum), true, true, 1, true, false, false); //Initialize editor
 
+    //Retrieves updates made to imbedded exercise
     function retrieveUpdates() {
         editor.loadEditor("program_code-" + figNum, "program_code" + figNum, true);
         interpreter.getVariables();
     }
 
+    //Allows users to save code when working on an embedded exercise
     function saveExercise() {
         editor.saveEditor();
     }

@@ -160,6 +160,10 @@ function Run_walk(figNum) {
         runMode = false;
     }
 
+    /* containsCommand - Checks if the specified text contains a command or not
+     * @param  {String} input  - String to parse through
+     * @return {Boolean}       - True if command found in string. False otherwise.
+     */
     function containsCommand(input) {
         var found = false;
         found = found || input.indexOf("draw") != -1;
@@ -172,7 +176,10 @@ function Run_walk(figNum) {
         return found;
     }
 
-    //returns the indent of the loop.
+    /* makeLoop - Returns the indent of the loop.
+     * @param  {Number} loopStart - Row number from code window that the loop starts on
+     * @param  {Number} i         - Number of times to repeat this loop
+     */
     function makeLoop(loopStart, i) {
         this.loopStart = loopStart;
         this.i = i;
@@ -232,7 +239,9 @@ function Run_walk(figNum) {
         }
     }
 
-    // disable / enable buttons for run walk
+    /* changeBtnState - Disable / enable buttons for run walk
+     * @param  {Boolean} state - If True, buttons will be disabled. If false, they are enabled
+     */
     function changeBtnState(state) {
         if(figNum < 0) {
             document.getElementById("distanceButton" + figNum).disabled = state;
@@ -248,17 +257,21 @@ function Run_walk(figNum) {
         }
     }
     
-    //fresh getter
+    /* getFresh - Gets the state of the program
+     * @return {Boolean} True if the program is fresh (hasn't starting the interpretting process). False otherwise.
+     */
     function getFresh() {
         return fresh;
     }
     
-    //fresh setter
+    /* setFresh - Sets the value of fresh
+     * @param {Boolean} value - Value to set fresh to
+     */
     function setFresh(value) {
         fresh = value;
     }
     
-    //gets objects
+    //gets all objects needed for run_walk to function properly
     function getObjects(editorObj, codeObj, canvasObj, interpreterObj, variablesObj) {
         editor = editorObj;
         code = codeObj;

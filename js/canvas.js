@@ -1,7 +1,8 @@
 /*
  * This file contains all code for the functions which control what
  * is drawn on the interactive drawing window. It also handles adding
- * the variables that are created to the appropriate arrays.
+ * the variables that are created to the appropriate arrays and listening
+ * for user input on the canvas.
  */
 
 function Canvas(figNum) {
@@ -55,7 +56,9 @@ function Canvas(figNum) {
         }
     });
 
-    //Writes cursor position on canvas
+    /* writeMessage - Writes cursor position on canvas
+     * @param  {string} message - string to write coordinates on the canvas (ie. 150 x 150)
+     */
     function writeMessage(message) {
         draw();
         var ctx = canvas.getContext('2d');
@@ -65,7 +68,10 @@ function Canvas(figNum) {
         ctx.fillText(message, 298, 10);
     }
 
-    //Returns the cursor position on canvas
+    /* getCursorPos - Returns the cursor position on canvas
+     * @param  {object} evt - jQuery object
+     * @return {object} X and Y coordinate of mouse on canvas
+     */
     function getCursorPos(evt) {
         var rect = canvas.getBoundingClientRect();
         return {
@@ -121,7 +127,13 @@ function Canvas(figNum) {
         }
     }
 
-    //Finds distance between two points on canvas
+    /* findDistance - Finds distance between two points on canvas
+     * @param  {number} startX - The starting point X position
+     * @param  {number} startY - The starting point Y position
+     * @param  {number} endX   - The ending point X position
+     * @param  {number} endY   - The ending point Y position
+     * @return {number}        - This is the distance between the two points
+     */
     function findDistance(startX, startY, endX, endY) {
             var distance = Math.sqrt(Math.pow((endX - startX), 2) + Math.pow((endY - startY), 2));
             return distance;
@@ -253,7 +265,12 @@ function Canvas(figNum) {
         variables.getPolyVars()[variables.getPolyVars().length] = 'g' + (variables.getPolyVars().length+1);
         variables.printVars();
         
-        //defines a point (or angle) on the polygon
+        /* Defines a line object within a polygon. should really be called line not point. To lazy to fix.
+         * @param  {number} startX - The starting position X coordinate
+         * @param  {number} startY - The starting position Y coordinate
+         * @param  {number} endX   - The ending position X coordinate
+         * @param  {number} endY   - The ending position Y coordinate
+         */
         function point(startX, startY, endX, endY) {
             this.startX = Math.floor(startX);
             this.startY = Math.floor(startY);
@@ -358,17 +375,21 @@ function Canvas(figNum) {
         });
     }
     
-    //toDraw getter
+    /* getToDraw -Gets the toDraw array
+     * @return {Array} - The array that determines what will be drawn on the canvas
+     */
     function getToDraw() {
         return toDraw;
     }
     
-    //toDraw setter
+    /* setToDraw - Sets the toDraw array
+     * @param {Array} value - the value to set the toDraw array to
+     */
     function setToDraw(value) {
         toDraw = value;
     }
     
-    //get objects
+    //Gets all objects needed by canvas.js
     function getObjects(variablesObj, shapesObj, codeObj, editorObj) {
         variables = variablesObj
         shapes = shapesObj;

@@ -25,7 +25,10 @@ function Code(figNum) {
     this.insertClickFunc = insertClickFunc;
     
 
-    //Listen for click events on the table
+    /* clickFunc - Listen for click events on the code
+     * @param  {object} cell - object of the element the user clicked on
+     * @return {[type]}      - 
+     */
     function clickFunc(cell) {
         cell.stopImmediatePropagation(); //Stop multiple cascading events from being called from the same event.
         
@@ -35,29 +38,6 @@ function Code(figNum) {
         var rowString = rowToString(rowNum);
         var currentElement = $(this);
         var classList = $(this).attr("class")
-        
-        //~ // we pass rowNum and colNum to tell the function where start highlighting
-        //~ if (cellVal.indexOf('=') == -1 && cellVal.indexOf('draw') == -1 && cellVal.indexOf('erase') == -1 && cellVal.indexOf('color') == -1 &&
-            //~ cellVal.indexOf('repeat') == -1 && cellVal.indexOf('times') == -1 && cellVal.indexOf('loop') == -1 &&
-            //~ cellVal.indexOf('endloop') == -1) {
-            //~ //THIS SHOULD BE HANDLED BY API... MAYBE?
-            //~ 
-            //~ if (cellVal.indexOf("(") == -1 && cellVal.indexOf(")") == -1) {
-                //~ if (colNum == 0) {
-                    //~ if (rowString.indexOf("repeat") >= 0)
-                    //~ highlightLoop("repeat", rowNum);
-                    //~ else if (rowString.indexOf("loop") >= 0 && rowString.indexOf("endloop") == -1)
-                    //~ highlightLoop("loop", rowNum);
-                    //~ else if (rowString.indexOf("endloop") >= 0)
-                    //~ highlightLoop("endloop", rowNum);
-                    //~ highlightLine(rowNum);
-    //~ 
-                    //~ //Highlight every line of polygon
-                    //~ if (rowToString(rowNum).charAt(0) == 'g')
-                    //~ while (rowToString(++rowNum).charAt(0) == '(') highlightLine(rowNum);
-                //~ }
-            //~ }
-        //~ }
 
         //User clicked on line number or possibly the insertion area
         if (colNum == 0 && rowNum != editor.getSelectedRowIndex()) {
@@ -469,7 +449,9 @@ function Code(figNum) {
         }
     }
 
-    //
+    /* insertClickFunc - Listens for user clicks on the insertion area
+     * @param  {object} cell object of the element the user clicked on
+     */
     function insertClickFunc(cell) {
         cell.stopImmediatePropagation(); //Prevent multiple events being thrown from the same event
         var insertRow = $(this).parent().index()+1;
@@ -487,6 +469,11 @@ function Code(figNum) {
         }
     }
 
+    /* addNewRow - Uses the editor function addRow to add a row to the table
+     * @param {number} index            - Defines which row in code window to put the line in
+     * @param {Array} arr               - Each element of arr is a cell within the code table
+     * @param {Boolean} lastPolygonLine - True if this is the last line of a polygon. False otherwise.
+     */
     function addNewRow(index, arr, lastPolygonLine) {
         var objects = new Array();
         for (var i = 0; i < arr.length; i++) {
@@ -505,19 +492,10 @@ function Code(figNum) {
         editor.addRow(index, objects);
     }
 
-    //Finds if text is a keyword in the watson graphics language
-    function isKeyWord(text) {
-        if (text.indexOf("draw") >= 0) return true;
-        if (text.indexOf("erase") >= 0) return true;
-        if (text.indexOf("color") >= 0) return true;
-        if (text.indexOf("repeat") >= 0) return true;
-        if (text.indexOf("times") >= 0) return true;
-        if (text.indexOf("loop") >= 0) return true;
-        if (text.indexOf("endloop") >= 0) return true;
-        return false;
-    }
-
-    //Returns string representation of the row at specified row index
+    /* rowToString - Returns string representation of the row at specified row index
+     * @param  {Number} rowInd - Index of the row you want to get the text from
+     * @return {String}        - A trimmed string containing the text from the row specified with rowInd
+     */
     function rowToString(rowInd) {
         var string = "";
         var arr = editor.rowToArray(rowInd);
@@ -537,7 +515,7 @@ function Code(figNum) {
         addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "draw", "(", "OBJECT", ")"]);
     }
 
-    //Erases a shape
+    //Allows user to choose a shape to erase
     function erase() {
         addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "erase", "(", "OBJECT", ")"]);
     }
@@ -547,7 +525,7 @@ function Code(figNum) {
         addNewRow(editor.getSelectedRowIndex(), [getIndent(editor.getSelectedRowIndex()) + "color", "(", "COLOR_NAME", ")"]);
     }
 
-    //Creates a loop in program window
+    //Creates a loop in program code window
     function loop() {
         var thisIndent = getIndent(editor.getSelectedRowIndex());
         addNewRow(editor.getSelectedRowIndex(), [thisIndent + "repeat&nbsp;", "COUNTER", "&nbsp;times"]);
@@ -557,7 +535,25 @@ function Code(figNum) {
 
     /* ************Code parsing functions************ */
 
-    //This function detects if this line is a distance assignment
+    /* isKeyWord - Finds if text is a keyword in the watson graphics language
+     * @param  {String}  text - The text that will be checked
+     * @return {Boolean}      - True if this is a keyword in Watson Graphics Language. False otherwise
+     */
+    function isKeyWord(text) {
+        if (text.indexOf("draw") >= 0) return true;
+        if (text.indexOf("erase") >= 0) return true;
+        if (text.indexOf("color") >= 0) return true;
+        if (text.indexOf("repeat") >= 0) return true;
+        if (text.indexOf("times") >= 0) return true;
+        if (text.indexOf("loop") >= 0) return true;
+        if (text.indexOf("endloop") >= 0) return true;
+        return false;
+    }
+
+    /* isDistanceAssign - This function detects if this line is a distance assignment
+     * @param  {Number}  row - Row in code window to parse through
+     * @return {Boolean}     - Returns true if this line contains a distance assignment. False otherwise.
+     */
     function isDistanceAssign(row) {
         var string = rowToString(row);
         if (string.indexOf("d") < string.indexOf("=") && string.indexOf("d") >= 0 && string.indexOf("+") == -1 &&
@@ -567,7 +563,12 @@ function Code(figNum) {
             return false;
     }
 
-    //This function checks to see if the specified variable has been assigned above the specified row
+    /* beenAssigned - This function checks to see if the specified variable has been assigned
+     * above the specified row
+     * @param  {String} variable  - Variable to check assignment with
+     * @param  {Number} row       - Line in code window to check above
+     * @return {Boolean}          - Returns true if the variable has been assigned. False otherwise.
+     */
     function beenAssigned(variable, row) {
         for (var i = 0; i < row; i++) {
             var string = rowToString(i);
@@ -577,7 +578,11 @@ function Code(figNum) {
         return false;
     }
 
-    //This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
+    /* isEditableValue - This function checks to see if the user clicked on a variable value (X/Y/RADIUS/any number between 0-300). Can't be a line number.
+     * @param  {String}  cellVal - Text to parse
+     * @param  {Number}  row     - Row number of code window that the text comes from
+     * @return {Boolean}         - Returns True if the value should be editable. False otherwise.
+     */
     function isEditableValue(cellVal, row) {
         var rowString = rowToString(row);
         if (((!isNaN(Number(cellVal) && rowString.indexOf("repeat") == -1)) 
@@ -594,7 +599,11 @@ function Code(figNum) {
     }
 
 
-    //delete loop
+    /* deleteLoop - Handles deleting loop in code window
+     * @param  {[type]} type   - Text containing what part of the loop the user clicked the line number on.
+     *                           (ie. "repeat", "loop", "endloop")
+     * @param  {[type]} rowNum - Row number the user clicked on
+     */
     function deleteLoop(type, rowNum) {
         if (type.indexOf("endloop") >= 0) {
             var endloop = 1;
@@ -660,7 +669,9 @@ function Code(figNum) {
         }
     }
 
-    //deletes all rows of a polygon
+    /* deletePolygon - Deletes all rows of a polygon
+     * @param  {Number} rowNum - Row of code window to delete
+     */
     function deletePolygon(rowNum) {
         editor.deleteRow(rowNum);
         do {
@@ -669,14 +680,20 @@ function Code(figNum) {
         editor.deleteRow(rowNum);
     }
 
-    //Returns true if rowNum is last line in polygon
+    /* lastPolyLine - Returns true if rowNum is last line in polygon
+     * @param  {Number} rowNum  - Row number of code window to test
+     * @return {Boolean}        - True if this is the last line of a polygon. False otherwise.
+     */
     function lastPolyLine(rowNum) {
         var rowObject = $("#figEditorprogram_code" + figNum).children().children(":nth-child(" + Number(rowNum+1) + ")");
         if(rowObject.html().indexOf("lastPolygonLine") >= 0) return true;
         else return false;
     }
 
-    //return string with correct number of indents.
+    /* getIndent - Returns string with correct number of indents.
+     * @param  {Number} row - Row number of code window to get indents from
+     * @return {String}     - String containing the correct number of indents for specified row.
+     */
     function getIndent(row) {
         var loop = 0;
         for (var i = 0; i < row; i++) {
@@ -690,8 +707,12 @@ function Code(figNum) {
         return string;
     }
     
-    //Returns array of variables of a specific type that have been assigned.
-    //If no type is given, it will give a list of all drawable items.
+    /* getAssignedVars - Returns array of variables of a specific type that have been assigned.
+     *                   If no type is given, it will give a list of all drawable items.
+     * @param  {Number} row  - Row of code window to check above
+     * @param  {String} type - (Optional) type of variable to look for. (ie. "p" for point, "l" for line etc...)
+     * @return {Array}       - Array of all variables found
+     */
     function getAssignedVars(row, type) {
         var arr = new Array();
         for(var i = 0; i < row; i++) {
@@ -713,13 +734,16 @@ function Code(figNum) {
     }
 
     
-    //get objects
+    //Gets all objects needed for code.js to function properly
     function getObjects(editorObj, variablesObj) {
         editor = editorObj;
         variables = variablesObj;
     }
 
-    //Handles all the figures for the Graphics chapter
+    /**
+     * Handles all the figures for the Graphics chapter
+     * Depending on the figure number, it will generate the correct code
+     */
     $(document).ready(function() {
         //All figNum's greater then zero are figure mode. Otherwise sandbox mode
         if(figNum >= 0) {

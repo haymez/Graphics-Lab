@@ -1,5 +1,7 @@
 /*
- * Adds elements such as buttons, canvas', and divs
+ * Adds all elements for application
+ * A lot of the css for these elements also resides here
+ * Authors: James Miltenberger, Jonathan Teel
  */
 
 function AddElements(figNum, height) {
@@ -212,6 +214,7 @@ function AddElements(figNum, height) {
     //center var tracker under code window
     if(figNum < 0) vvDivHolder.style.paddingLeft = $("#var_buttons"+figNum).css('width');
     
+    //This gets all objects needed for addElements.js to work properly
     function getObjects(variablesObj, canvasObj, codeObj, run_walkObj) {
         variables = variablesObj;
         canvas = canvasObj;
