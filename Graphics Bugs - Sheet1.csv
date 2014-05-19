@@ -1,0 +1,7 @@
+Date Found,Bug,Description,Started?,Origin (Filename),Priority,Comments
+5/19/2014,Syntax error handline,Interpreter will interpret programs that don't make sense.,No,interpreter.js,Medium,Should throw alerts to notify user of error. (ex. draw(p1) when p1 isn't initialized)
+5/19/2014,Var Tracker,all variables that are declared need to be in the tracker with types and values as undefined,No,run_walk.js,Medium,As soon as a user clicks walk the declared variables need to be set to undefined and changed when they are assigned
+5/19/2014,Figure 6.12,lines don't match up perfectly. Figure out what causes this and fix it.,No,code.js,Low,"When you run the embedded figure, it appears as though the lines don't actually line up as they should."
+5/19/2014,Var Tracker,Var tracker needs to display polygons the same way they are shown in code. (Right now it's all on one long line),No,run_walk.js,Low,The polygons should show up on multiple lines with each line being dedicated to a vertice of the polygon
+5/19/2014,Distance variables,"distanceValue' needs to be 'distanceExpression' in lines like ""d1=distanceValue"" but in lines like ""d1=d1+distanceValue"" leave it as 'distanceValue'",No,code.js,Medium,"Basically, any time the distance can become an expression (ie. d1+5), it should be distanceExpression. Otherwise it should be distanceValue (ie. d1=d1+distanceValue)"
+5/19/2014,Error handling,Abnormal program termination needs to be descriptive. (tell you what you did wrong).,No,interpreter.js,Medium,
