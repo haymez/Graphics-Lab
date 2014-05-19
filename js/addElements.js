@@ -10,6 +10,28 @@ function AddElements(figNum, height) {
     var canvas;
     var code;
     var run_walk;
+
+    var figId = "";
+    switch(figNum) {
+        case 0:
+            figId = "centercircle";
+            break;
+        case 1:
+            figId = "boxprogram";
+            break;
+        case 2:
+            figId = "concentricprogram";
+            break;
+        case 3:
+            figId = "concentricnop1";
+            break;
+        case 4:
+            figId = "growingcircle";
+            break;
+        case 5:
+            figId = "fallingline";
+            break;
+    }
     
     //public functions
     this.getObjects = getObjects;
@@ -116,61 +138,101 @@ function AddElements(figNum, height) {
     
     var distanceButton = document.createElement('button');
     distanceButton.id = "distanceButton" + figNum;
-    distanceButton.onclick = function() { variables.newDistance(); };
+    distanceButton.onclick = function() {
+        variables.newDistance();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     distanceButton.innerHTML = "Distance";
     distanceButton.className = "btn btn-primary btn-sm";
 
     var pointButton = document.createElement('button');
     pointButton.id = "pointButton" + figNum;
-    pointButton.onclick = function() { canvas.drawPoint(); };
+    pointButton.onclick = function() {
+        canvas.drawPoint();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     pointButton.innerHTML = "Point";
     pointButton.className = "btn btn-primary btn-sm";
 
     var lineButton = document.createElement('button');
     lineButton.id = "lineButton" + figNum;
-    lineButton.onclick = function() { canvas.drawLine();  };
+    lineButton.onclick = function() {
+        canvas.drawLine();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     lineButton.innerHTML = "Line";
     lineButton.className = "btn btn-primary btn-sm";
 
     var polygonButton = document.createElement('button');
     polygonButton.id = "polygonButton" + figNum;
-    polygonButton.onclick = function() { canvas.drawPolygon(); };
+    polygonButton.onclick = function() {
+        canvas.drawPolygon();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     polygonButton.innerHTML = "Polygon";
     polygonButton.className = "btn btn-primary btn-sm";
 
     var circleButton = document.createElement('button');
     circleButton.id = "circleButton" + figNum;
-    circleButton.onclick = function() { canvas.drawCircle(); };
+    circleButton.onclick = function() {
+        canvas.drawCircle();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     circleButton.innerHTML = "Circle";
     circleButton.className = "btn btn-primary btn-sm";
 
     var assignButton = document.createElement('button');
     assignButton.id = "assignButton" + figNum;
-    assignButton.onclick = function() {code.assign();};
+    assignButton.onclick = function() {
+        code.assign();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     assignButton.innerHTML = "Assign";
     assignButton.className = "btn btn-success btn-sm";
 
     var drawButton = document.createElement('button');
     drawButton.id = "drawButton" + figNum;
-    drawButton.onclick = function() { code.drawShape(); };
+    drawButton.onclick = function() {
+        code.drawShape();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     drawButton.innerHTML = "Draw";
     drawButton.className = "btn btn-success btn-sm";
 
     var eraseButton = document.createElement('button');
     eraseButton.id = "eraseButton" + figNum;
-    eraseButton.onclick = function() {code.erase();};
+    eraseButton.onclick = function() {
+        code.erase();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     eraseButton.innerHTML = "Erase";
     eraseButton.className = "btn btn-success btn-sm";
 
     var colorButton = document.createElement('button');
     colorButton.id = "colorButton" + figNum;
-    colorButton.onclick = function() { code.changeColor(); };
+    colorButton.onclick = function() {
+        code.changeColor();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     colorButton.innerHTML = "Color";
     colorButton.className = "btn btn-success btn-sm";
 
     var loopButton = document.createElement('button');
     loopButton.id = "loopButton" + figNum;
-    loopButton.onclick = function() { code.loop(); };
+    loopButton.onclick = function() {
+        code.loop();
+        if(figNum < 0) ga("send", "event", "graphics", "edit", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "edit", "figure-" + figId)
+    };
     loopButton.innerHTML = "Loop";
     loopButton.className = "btn btn-success btn-sm";
 
@@ -208,8 +270,16 @@ function AddElements(figNum, height) {
     container.style.height = $("#"+programDiv.id).height() + $("#"+drawDiv.id).height() + "px";
 
     //Add listeners for walk and run
-    $("#" + runButton.id).click(function() { run_walk.run(); });
-    $("#" + walkButton.id).click(function() { run_walk.walk(); });
+    $("#" + runButton.id).click(function() {
+        run_walk.run();
+        if(figNum < 0) ga("send", "event", "graphics", "run", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "run", "figure-" + figId)
+    });
+    $("#" + walkButton.id).click(function() {
+        run_walk.walk();
+        if(figNum < 0) ga("send", "event", "graphics", "walk", "sandbox" + figNum)
+        else ga("send", "event", "graphics", "walk", "figure-" + figId)
+    });
 
     //center var tracker under code window
     if(figNum < 0) vvDivHolder.style.paddingLeft = $("#var_buttons"+figNum).css('width');
